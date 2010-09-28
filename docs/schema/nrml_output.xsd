@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://opengem.org/xmlns/shaml/0.1"
-	xmlns:shaml="http://opengem.org/xmlns/shaml/0.1" xmlns:gml="http://www.opengis.net/gml/profile/sfgml/1.0" elementFormDefault="qualified">
+	xmlns:shaml="http://opengem.org/xmlns/shaml/0.1"
+	xmlns:gml="http://www.opengis.net/gml/profile/sfgml/1.0" elementFormDefault="qualified">
 
 	<!-- import -->
 	<xs:import namespace="http://www.opengis.net/gml/profile/sfgml/1.0"
-	    schemaLocation="./GML-SimpleFeaturesProfileSchema.xsd"/>
-		<!-- schemaLocation="./gml.xsd"/> -->
+		schemaLocation="./GML-SimpleFeaturesProfileSchema.xsd"/>
+	<!-- schemaLocation="./gml.xsd"/> -->
 	<xs:include schemaLocation="nrml_common.xsd"/>
 	<!-- -->
 	<xs:complexType name="HazardCurveListType">
@@ -132,78 +133,64 @@
 	<xs:element name="LossRatioCurve" type="shaml:CurveType"/>
 	<xs:complexType name="CurveListType">
 		<xs:sequence minOccurs="0" maxOccurs="unbounded">
-    			<xs:choice>
-    				<xs:element ref="shaml:Curve"/>
-    				<xs:element ref="shaml:LossCurve"/>
-    				<xs:element ref="shaml:LossRatioCurve"/>
-    			</xs:choice>
+			<xs:choice>
+				<xs:element ref="shaml:Curve"/>
+				<xs:element ref="shaml:LossCurve"/>
+				<xs:element ref="shaml:LossRatioCurve"/>
+			</xs:choice>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:element name="LossCurveList" type="shaml:CurveListType"/>
 	<xs:element name="LossRatioCurveList" type="shaml:CurveListType"/>
 	<xs:element name="RiskResult">
 		<xs:complexType>
-		    <xs:sequence minOccurs="1">
-    		    <xs:element name="Config"/>
-    			<xs:choice>
-    				<xs:element ref="shaml:LossCurveList"/>
-    				<xs:element ref="shaml:LossRatioCurveList"/>
-    			</xs:choice>
-    			<xs:choice>
-    	            <xs:element name="LossCurvePE" type="shaml:CurveType"/>
-    	            <xs:element name="LossRatioCurvePE" type="shaml:CurveType"/>
-    			</xs:choice>
-    		</xs:sequence>
+			<xs:sequence minOccurs="1">
+				<xs:element name="Config"/>
+				<xs:choice>
+					<xs:element ref="shaml:LossCurveList"/>
+					<xs:element ref="shaml:LossRatioCurveList"/>
+				</xs:choice>
+				<xs:choice>
+					<xs:element name="LossCurvePE" type="shaml:CurveType"/>
+					<xs:element name="LossRatioCurvePE" type="shaml:CurveType"/>
+				</xs:choice>
+			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
-	<xs:complexType name="EvenlyDiscretizedPMFType">
-		<xs:sequence maxOccurs="1">
-			<xs:element name="PMFvalues" type="gml:doubleList">
-				<xs:annotation>
-					<xs:documentation>This contains the PMF values
-</xs:documentation>
-				</xs:annotation>
-			</xs:element>
+	<xs:complexType name="EvenlyDiscretizedHMFList">
+		<xs:annotation>
+			<xs:documentation>This is a container for evenly discretized Hazard Mass Functions.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="HMF" type="shaml:CurveType"/>
 		</xs:sequence>
 		<xs:attribute name="minX" type="xs:double" use="required">
 			<xs:annotation>
-				<xs:documentation>In case of a PMF for a continuous random variable, this is the middle-point of the first bin. In case of a PMF for a discrete random variable, this is the first x value of the PMF.
-</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="numVal" type="xs:int" use="required">
-			<xs:annotation>
-				<xs:documentation>Number of values in the PMF
+				<xs:documentation>
+
+
 </xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="deltaX" type="xs:double" use="required">
 			<xs:annotation>
-				<xs:documentation>In case of a PMF for a continuous random variable, this is the bin width associated with each value. In case of a PMF for a discrete random variable, this is the discretization interval of the PMF
-</xs:documentation>
+				<xs:documentation/>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:element name="EvenlyDiscretizedPMF" type="shaml:EvenlyDiscretizedPMFType"/>
-	<xs:complexType name="ArbitrarilyDiscretizedPMFType">
-		<xs:all maxOccurs="1">
-			<xs:element name="binWidths" type="gml:doubleList">
-				<xs:annotation>
-					<xs:documentation>These are the bin widths associated with each PMF values
-</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="PMFvalues" type="gml:doubleList">
-				<xs:annotation>
-					<xs:documentation>These are the PMF values</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:all>
-		<xs:attribute name="minX" type="xs:double" use="required">
+	<xs:element name="EvenlyDiscretizedHMFList" type="shaml:EvenlyDiscretizedHMFList"/>
+	<xs:complexType name="ArbitrarilyDiscretizedHMFList">
+		<xs:annotation>
+			<xs:documentation>This is a container for arbitrarily discretized Hazard Mass Functions.</xs:documentation>
+		</xs:annotation>
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="HMF" type="shaml:CurveType"/>
+		</xs:sequence>
+		<xs:attribute name="xVals" type="gml:doubleList" use="required">
 			<xs:annotation>
-				<xs:documentation>This is the lower limit of the first bin.</xs:documentation>
+				<xs:documentation/>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
-	<xs:element name="ArbitrarilyDiscretizedPMF" type="shaml:ArbitrarilyDiscretizedPMFType"/>
+	<xs:element name="ArbitrarilyDiscretizedHMFList" type="shaml:ArbitrarilyDiscretizedHMFList"/>
 </xs:schema>
