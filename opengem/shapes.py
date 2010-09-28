@@ -1,3 +1,4 @@
+# encoding: utf-8
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 """
 Collection of base classes for processing 
@@ -332,5 +333,32 @@ class FastCurve(object):
         # TODO (bw): Test this corner case
         error_str = "%s is not contained in this function" % (y_value, )
         raise ValueError(error_str)
+
+
+class HazardCurve(FastCurve):
+    """A really sketch representation of an hazard curve."""
+    
+    def __init__(self, values):
+        super(HazardCurve, self).__init__(values)
+
+        self.id_model = "FIXED" # fixed, not yet implemented
+        self.vs30 = 0.0 # fixed, not yet implemented
+
+        self.time_span_duration = 0.0
+        self.IMT = None
+        self.end_branch_label = None
+        self.computed_on = None
+
+    def __eq__(self, other):
+        """Two hazard curves are equal when computed on the same site."""
+        return self.computed_on == other.computed_on
+
+    @property
+    def max_prob(self):
+        pass
+    
+    @property
+    def min_prob(self):
+        pass
 
 EMPTY_CURVE = FastCurve(())

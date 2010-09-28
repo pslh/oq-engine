@@ -50,6 +50,32 @@ class Reader(object):
         self._check_key_in_cache(key)
         return json.JSONDecoder().decode(self.client.get(key))
     
+    def curve_at(self, key):
+        """Read a serialized hazard curves and translated them in our model.
+        
+        This should be, eventually, the only method used
+        to read hazard curves from memcached.
+        """
+        decoded_model = self._get_and_decode(key)
+
+        curves = []
+
+        for set_counter, raw_curves in enumerate(decoded_model["hcRepList"]):
+
+            for curve_counter, curve in enumerate(raw_curves["probExList"]):
+                hazard_curve = shapes.HazardCurve(zip(raw_curves["gmLevels"], curve))
+                hazard_curve.time_span_duration = raw_curves["timeSpan"]
+                hazard_curve.IMT = raw_curves["intensityMeasureType"]
+                hazard_curve.end_branch_label = decoded_model["endBranchLabels"][set_counter]
+
+                lon = raw_curves["gridNode"][curve_counter]["location"]["lon"]
+                lat = raw_curves["gridNode"][curve_counter]["location"]["lat"]
+
+                hazard_curve.computed_on = shapes.Site(math.degrees(lon), math.degrees(lat))
+                curves.append(hazard_curve)
+
+        return curves
+
     def for_shaml(self, key):
         """Read serialized versions of hazard curves
         and produce a dictionary as expected by the shaml writer.
