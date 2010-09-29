@@ -205,7 +205,7 @@ class Gefeaturevalue(models.Model):
     class Meta:
         db_table = u'gefeaturevalue'
     def __unicode__(self):
-        return self.gfcode + self.gecode
+        return self.gfcode+self.gecode
 
 class Geopoint(models.Model):
     gpid = models.IntegerField("Id", primary_key=True)
@@ -222,12 +222,74 @@ class Geopoint(models.Model):
     def __unicode__(self):
         return self.gpname
 
+# TODO:Change to Multicolumn primary key: rlid+gecode
 class Gereference(models.Model):
     rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
     gecode = models.ForeignKey(Gmpe, db_column='gecode')
     gradddate = models.DateTimeField()
     class Meta:
         db_table = u'gereference'
+    def __unicode__(self):
+        return str(self.rlid)+self.gecode
+
+# TODO:Change to Multicolumn primary key: gecode+eccode
+class Gmeconstant(models.Model):
+    gecode = models.ForeignKey(Gmpe, db_column='gecode')
+    eccode = models.ForeignKey(Econstant, db_column='eccode')
+    gmecvalue = models.CharField("Value of Constant", max_length=20)
+    gmecremarks = models.CharField("Remarks", max_length=255)
+    class Meta:
+        db_table = u'gmeconstant'
+    def __unicode__(self):
+        return self.gecode+self.eccode
+
+# TODO:Change to Multicolumn primary key: gecode+evcode
+class Gmevariable(models.Model):
+    gecode = models.ForeignKey(Gmpe, db_column='gecode')
+    evcode = models.ForeignKey(Evariable, db_column='evcode')
+    gmevremarks = models.CharField("Remarks", max_length=255)
+    class Meta:
+        db_table = u'gmevariable'
+    def __unicode__(self):
+        return self.gecode+self.evcode
+
+# TODO:Change to Multicolumn primary key: gpcode+gecode
+class Gmparamvalue(models.Model):
+    gpcode = models.ForeignKey(Gmpeparameter, db_column='gpcode')
+    gecode = models.ForeignKey(Gmpe, db_column='gecode')
+    gepvalstring = models.CharField("Parameter Value String", max_length=50)
+    gepremarks = models.CharField("Remarks", max_length=255)
+    class Meta:
+        db_table = u'gmparamvalue'
+    def __unicode__(self):
+        return self.gpcode+self.gecode
+
+class Gmpe(models.Model):
+    EQNTYPE_CHOICES = (
+        ('S','Standard 3 constants'),
+        ('O','Other')
+    )
+    gecode = models.CharField("GMPE Code", primary_key=True)
+    geprivatetag = models.BooleanField("Private to GEM?")
+    geshortname = mmodels.CharField("Short Name", max_length=20)
+    gename = models.CharField("Name", max_length=50)
+    gedesc = models.CharField("Description", max_length=100)
+    geremarks = models.CharField("Remarks", max_length=255)
+    geequation = models.CharField("Functional Form", max_length=5120)
+    geeqndbdefntag = models.BooleanField("Equation Functional Form Defined?")
+    geeqntypecode = models.CharField("Equation Type Code", max_length=1,
+                    choices=EQNTYPE_CHOICES) 
+    geareapolygon = models.CharField("Polygon WKT", max_length=5120)
+    geareamultipolygon = models.CharField("Multipolygon WKT", max_length=5120)
+    secode = models.ForeignKey(Seismotecenvt, db_column='secode')
+    # Geospatial data
+    gepgareapolygon = models.PolygonField()
+    gepgareamultipolygon = models.MultiPolygonField()
+    objects = models.GeoManager()
+    class Meta:
+        db_table = u'gmpe'
+    def __unicode__(self):
+        return self.gename
 
 class Gmpefeature(models.Model):
     gfcode = models.TextField(primary_key=True)
@@ -549,29 +611,6 @@ class Soilclass(models.Model):
     def __unicode__(self):
         return self.ecname
 
-
-class Gmpe(models.Model):
-    gecode = models.TextField() # This field type is a guess.
-    geprivatetag = models.BooleanField()
-    geshortname = mmodels.CharField("Short Name", max_length=20)odels.TextField() # This fielmodels.CharField("Short Name", max_length=20)d type is a guess.
-    gename = models.CharField(max_length=50)
-    gedesc = models.CharField(max_length=100)
-    geremarks = models.CharField(max_length=255)
-    geequation = models.CharField(max_length=5120)
-    geeqndbdefntag = models.BooleanField()
-    geeqntypecode = models.TextField() # This field type is a guess.
-    geareapolygon = models.CharField(max_length=5120)
-    geareamultipolygon = models.CharField(max_length=5120)
-    secode = models.ForeignKey(Seismotecenvt, db_column='secode')
-    gepgareapolygon = models.PolygonField()
-    gepgareamultipolygon = models.MultiPolygonField()
-    objects = models.GeoManager()
-    class Meta:
-        db_table = u'gmpe'
-    def __unicode__(self):
-        return self.ecname
-
-
 #class SpatialRefSys(models.Model):
 #    srid = models.IntegerField(primary_key=True)
 #    auth_name = models.CharField(max_length=256)
@@ -707,18 +746,6 @@ class Ltreeparamtypelevel(models.Model):
     def __unicode__(self):
         return self.ecname
 
-
-class Gmparamvalue(models.Model):
-    gpcode = models.ForeignKey(Gmpeparameter, db_column='gpcode')
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    gepvalstring = models.TextField() # This field type is a guess.
-    gepremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'gmparamvalue'
-    def __unicode__(self):
-        return self.ecname
-
-
 class Hilmreference(models.Model):
     rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
     hilmid = models.ForeignKey(Hazardinputltreemodel, db_column='hilmid')
@@ -798,18 +825,6 @@ class Screference(models.Model):
     def __unicode__(self):
         return self.ecname
 
-
-class Gmeconstant(models.Model):
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    eccode = models.ForeignKey(Econstant, db_column='eccode')
-    gmecvalue = models.TextField() # This field type is a guess.
-    gmecremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'gmeconstant'
-    def __unicode__(self):
-        return self.ecname
-
-
 class Referenceliterature(models.Model):
     rlid = models.IntegerField()
     rlmajorreftag = models.BooleanField()
@@ -832,14 +847,6 @@ class Referenceliterature(models.Model):
     rlremarks = models.CharField(max_length=255)
     class Meta:
         db_table = u'referenceliterature'
-
-class Gmevariable(models.Model):
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    evcode = models.ForeignKey(Evariable, db_column='evcode')
-    gmevremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'gmevariable'
-
 class Hazardcurve(models.Model):
     hcrvid = models.IntegerField(primary_key=True)
     hcrvshortname = models.CharField("Short Name", max_length=20)models.TextField() # This field type is a guess.
