@@ -249,3 +249,14 @@ class MemcachedTestCase(unittest.TestCase):
             self.assertTrue(shaml_values in data.values())
 
         self.assertEqual(1, number_of_curves)
+
+    # first test against the new object model
+    
+    def test_reads_one_hazard_curve(self):
+        self.python_client.set("KEY", ONE_CURVE_MODEL)
+        curve = self.reader.curve_at("KEY")[0]
+
+        self.assertEqual(50.0, curve.time_span_duration)
+        self.assertEqual("IMT", curve.IMT)
+        self.assertEqual("label", curve.end_branch_label)
+        self.assertEqual(shapes.Site(2.0, 1.0), curve.computed_on)
