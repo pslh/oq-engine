@@ -1,6 +1,8 @@
 from django.contrib.gis.db import models
 
 # Models from opengemdb
+# related to hazard curve serialization:
+# hazardcalculation, hazardcurve, hazardpointvalue, geopoint, intensitymeasuretype, hazardinputltreemodel, hilmpath, hazardinputbasicmodel
 # Initially generated with ogrinspect and modified manually
 # author aurea moemke
 # started: 29 Sep 2010

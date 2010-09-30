@@ -11,7 +11,7 @@ import geohash
 from shapely import geometry
 from shapely import wkt
 
-from opengem import flags
+import flags
 FLAGS = flags.FLAGS
 
 flags.DEFINE_integer('distance_precision', 12, 
