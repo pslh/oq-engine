@@ -2,7 +2,9 @@ from django.contrib.gis.db import models
 
 # Models from opengemdb
 # related to hazard curve serialization:
-# hazardcalculation, hazardcurve, hazardpointvalue, geopoint, intensitymeasuretype, hazardinputltreemodel, hilmpath, hazardinputbasicmodel
+# hazardcalculation, hazardcurve, hazardpointvalue, geopoint, 
+# intensitymeasuretype, hazardinputltreemodel, hilmpath, hazardinputbasicmodel
+#
 # Initially generated with ogrinspect and modified manually
 # author aurea moemke
 # started: 29 Sep 2010
@@ -147,7 +149,7 @@ class Eqcatcompleteness(models.Model):
         return "EqCatCompletenessID"+str(self.ccid)
 
 class Evariable(models.Model):
-    EDATATYPE_CHOICES = ( 
+    DATATYPE_CHOICES = ( 
         (1, 'Integer'),
         (2, 'Float'),
         (3, 'String'),
@@ -155,7 +157,7 @@ class Evariable(models.Model):
     ) 
     evcode = models.CharField("Variable code", max_length=10, primary_key=True)
     evtypeid = models.IntegerField("Data Type", 
-                  choices=EDATATYPE_CHOICES)
+                  choices=DATATYPE_CHOICES)
     evshortname = models.CharField("Short Name", max_length=20)
     evname =  models.CharField("Name", max_length=50)    
     evdesc = models.CharField("Description", max_length=100)
@@ -322,31 +324,30 @@ class Gmpeparameter(models.Model):
 class Hazardsoftware(models.Model):
     hscode = models.TextField(primary_key=True) # This field type is a guess.
     hsname =  models.CharField("Name", max_length=50)
-    hsdesc = models.CharField(max_length=100)
-    hsadddate = models.DateTimeField()
-    hsremarks = models.CharField(max_length=255)
+    hsdesc = models.CharField("Description", max_length=100)
+    hsadddate = models.DateTimeField("Addition Date")
+    hsremarks = models.CharField("Remarks", max_length=255)
     class Meta:
         db_table = u'hazardsoftware'
     def __unicode__(self):
         return self.hsname
 
-
 class Intensitymeasuretype(models.Model):
     imcode = models.TextField(primary_key=True) # This field type is a guess.
     imname =  models.CharField("Name", max_length=50)
-    imdesc = models.CharField(max_length=100)
-    imvaluemin = models.FloatField()
-    imvaluemax = models.FloatField()
-    imunittype = models.TextField() # This field type is a guess.
-    imunitdescr = models.CharField(max_length=100)
-    imremarks = models.CharField(max_length=255)
+    imdesc = models.CharField("Description", max_length=100)
+    imvaluemin = models.FloatField("Intensity Measure Minimum Value")
+    imvaluemax = models.FloatField("Intensity Measure Maximum Value")
+    imunittype = models.CharField() 
+    imunitdescr = models.CharField("Description", max_length=100)
+    imremarks = models.CharField("Remarks", max_length=255)
     class Meta:
         db_table = u'intensitymeasuretype'
     def __unicode__(self):
         return self.imname
 
 class Magrupturerelation(models.Model):
-    mrrcode = models.TextField() # This field type is a guess.
+    mrrcode = models.CharField(max_length=10, primary_key=True)
     mrrname = models.CharField(max_length=50)
     mrrdesc = models.CharField(max_length=100)
     mrrremarks = models.CharField(max_length=255)
@@ -358,27 +359,33 @@ class Magrupturerelation(models.Model):
 class Logictreestruc(models.Model):
     ltsid = models.IntegerField(primary_key=True)
     ltsshortname = mmodels.CharField("Short Name", max_length=20)
-    ltsname = models.CharField(max_length=50)
-    ltsdesc = models.CharField(max_length=100)
-    ltsremarks = models.CharField(max_length=255)
-    ltsnumlevels = models.IntegerField()
+    ltsname = models.CharField("Name",max_length=50)
+    ltsdesc = models.CharField("Description", max_length=100)
+    ltsremarks = models.CharField("Remarks", max_length=255)
+    ltsnumlevels = models.IntegerField("Number of Levels")
     class Meta:
         db_table = u'logictreestruc'
     def __unicode__(self):
         return self.ltsname
 
-
 class Ltreeparamtype(models.Model):
+    DATATYPE_CHOICES = ( 
+        (1, 'Integer'),
+        (2, 'Float'),
+        (3, 'String'),
+        (4, 'Boolean')
+    ) 
     ltptid = models.IntegerField(primary_key=True)
-    ltptshortname = mmodels.CharField("Short Name", max_length=20)odels.TextField() # This field type is a guess.
-    ltptname = models.CharField(max_length=50)
-    ltptdesc = models.CharField(max_length=100)
-    ltptdatatypecode = models.IntegerField()
-    ltptpossvalstring = models.TextField() # This field type is a guess.
-    ltptvaluemin = models.FloatField()
-    ltptvaluemax = models.FloatField()
-    ltptmapping = models.CharField(max_length=255)
-    ltptremarks = models.CharField(max_length=255)
+    ltptshortname = mmodels.CharField("Short Name", max_length=20)
+    ltptname = models.CharField("Name", max_length=50)
+    ltptdesc = models.CharField("Description", max_length=100)
+    ltptdatatypecode = models.IntegerField("Data Type Code",
+                       choices = DATATYPE_CHOICES)
+    ltptpossvalstring = models.CharField("Possible Value String")
+    ltptvaluemin = models.FloatField("Minimum Value")
+    ltptvaluemax = models.FloatField("Maximum Value")
+    ltptmapping = models.CharField("Mapping", max_length=255)
+    ltptremarks = models.CharField("Remarks", max_length=255)
     class Meta:
         db_table = u'ltreeparamtype'
     def __unicode__(self):
@@ -386,26 +393,24 @@ class Ltreeparamtype(models.Model):
 
 class Hazardpointvalue(models.Model):
     hpid = models.IntegerField(primary_key=True)
-    hpvalue = models.FloatField()
-    hpexceedprob = models.FloatField()
-    hpexceedyears = models.IntegerField()
+    hpvalue = models.FloatField("Ground Motion Value")
+    hpexceedprob = models.FloatField("Prob'y of Exceedance")
+    hpexceedyears = models.IntegerField("Years")
     hcid = models.ForeignKey(Hazardcalculation, db_column='hcid')
     gpid = models.ForeignKey(Geopoint, db_column='gpid')
     imcode = models.ForeignKey(Intensitymeasuretype, db_column='imcode')
     class Meta:
         db_table = u'hazardpointvalue'
     def __unicode__(self):
-        return "Hazard Point Id"+str(self.hpid)
+        return "Haz Pt Id "+ str(self.hpid)
 
+#TODO: Multicolumn primary keys
 class Hibmge(models.Model):
     hibmid = models.ForeignKey(Hazardinputbasicmodel, db_column='hibmid')
     gecode = models.ForeignKey(Gmpe, db_column='gecode')
     hibmgeweight = models.FloatField()
     class Meta:
         db_table = u'hibmge'
-    def __unicode__(self):
-        return self.ecname
-
 
 class Seismicsource(models.Model):
    SEISMICSOURCETYPE_CHOICES = (
@@ -467,7 +472,7 @@ class Ssourcemfd(models.Model):
         (2, 'Reverse'),
         (3, 'StrikeSlip'),
     )
-    ssid = models.ForeignKey(Seismicsource, db_column='ssid')
+    ssid = models.ForeignKey("Id", Seismicsource, db_column='ssid')
     mfdcode = models.ForeignKey(Magfreqdistn, db_column='mfdcode')
     ssmfdseqnum = models.IntegerField("Sequence Number")
     ssmfdmagnitudemax = models.FloatField("Maximum Magnitude")
@@ -503,9 +508,7 @@ class Ssourcemfd(models.Model):
     class Meta:
         db_table = u'ssourcemfd'
     def __unicode__(self):
-        return self.ecname
-
-
+        return str(self.ssid)+mfdcode+str(self.ssmfdseqnum)
 
 class Sourcegeometrycatalog(models.Model):
     SOURCEGEOMCATTYPE_CHOICES = ( 
@@ -537,7 +540,6 @@ class Sourcegeometrycatalog(models.Model):
     scorigformatid = models.IntegerField("Original Format Type",
                      choices=ORIGFORMATTYPE_CHOICES,default=u'O')
     scremarks = models.CharField("Remarks", max_length=255, blank=True)
-
     #Geodjango-specific: a geometry field, 
     #and overriding the default manager with a GeoManager instance.
     scpgareapolygon = models.PolygonField(blank=True)
@@ -547,6 +549,7 @@ class Sourcegeometrycatalog(models.Model):
         db_table = u'sourcegeometrycatalog'
     def __unicode__(self):
         return self.scname
+
 #class GeographyColumns(models.Model):
 #    f_table_catalog = models.TextField() # This field type is a guess.
 #    f_table_schema = models.TextField() # This field type is a guess.
@@ -560,57 +563,28 @@ class Sourcegeometrycatalog(models.Model):
 
 class Hilmpath(models.Model):
     hilmpid = models.IntegerField(primary_key=True)
-    hilmppathstring = models.CharField(max_length=5120)
-    hilmpfinalpathtag = models.BooleanField()
+    hilmppathstring = models.CharField("Path String", max_length=5120)
+    hilmpfinalpathtag = models.BooleanField("Endbranch?")
     hilmid = models.ForeignKey(Hazardinputltreemodel, db_column='hilmid')
-    hilmpweight = models.FloatField()
-    hilmpshortname = mmodels.CharField("Short Name", max_length=20)odels.TextField() # This field type is a guess.
-    hilmpname = models.CharField(max_length=50)
-    hilmpdesc = models.CharField(max_length=100)
-    hilmpremarks = models.CharField(max_length=255)
+    hilmpweight = models.FloatField("Endbranch Weight")
+    hilmpshortname = mmodels.CharField("Short Name", max_length=20)
+    hilmpname = models.CharField("Name", max_length=50)
+    hilmpdesc = models.CharField("Description", max_length=100)
+    hilmpremarks = models.CharField("Remarks", max_length=255)
     scid = models.ForeignKey(Sourcegeometrycatalog, db_column='scid')
-    hilmpltree = models.TextField() # This field type is a guess.
+    hilmpltree = models.CharField("Ltree")
     class Meta:
         db_table = u'hilmpath'
     def __unicode__(self):
-        return self.ecname
+        return self.hilmppathstring
 
+# TODO: Multicolumn primary keys
 class Hibmreference(models.Model):
     rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
     hibmid = models.ForeignKey(Hazardinputbasicmodel, db_column='hibmid')
     hibmradddate = models.DateTimeField()
     class Meta:
         db_table = u'hibmreference'
-    def __unicode__(self):
-        return self.ecname
-
-
-class Siteamplification(models.Model):
-    sacode = models.TextField() # This field type is a guess.
-    saname = models.CharField(max_length=50)
-    sadesc = models.CharField(max_length=100)
-    savs30min = models.IntegerField()
-    savs30max = models.IntegerField()
-    savs30descstring = models.CharField(max_length=50)
-    sanehrp = models.TextField() # This field type is a guess.
-    saintampl = models.FloatField()
-    saremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'siteamplification'
-    def __unicode__(self):
-        return self.ecname
-
-
-class Soilclass(models.Model):
-    socode = models.TextField() # This field type is a guess.
-    soname = models.CharField(max_length=50)
-    sodesc = models.CharField(max_length=100)
-    sovalue = models.TextField() # This field type is a guess.
-    soremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'soilclass'
-    def __unicode__(self):
-        return self.ecname
 
 #class SpatialRefSys(models.Model):
 #    srid = models.IntegerField(primary_key=True)
@@ -632,120 +606,131 @@ class Soilclass(models.Model):
 #    class Meta:
 #        db_table = u'geometry_columns'
 
+class Hazardcurve(models.Model):
+    hcrvid = models.IntegerField(primary_key=True)
+    hcrvshortname = models.CharField("Short Name", max_length=20)
+    hcrvname = models.CharField("Name", max_length=50)
+    hcrvdesc = models.CharField("Description", max_length=100)
+    hcrvtimestamp = models.DateTimeField("Timestamp")
+    hcrvmingrdmotion = models.FloatField("Minimum Ground Motion")
+    hcrvmaxgrdmotion = models.FloatField("Maximum Ground Motion")
+    hcrvtimeperiod = models.IntegerField("Time Period")
+    hcrvsadamping = models.FloatField("SA Damping")
+    hcrvsaperiod = models.IntegerField("SA Period")
+    hcrvremarks = models.CharField("Remarks", max_length=255)
+    hcid = models.ForeignKey(Hazardcalculation, db_column='hcid')
+    gpid = models.ForeignKey(Geopoint, db_column='gpid')
+    imcode = models.ForeignKey(Intensitymeasuretype, db_column='imcode')
+    class Meta:
+        db_table = u'hazardcurve'
+    def __unicode__(self):
+        return self.hcrvname
+
 class Hazardinputbasicmodel(models.Model):
-    hibmid = models.IntegerField()
+    hibmid = models.IntegerField(primary_key=True)
     hibmshortname = models.CharField("Short Name", max_length=20)
-    hibmname = models.CharField(max_length=50)
-    hibmdesc = models.CharField(max_length=100)
-    hibmremarks = models.CharField(max_length=255)
-    hibmcvrgtypecode = models.TextField() # This field type is a guess.
-    hibmareapolygon = models.CharField(max_length=5120)
-    hibmareamultipolygon = models.CharField(max_length=5120)
+    hibmname = models.CharField("Name", max_length=50)
+    hibmdesc = models.CharField("Description", max_length=100)
+    hibmremarks = models.CharField("Remarks", max_length=255)
+    hibmcvrgtypecode = models.CharField("Coverage Type Code", max_length=1) 
+    hibmareapolygon = models.CharField("Polygon WKT", max_length=5120)
+    hibmareamultipolygon = models.CharField("Multipolygon WKT", max_length=5120)
     scid = models.ForeignKey(Sourcegeometrycatalog, db_column='scid')
+    #Geospatial data
     hibmpgareapolygon = models.PolygonField()
     hibmpgareamultipolygon = models.MultiPolygonField()
     objects = models.GeoManager()
     class Meta:
         db_table = u'hazardinputbasicmodel'
     def __unicode__(self):
-        return self.ecname
-
+        return self.hibmname
 
 class Hazardinputltreemodel(models.Model):
     hilmid = models.IntegerField(primary_key=True)
     hilmshortname = models.CharField("Short Name", max_length=20)
-    hilmname = models.CharField(max_length=50)
-    hilmdesc = models.CharField(max_length=100)
-    hilmremarks = models.CharField(max_length=255)
+    hilmname = models.CharField("Name", max_length=50)
+    hilmdesc = models.CharField("Description", max_length=100)
+    hilmremarks = models.CharField("Remarks", max_length=255)
     hilmcvrgtypecode = models.IntegerField()
-    hilmareapolygon = models.CharField(max_length=5120)
-    hilmareamultipolygon = models.CharField(max_length=5120)
+    hilmareapolygon = models.CharField("Polygon WKT", max_length=5120)
+    hilmareamultipolygon = models.CharField("Multipolygon WKT", max_length=5120)
     ltsid = models.ForeignKey(Logictreestruc, db_column='ltsid')
+    # Geospatial data
     hilmpgareapolygon = models.PolygonField()
     hilmpgareamultipolygon = models.MultiPolygonField()
     objects = models.GeoManager()
     class Meta:
         db_table = u'hazardinputltreemodel'
     def __unicode__(self):
-        return self.ecname
-
-
-class Seismotecenvt(models.Model):
-    secode = models.TextField(primary_key=True) # This field type is a guess.
-    sename = models.CharField(max_length=50)
-    sedesc = models.CharField(max_length=100)
-    seremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'seismotecenvt'
-    def __unicode__(self):
-        return self.ecname
+        return self.hilmname
 
 
 class Hazardcalculation(models.Model):
+    PROBDETTAG_CHOICES = (
+        ( 'P', u'Probabilistic'),
+        ( 'D', u'Deterministic')
+    )
     hcid = models.IntegerField(primary_key=True)
     hcshortname = models.CharField("Short Name", max_length=20)
-    hcname = models.CharField(max_length=50)
-    hcdesc = models.CharField(max_length=100)
+    hcname = models.CharField("Name", max_length=50)
+    hcdesc = models.CharField("Description", max_length=100)
     hcstarttimestamp = models.DateTimeField()
     hcendtimestamp = models.DateTimeField()
-    hcprobdettag = models.TextField() # This field type is a guess.
+    hcprobdettag = models.CharField("(P)robabilistic/(D)eterministic",
+                    max_length=1,
+                    choices=PROBDETTAG_CHOICES)
     hcgemgentag = models.BooleanField()
-    hcareapolygon = models.CharField(max_length=5120)
-    hcareamultipolygon = models.CharField(max_length=5120)
-    hcremarks = models.CharField(max_length=255)
+    hcareapolygon = models.CharField("Polygon WKT", max_length=5120)
+    hcareamultipolygon = models.CharField("Multipolygon WKT", max_length=5120)
+    hcremarks = models.CharField("Remarks", max_length=255)
     hibmid = models.ForeignKey(Hazardinputbasicmodel, db_column='hibmid')
     hilmid = models.ForeignKey(Hazardinputltreemodel, db_column='hilmid')
     hilmpid = models.ForeignKey(Hilmpath, db_column='hilmpid')
     evid = models.ForeignKey(Event, db_column='evid')
     hscode = models.ForeignKey(Hazardsoftware, db_column='hscode')
     cocode = models.ForeignKey(Calculationowner, db_column='cocode')
+    # Geospatial data
     hcpgareapolygon = models.PolygonField()
     hcpgareamultipolygon = models.MultiPolygonField()
     objects = models.GeoManager()
     class Meta:
         db_table = u'hazardcalculation'
     def __unicode__(self):
-        return self.ecname
+        return self.hcname
 
+class Hazardmap(models.Model):
+    hmapid = models.IntegerField(primary_key=True)
+    hmapshortname = models.CharField("Short Name", max_length=20)
+    hmapname = models.CharField("Name", max_length=50)
+    hmapdesc = models.CharField("Description", max_length=100)
+    hmaptimestamp = models.DateTimeField("Timestamp")
+    hmaptimedepstartdate = models.DateTimeField("Time Dep Map Start Timestamp")
+    hmaptimedependdate = models.DateTimeField("Time Dep Map End Timestamp")
+    hmapexceedprob = models.IntegerField("Probability of Exceedance, i.e. 10")
+    hmapexceedyears = models.IntegerField("Years, i.e. 50")
+    hmapdamping = models.IntegerField("Damping")
+    hmapgridsize = models.FloatField("Grid Size, i.e. 0.1")
+    hmapremarks = models.CharField("Remarks",max_length=255)
+    hcid = models.ForeignKey(Hazardcalculation, db_column='hcid')
+    imcode = models.ForeignKey(Intensitymeasuretype, db_column='imcode')
+    class Meta:
+        db_table = u'hazardmap'
+    def __unicode__(self):
+        return self.hmapname
 
 class Hilmruleset(models.Model):
     hilmrid = models.IntegerField(primary_key=True)
     hilmrcvrgtypecode = models.IntegerField()
     hilmractiontypecode = models.IntegerField()
-    hilmrvalstring = models.TextField() # This field type is a guess.
-    hilmrprobpctstring = models.TextField() # This field type is a guess.
+    hilmrvalstring = models.CharField() 
+    hilmrprobpctstring = models.CharField()
     ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
     ltpvid = models.ForeignKey(Ltreeparamvalue, db_column='ltpvid')
     hilmid = models.ForeignKey(Hazardinputltreemodel, db_column='hilmid')
     class Meta:
         db_table = u'hilmruleset'
     def __unicode__(self):
-        return self.ecname
-
-
-class Ltreeparamvalue(models.Model):
-    ltpvid = models.IntegerField(primary_key=True)
-    ltpvshortname = models.CharField("Short Name", max_length=20)models.TextField() # This field type is a guess.
-    ltpvname = models.CharField(max_length=50)
-    ltpvdesc = models.CharField(max_length=100)
-    ltpvremarks = models.CharField(max_length=255)
-    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
-    class Meta:
-        db_table = u'ltreeparamvalue'
-    def __unicode__(self):
-        return self.ecname
-
-
-class Ltreeparamtypelevel(models.Model):
-    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
-    ltsid = models.ForeignKey(Logictreestruc, db_column='ltsid')
-    ltptlevel = models.IntegerField()
-    ltptnumbranches = models.IntegerField()
-    ltptbranchsettag = models.BooleanField()
-    class Meta:
-        db_table = u'ltreeparamtypelevel'
-    def __unicode__(self):
-        return self.ecname
+        return self.hilmrvalstring
 
 class Hilmreference(models.Model):
     rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
@@ -765,6 +750,28 @@ class Hilmpge(models.Model):
     def __unicode__(self):
         return self.ecname
 
+class Ltreeparamtypelevel(models.Model):
+    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
+    ltsid = models.ForeignKey(Logictreestruc, db_column='ltsid')
+    ltptlevel = models.IntegerField()
+    ltptnumbranches = models.IntegerField()
+    ltptbranchsettag = models.BooleanField()
+    class Meta:
+        db_table = u'ltreeparamtypelevel'
+    def __unicode__(self):
+        return self.ecname
+
+class Ltreeparamvalue(models.Model):
+    ltpvid = models.IntegerField(primary_key=True)
+    ltpvshortname = models.CharField("Short Name", max_length=20)
+    ltpvname = models.CharField(max_length=50)
+    ltpvdesc = models.CharField(max_length=100)
+    ltpvremarks = models.CharField(max_length=255)
+    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
+    class Meta:
+        db_table = u'ltreeparamvalue'
+    def __unicode__(self):
+        return self.ecname
 
 class Sfaultchar(models.Model):
     ssfcid = models.IntegerField(primary_key=True)
@@ -783,7 +790,6 @@ class Sfaultchar(models.Model):
     def __unicode__(self):
         return self.ecname
 
-
 class Magfreqdistn(models.Model):
     mfdcode = models.TextField(primary_key=True) # This field type is a guess.
     mfdname = models.CharField(max_length=50)
@@ -794,28 +800,6 @@ class Magfreqdistn(models.Model):
         db_table = u'magfreqdistn'
     def __unicode__(self):
         return self.ecname
-
-
-class Hazardmap(models.Model):
-    hmapid = models.IntegerField(primary_key=True)
-    hmapshortname = models.CharField("Short Name", max_length=20)
-    hmapname = models.CharField(max_length=50)
-    hmapdesc = models.CharField(max_length=100)
-    hmaptimestamp = models.DateTimeField()
-    hmaptimedepstartdate = models.DateTimeField()
-    hmaptimedependdate = models.DateTimeField()
-    hmapexceedprob = models.IntegerField()
-    hmapexceedyears = models.IntegerField()
-    hmapdamping = models.IntegerField()
-    hmapgridsize = models.FloatField()
-    hmapremarks = models.CharField(max_length=255)
-    hcid = models.ForeignKey(Hazardcalculation, db_column='hcid')
-    imcode = models.ForeignKey(Intensitymeasuretype, db_column='imcode')
-    class Meta:
-        db_table = u'hazardmap'
-    def __unicode__(self):
-        return self.ecname
-
 
 class Screference(models.Model):
     rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
@@ -848,21 +832,39 @@ class Referenceliterature(models.Model):
     rlremarks = models.CharField(max_length=255)
     class Meta:
         db_table = u'referenceliterature'
-class Hazardcurve(models.Model):
-    hcrvid = models.IntegerField(primary_key=True)
-    hcrvshortname = models.CharField("Short Name", max_length=20)models.TextField() # This field type is a guess.
-    hcrvname = models.CharField(max_length=50)
-    hcrvdesc = models.CharField(max_length=100)
-    hcrvtimestamp = models.DateTimeField()
-    hcrvmingrdmotion = models.FloatField()
-    hcrvmaxgrdmotion = models.FloatField()
-    hcrvtimeperiod = models.IntegerField()
-    hcrvsadamping = models.FloatField()
-    hcrvsaperiod = models.IntegerField()
-    hcrvremarks = models.CharField(max_length=255)
-    hcid = models.ForeignKey(Hazardcalculation, db_column='hcid')
-    gpid = models.ForeignKey(Geopoint, db_column='gpid')
-    imcode = models.ForeignKey(Intensitymeasuretype, db_column='imcode')
-    class Meta:
-        db_table = u'hazardcurve'
 
+class Seismotecenvt(models.Model):
+    secode = models.CharField(max_length=10, primary_key=True)
+    sename = models.CharField("Name", max_length=50)
+    sedesc = models.CharField("Description", max_length=100)
+    seremarks = models.CharField("Remarks", max_length=255)
+    class Meta:
+        db_table = u'seismotecenvt'
+    def __unicode__(self):
+        return self.sename
+
+class Siteamplification(models.Model):
+    sacode = models.CharField(primary_key=True)
+    saname = models.CharField("Name", max_length=50)
+    sadesc = models.CharField("Description", max_length=100)
+    savs30min = models.IntegerField("VS 30 Minimum")
+    savs30max = models.IntegerField("VS 30 Maximum")
+    savs30descstring = models.CharField("VS 30 Description", max_length=50)
+    sanehrp = models.CharField("NEHRP Code", max_length=4)
+    saintampl = models.FloatField("Intensity Amplification")
+    saremarks = models.CharField("Remarks", max_length=255)
+    class Meta:
+        db_table = u'siteamplification'
+    def __unicode__(self):
+        return self.saname
+
+class Soilclass(models.Model):
+    socode = models.CharField(primary_key=True) # This field type is a guess.
+    soname = models.CharField("Name", max_length=50)
+    sodesc = models.CharField("Description", max_length=100)
+    sovalue = models.CharField("Value", max_length=10)
+    soremarks = models.CharField("Remarks",max_length=255)
+    class Meta:
+        db_table = u'soilclass'
+    def __unicode__(self):
+        return self.soname
