@@ -276,7 +276,7 @@ class Gmpe(models.Model):
     gedesc = models.CharField("Description", max_length=100)
     geremarks = models.CharField("Remarks", max_length=255)
     geequation = models.CharField("Functional Form", max_length=5120)
-    geeqndbdefntag = models.BooleanField("Equation Functional Form Defined?")
+    geeqndbdefntag = models.BooleanField("Equation Fcnal Form Defined in DB?")
     geeqntypecode = models.CharField("Equation Type Code", max_length=1,
                     choices=EQNTYPE_CHOICES) 
     geareapolygon = models.CharField("Polygon WKT", max_length=5120)
@@ -292,31 +292,30 @@ class Gmpe(models.Model):
         return self.gename
 
 class Gmpefeature(models.Model):
-    gfcode = models.TextField(primary_key=True)
+    gfcode = models.CharField(max_length=10, primary_key=True)
     gftypeid = models.IntegerField()
     gfpossvalstring = models.CharField(max_length=2048)
     gfshortname = models.CharField("Short Name", max_length=20)
-    gfname = models.CharField(max_length=50)
-    gfdesc = models.CharField(max_length=100)
-    gfremarks = models.CharField(max_length=255)
+    gfname = models.CharField("Name", max_length=50)
+    gfdesc = models.CharField("Description", max_length=100)
+    gfremarks = models.CharField("Remarks", max_length=255)
     class Meta:
         db_table = u'gmpefeature'
     def __unicode__(self):
         return self.gfname
 
 class Gmpeparameter(models.Model):
-    gpcode = models.TextField(primary_key=True) # This field type is a guess.
+    gpcode = models.TextField(max_length=10, primary_key=True)
     gptypeid = models.IntegerField()
-    gppossvalstring = models.CharField(max_length=2048)
+    gppossvalstring = models.CharField("Possible Value", max_length=2048)
     gpshortname = mmodels.CharField("Short Name", max_length=20)
-    gpname = models.CharField(max_length=50)
-    gpdesc = models.CharField(max_length=100)
-    gpremarks = models.CharField(max_length=255)
+    gpname = models.CharField("Name", max_length=50)
+    gpdesc = models.CharField("Description", max_length=100)
+    gpremarks = models.CharField("Remarks", max_length=255)
     class Meta:
         db_table = u'gmpeparameter'
     def __unicode__(self):
         return self.gpname
-
 
 class Hazardsoftware(models.Model):
     hscode = models.TextField(primary_key=True) # This field type is a guess.
