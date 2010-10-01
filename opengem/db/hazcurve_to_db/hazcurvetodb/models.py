@@ -9,6 +9,16 @@ from django.contrib.gis.db import models
 # author aurea moemke
 # started: 29 Sep 2010
 
+class Seismotecenvt(models.Model):
+    secode = models.CharField(max_length=10, primary_key=True)
+    sename = models.CharField("Name", max_length=50)
+    sedesc = models.CharField("Description", max_length=100)
+    seremarks = models.CharField("Remarks", max_length=255)
+    class Meta:
+        db_table = u'seismotecenvt'
+    def __unicode__(self):
+        return self.sename
+
 class Calculationgroup(models.Model):
     cgcode = models.CharField("Group Code", max_length=10, primary_key=True) 
     cgname = models.CharField("Name", max_length=50)
@@ -96,101 +106,6 @@ class Earthquakecatalog(models.Model):
     def __unicode__(self):
         return self.ecname
 
-class Econstant(models.Model):
-    EDATATYPE_CHOICES = ( 
-        (1, 'Integer'),
-        (2, 'Float'),
-        (3, 'String'),
-        (4, 'Boolean')
-    ) 
-    eccode = models.CharField("Code", max_length=10, primary_key=True)
-    ectypeid = models.IntegerField("Equation Constant Data Type",
-                                   choices=EDATATYPE_CHOICES)
-    ecshortname = models.CharField("Short Name", max_length=20)
-    ecname =  models.CharField("Name", max_length=50)
-    ecdesc = models.CharField("Description", max_length=100)
-    ecremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'econstant'
-    def __unicode__(self):
-        return self.ecname
-
-class Referenceliterature(models.Model):
-    rlid = models.AutoField("Reference Literature Id", primary_key=True)
-    rlmajorreftag = models.BooleanField()
-    rlshortname = models.CharField("Short Name", max_length=20)
-    rlmainauthorfname = models.CharField(max_length=25)
-    rlmainauthorlname = models.CharField(max_length=25)
-    rlotherauthor = models.CharField(max_length=512)
-    rltitle = models.CharField(max_length=512)
-    rlmediatype = models.CharField(max_length=1)
-    rlperiodicaltitle = models.CharField(max_length=512)
-    rlpublishercity = models.CharField(max_length=100)
-    rlpublishername = models.CharField(max_length=512)
-    rlpubnyear = models.IntegerField()
-    rlvolnum = models.IntegerField()
-    rlissuenum = models.IntegerField()
-    rlpagenums = models.CharField(max_length=100)
-    rllastaccessdate = models.DateField()
-    rltype = models.CharField(max_length=2) 
-    rlurl = models.CharField(max_length=1024)
-    rlremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'referenceliterature'
-
-#TODO: Multicolumn primary keys
-class Ecreference(models.Model):
-    rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
-    ecid = models.ForeignKey(Earthquakecatalog, db_column='ecid')
-    eradddate = models.DateTimeField()
-    class Meta:
-        db_table = u'ecreference'
-    def __unicode__(self):
-        return "Reference"+str(self.ecrlid)+str(self.ecid)
-
-class Eqcatcompleteness(models.Model):
-    EQCATCOMPTYPE_CHOICES = ( 
-        ('T', 'Time Complete'),
-        ('R', 'Region Complete'),
-        ('O', 'Others')
-    )
-    ccid = models.AutoField("Id", primary_key=True)
-    cctype = models.CharField("Catalog Completeness Code", max_length=1,
-                               choices=EQCATCOMPTYPE_CHOICES)
-    ccareapolygon = models.CharField("Polygon WKT", max_length=5120)
-    ccareamultipolygon = models.CharField("Multipolygon WKT", max_length=5120)
-    ccstartdate = models.DateTimeField("Start Date")
-    ccenddate = models.DateTimeField("End Date")
-    ccmlevel = models.FloatField("Magnitude Completeness Level")
-    ecid = models.ForeignKey(Earthquakecatalog, db_column='ecid')
-    #Geometry fields
-    ccpgareapolygon = models.PolygonField(blank=True)
-    ccpgareamultipolygon = models.MultiPolygonField(blank=True)
-    objects = models.GeoManager()
-    class Meta:
-        db_table = u'eqcatcompleteness'
-    def __unicode__(self):
-        return "EqCatCompletenessID"+str(self.ccid)
-
-class Evariable(models.Model):
-    DATATYPE_CHOICES = ( 
-        (1, 'Integer'),
-        (2, 'Float'),
-        (3, 'String'),
-        (4, 'Boolean')
-    ) 
-    evcode = models.CharField("Variable code", max_length=10, primary_key=True)
-    evtypeid = models.IntegerField("Data Type", 
-                  choices=DATATYPE_CHOICES)
-    evshortname = models.CharField("Short Name", max_length=20)
-    evname =  models.CharField("Name", max_length=50)    
-    evdesc = models.CharField("Description", max_length=100)
-    evremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'evariable'
-    def __unicode__(self):
-        return self.evname
-
 class Event(models.Model):
     evid = models.AutoField("Event Id", primary_key=True)
     evshortname = models.CharField("Short Name", max_length=20)
@@ -223,67 +138,6 @@ class Event(models.Model):
         db_table = u'event'
     def __unicode__(self):
         return self.evname
-
-class Seismotecenvt(models.Model):
-    secode = models.CharField(max_length=10, primary_key=True)
-    sename = models.CharField("Name", max_length=50)
-    sedesc = models.CharField("Description", max_length=100)
-    seremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'seismotecenvt'
-    def __unicode__(self):
-        return self.sename
-
-class Gmpe(models.Model):
-    EQNTYPE_CHOICES = (
-        ('S','Standard 3 constants'),
-        ('O','Other')
-    )
-    gecode = models.CharField("GMPE Code",max_length=10, primary_key=True)
-    geprivatetag = models.BooleanField("Private to GEM?")
-    geshortname = models.CharField("Short Name", max_length=20)
-    gename = models.CharField("Name", max_length=50)
-    gedesc = models.CharField("Description", max_length=100)
-    geremarks = models.CharField("Remarks", max_length=255)
-    geequation = models.CharField("Functional Form", max_length=5120)
-    geeqndbdefntag = models.BooleanField("Equation Fcnal Form Defined in DB?")
-    geeqntypecode = models.CharField("Equation Type Code", max_length=1,
-                    choices=EQNTYPE_CHOICES) 
-    geareapolygon = models.CharField("Polygon WKT", max_length=5120)
-    geareamultipolygon = models.CharField("Multipolygon WKT", max_length=5120)
-    secode = models.ForeignKey(Seismotecenvt, db_column='secode')
-    # Geospatial data
-    gepgareapolygon = models.PolygonField()
-    gepgareamultipolygon = models.MultiPolygonField()
-    objects = models.GeoManager()
-    class Meta:
-        db_table = u'gmpe'
-    def __unicode__(self):
-        return self.gename
-
-class Gmpefeature(models.Model):
-    gfcode = models.CharField(max_length=10, primary_key=True)
-    gftypeid = models.IntegerField()
-    gfpossvalstring = models.CharField(max_length=2048)
-    gfshortname = models.CharField("Short Name", max_length=20)
-    gfname = models.CharField("Name", max_length=50)
-    gfdesc = models.CharField("Description", max_length=100)
-    gfremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'gmpefeature'
-    def __unicode__(self):
-        return self.gfname
-
-# TODO:Change to Multicolumn primary key: gfcode+gecode
-class Gefeaturevalue(models.Model):
-    gfcode = models.ForeignKey(Gmpefeature, db_column='gfcode')
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    gefvalstring = models.CharField("Value String", max_length=50)
-    gefremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'gefeaturevalue'
-    def __unicode__(self):
-        return self.gfcode+self.gecode
 
 class Siteamplification(models.Model):
     sacode = models.CharField(max_length=10, primary_key=True)
@@ -326,61 +180,6 @@ class Geopoint(models.Model):
     def __unicode__(self):
         return self.gpname
 
-# TODO:Change to Multicolumn primary key: rlid+gecode
-class Gereference(models.Model):
-    rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    gradddate = models.DateTimeField()
-    class Meta:
-        db_table = u'gereference'
-    def __unicode__(self):
-        return str(self.rlid)+self.gecode
-
-# TODO:Change to Multicolumn primary key: gecode+eccode
-class Gmeconstant(models.Model):
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    eccode = models.ForeignKey(Econstant, db_column='eccode')
-    gmecvalue = models.CharField("Value of Constant", max_length=20)
-    gmecremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'gmeconstant'
-    def __unicode__(self):
-        return self.gecode+self.eccode
-
-# TODO:Change to Multicolumn primary key: gecode+evcode
-class Gmevariable(models.Model):
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    evcode = models.ForeignKey(Evariable, db_column='evcode')
-    gmevremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'gmevariable'
-    def __unicode__(self):
-        return self.gecode+self.evcode
-
-class Gmpeparameter(models.Model):
-    gpcode = models.TextField(max_length=10, primary_key=True)
-    gptypeid = models.IntegerField()
-    gppossvalstring = models.CharField("Possible Value", max_length=2048)
-    gpshortname = models.CharField("Short Name", max_length=20)
-    gpname = models.CharField("Name", max_length=50)
-    gpdesc = models.CharField("Description", max_length=100)
-    gpremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'gmpeparameter'
-    def __unicode__(self):
-        return self.gpname
-
-# TODO:Change to Multicolumn primary key: gpcode+gecode
-class Gmparamvalue(models.Model):
-    gpcode = models.ForeignKey(Gmpeparameter, db_column='gpcode')
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    gepvalstring = models.CharField("Parameter Value String", max_length=50)
-    gepremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'gmparamvalue'
-    def __unicode__(self):
-        return self.gpcode+self.gecode
-
 class Hazardsoftware(models.Model):
     hscode = models.TextField(primary_key=True) # This field type is a guess.
     hsname =  models.CharField("Name", max_length=50)
@@ -406,16 +205,6 @@ class Intensitymeasuretype(models.Model):
     def __unicode__(self):
         return self.imname
 
-class Magrupturerelation(models.Model):
-    mrrcode = models.CharField(max_length=10, primary_key=True)
-    mrrname = models.CharField(max_length=50)
-    mrrdesc = models.CharField(max_length=100)
-    mrrremarks = models.CharField(max_length=255)
-    class Meta:
-        db_table = u'magrupturerelation'
-    def __unicode__(self):
-        return self.mrrname
-
 class Logictreestruc(models.Model):
     ltsid = models.AutoField("Logic Tree Structure Id", primary_key=True)
     ltsshortname = models.CharField("Short Name", max_length=20)
@@ -427,30 +216,6 @@ class Logictreestruc(models.Model):
         db_table = u'logictreestruc'
     def __unicode__(self):
         return self.ltsname
-
-class Ltreeparamtype(models.Model):
-    DATATYPE_CHOICES = ( 
-        (1, 'Integer'),
-        (2, 'Float'),
-        (3, 'String'),
-        (4, 'Boolean')
-    ) 
-    ltptid = models.AutoField("Logic Tree Parameter Type", primary_key=True)
-    ltptshortname = models.CharField("Short Name", max_length=20)
-    ltptname = models.CharField("Name", max_length=50)
-    ltptdesc = models.CharField("Description", max_length=100)
-    ltptdatatypecode = models.IntegerField("Data Type Code",
-                       choices = DATATYPE_CHOICES)
-    ltptpossvalstring = models.CharField("Possible Value String", 
-                                          max_length=2048)
-    ltptvaluemin = models.FloatField("Minimum Value")
-    ltptvaluemax = models.FloatField("Maximum Value")
-    ltptmapping = models.CharField("Mapping", max_length=255)
-    ltptremarks = models.CharField("Remarks", max_length=255)
-    class Meta:
-        db_table = u'ltreeparamtype'
-    def __unicode__(self):
-        return self.ltptname
 
 class Sourcegeometrycatalog(models.Model):
     SOURCEGEOMCATTYPE_CHOICES = ( 
@@ -597,14 +362,6 @@ class Hazardpointvalue(models.Model):
     def __unicode__(self):
         return "Haz Pt Id "+ str(self.hpid)
 
-#TODO: Multicolumn primary keys
-class Hibmge(models.Model):
-    hibmid = models.ForeignKey(Hazardinputbasicmodel, db_column='hibmid')
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    hibmgeweight = models.FloatField()
-    class Meta:
-        db_table = u'hibmge'
-
 class Seismicsource(models.Model):
     SEISMICSOURCETYPE_CHOICES = (
         (1, 'Simple Fault'),
@@ -657,102 +414,6 @@ class Seismicsource(models.Model):
     def __unicode__(self):
         return self.ssname
 
-class Magfreqdistn(models.Model):
-    mfdcode = models.TextField(primary_key=True) # This field type is a guess.
-    mfdname = models.CharField(max_length=50)
-    mfddesc = models.CharField(max_length=100)
-    mfdremarks = models.CharField(max_length=255)
-    mfddisctag = models.BooleanField()
-    class Meta:
-        db_table = u'magfreqdistn'
-    def __unicode__(self):
-        return self.ecname
-
-# TODO: add support for multicolumn indexes
-# Currently no support for composite/multicolumn primary keys in Django
-class Ssourcemfd(models.Model):
-    SLIPTYPECODE_CHOICES = (
-        (1, 'Normal'),
-        (2, 'Reverse'),
-        (3, 'StrikeSlip')
-    )
-    ssid = models.ForeignKey(Seismicsource, db_column='ssid')
-    mfdcode = models.ForeignKey(Magfreqdistn, db_column='mfdcode')
-    ssmfdseqnum = models.IntegerField("Sequence Number")
-    ssmfdmagnitudemax = models.FloatField("Maximum Magnitude")
-    ssmfdmagnitudemin = models.FloatField("Minimum Magnitude")
-    ssmfdvala = models.FloatField("a Value")
-    ssmfdvalb = models.FloatField("b Value")
-    ssmfdlambda = models.FloatField("Lambda Value")
-    ssmfdbeta = models.FloatField("Beta Value")
-    ssmfdvalaorig = models.FloatField("Original a value")
-    ssmfdcharmagnitude = models.FloatField("Char Magnitude")
-    ssmfdcharrate = models.FloatField("Char Rate")
-    ssmfdcharmagsd = models.FloatField("Char Magnitude Standard Deviation")
-    ssmfdtrunclevel = models.FloatField("Truncation Level")
-    ssmfdmodelweight = models.FloatField("Model Weight")
-    ssmfdmomentrate = models.FloatField("Moment Rate")
-    ssmfdstrike = models.IntegerField("Strike (degrees)")
-    ssmfddip = models.IntegerField("Dip (degrees)")
-    ssmfdrake = models.IntegerField("Rake (degrees)")
-    ssmfddipdirection = models.CharField("Dip Direction", max_length=5)
-    ssmfddowndipwidth = models.FloatField("Downdip Width")
-    ssmfdtopoffault = models.FloatField("Top of Fault")
-    ssmfdfaultlength = models.FloatField("Fault Length")
-    ssmfdsliptypecode = models.IntegerField("Slip Type Code",
-                        choices=SLIPTYPECODE_CHOICES)
-    mrrcode = models.ForeignKey(Magrupturerelation, db_column='mrrcode')
-    ssmfderrorcode = models.IntegerField()
-    ssmfdremarks = models.CharField("Remarks", max_length=255)
-    ssmfddisctag = models.BooleanField("Discretization Tag")
-    ssmfddeltamag = models.FloatField("Discretization Step")
-    ssmfdnumintervals = models.IntegerField("Number of Discrete Intervals")
-    ssmfddiscvalsstring = models.CharField(
-            "Magnitude, Seismic Rate pairs for Discrete MFD", max_length=2048)
-    class Meta:
-        db_table = u'ssourcemfd'
-    def __unicode__(self):
-        return str(self.ssid)+mfdcode+str(self.ssmfdseqnum)
-
-#class GeographyColumns(models.Model):
-#    f_table_catalog = models.TextField() # This field type is a guess.
-#    f_table_schema = models.TextField() # This field type is a guess.
-#    f_table_name = models.TextField() # This field type is a guess.
-#    f_geography_column = models.TextField() # This field type is a guess.
-#    coord_dimension = models.IntegerField()
-#    srid = models.IntegerField()
-#    type = models.TextField()
-#    class Meta:
-#        db_table = u'geography_columns'
-
-# TODO: Multicolumn primary keys
-class Hibmreference(models.Model):
-    rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
-    hibmid = models.ForeignKey(Hazardinputbasicmodel, db_column='hibmid')
-    hibmradddate = models.DateTimeField()
-    class Meta:
-        db_table = u'hibmreference'
-
-#class SpatialRefSys(models.Model):
-#    srid = models.IntegerField(primary_key=True)
-#    auth_name = models.CharField(max_length=256)
-#    auth_srid = models.IntegerField()
-#    srtext = models.CharField(max_length=2048)
-#    proj4text = models.CharField(max_length=2048)
-#    class Meta:
-#        db_table = u'spatial_ref_sys'
-
-#class GeometryColumns(models.Model):
-#    f_table_catalog = models.CharField(max_length=256)
-#    f_table_schema = models.CharField(max_length=256)
-#    f_table_name = models.CharField(max_length=256)
-#    f_geometry_column = models.CharField(max_length=256)
-#    coord_dimension = models.IntegerField()
-#    srid = models.IntegerField()
-#    type = models.CharField(max_length=30)
-#    class Meta:
-#        db_table = u'geometry_columns'
-
 class Hazardcurve(models.Model):
     hcrvid = models.AutoField("Hazard Curve Id", primary_key=True)
     hcrvshortname = models.CharField("Short Name", max_length=20)
@@ -793,85 +454,4 @@ class Hazardmap(models.Model):
     def __unicode__(self):
         return self.hmapname
 
-class Ltreeparamvalue(models.Model):
-    ltpvid = models.AutoField("Logic Tree Parameter Value", primary_key=True)
-    ltpvshortname = models.CharField("Short Name", max_length=20)
-    ltpvname = models.CharField(max_length=50)
-    ltpvdesc = models.CharField(max_length=100)
-    ltpvremarks = models.CharField(max_length=255)
-    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
-    class Meta:
-        db_table = u'ltreeparamvalue'
-    def __unicode__(self):
-        return self.ecname
-
-
-class Hilmruleset(models.Model):
-    hilmrid = models.AutoField("Hazard Input Logic Tree Model Ruleset Id", 
-                               primary_key=True)
-    hilmrcvrgtypecode = models.IntegerField()
-    hilmractiontypecode = models.IntegerField()
-    hilmrvalstring = models.CharField(max_length=100) 
-    hilmrprobpctstring = models.CharField(max_length=10)
-    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
-    ltpvid = models.ForeignKey(Ltreeparamvalue, db_column='ltpvid')
-    hilmid = models.ForeignKey(Hazardinputltreemodel, db_column='hilmid')
-    class Meta:
-        db_table = u'hilmruleset'
-    def __unicode__(self):
-        return self.hilmrvalstring
-
-class Hilmreference(models.Model):
-    rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
-    hilmid = models.ForeignKey(Hazardinputltreemodel, db_column='hilmid')
-    hilmradddate = models.DateTimeField()
-    class Meta:
-        db_table = u'hilmreference'
-    def __unicode__(self):
-        return self.ecname
-
-class Hilmpge(models.Model):
-    hilmpid = models.ForeignKey(Hilmpath, db_column='hilmpid')
-    gecode = models.ForeignKey(Gmpe, db_column='gecode')
-    hilmpgeweight = models.FloatField()
-    class Meta:
-        db_table = u'hilmpge'
-    def __unicode__(self):
-        return self.ecname
-
-class Ltreeparamtypelevel(models.Model):
-    ltptid = models.ForeignKey(Ltreeparamtype, db_column='ltptid')
-    ltsid = models.ForeignKey(Logictreestruc, db_column='ltsid')
-    ltptlevel = models.IntegerField()
-    ltptnumbranches = models.IntegerField()
-    ltptbranchsettag = models.BooleanField()
-    class Meta:
-        db_table = u'ltreeparamtypelevel'
-    def __unicode__(self):
-        return self.ecname
-
-class Sfaultchar(models.Model):
-    ssfcid = models.AutoField("Fault Characterization Id", primary_key=True)
-    ssfcstatus = models.TextField() # This field type is a guess.
-    ssfcsliprate = models.FloatField()
-    ssfcslipratesd = models.FloatField()
-    ssfcfloattypeid = models.IntegerField()
-    ssfcfloatingruptureflag = models.BooleanField()
-    ssfcfloatoffsetalongstrike = models.IntegerField()
-    ssfcfloatoffsetalongdip = models.IntegerField()
-    ssfcrupturetop = models.IntegerField()
-    ssfcrupturebottom = models.IntegerField()
-    ssid = models.ForeignKey(Seismicsource, db_column='ssid')
-    class Meta:
-        db_table = u'sfaultchar'
-    def __unicode__(self):
-        return self.ecname
-class Screference(models.Model):
-    rlid = models.ForeignKey(Referenceliterature, db_column='rlid')
-    scid = models.ForeignKey(Sourcegeometrycatalog, db_column='scid')
-    scradddate = models.DateTimeField()
-    class Meta:
-        db_table = u'screference'
-    def __unicode__(self):
-        return self.ecname
 
