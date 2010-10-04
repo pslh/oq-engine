@@ -786,6 +786,7 @@ class Hazardmap(models.Model):
     hmapdamping = models.IntegerField("Damping")
     hmapgridsize = models.FloatField("Grid Size, i.e. 0.1")
     hmapremarks = models.CharField("Remarks",max_length=255)
+    hmapwms = models.CharField("WMS URL",max_length=256)
     hcid = models.ForeignKey(Hazardcalculation, db_column='hcid')
     imcode = models.ForeignKey(Intensitymeasuretype, db_column='imcode')
     class Meta:

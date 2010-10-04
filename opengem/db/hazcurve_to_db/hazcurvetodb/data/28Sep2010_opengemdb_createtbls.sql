@@ -2055,6 +2055,7 @@ CREATE TABLE hazardmap (
     hmapdamping integer,
     hmapgridsize real,
     hmapremarks character varying(255),
+    hmapwms character varying(256),
     hcid integer,
     imcode character(10) NOT NULL
 );
@@ -2149,6 +2150,13 @@ COMMENT ON COLUMN hazardmap.hmapgridsize IS 'Hazard Map Grid Size Longitude/Lati
 --
 
 COMMENT ON COLUMN hazardmap.hmapremarks IS 'Hazard Map Remarks';
+
+
+--
+-- Name: COLUMN hazardmap.hmapwms; Type: COMMENT; Schema: public; Owner: -
+--
+
+COMMENT ON COLUMN hazardmap.hmapwms IS 'Hazard Map WMS for storing WMS URL';
 
 
 --
