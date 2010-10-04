@@ -1,14 +1,16 @@
 #!/usr/bin/env python
 
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from psycopg2 import IntegrityError
+
 import datetime
-from django.db import models
-#from hazcurve_to_db.hazcurvetodb.models import Calculationgroup
-#from hazcurve_to_db.hazcurvetodb.models import Calculationowner
+from hazcurvetodb.models import Calculationgroup, Calculationowner
 
 #or from django.db import models
 
 # To create database records
-cg = Calculationgroup(cgcode="OPENGEMDEV2", cgname="OPENGEMDEV", 
+cg = Calculationgroup(cgcode="GEMDEV2", cgname="OPENGEMDEV", 
         cgdesc="Opengem Development Team", cgauthlevel="1", 
         cgadddate=datetime.datetime.now(),cgremarks="Opengem Development Team, ETH Zurich, Zurich, Switzerland and EU Center, Pavia, Italy")
 cg.save()
