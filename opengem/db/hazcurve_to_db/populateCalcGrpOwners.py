@@ -14,11 +14,13 @@ import datetime
 from hazcurvetodb.models import Calculationgroup, Calculationowner
 
 # To create database records
-cg = Calculationgroup(cgcode="OPENGEMDEV", cgname="OPENGEMDEV", 
-        cgdesc="Opengem Development Team", cgauthlevel="1", 
-        cgadddate=datetime.datetime.now(), cgremarks="Opengem Development Team,\        ETH Zurich, Zurich, Switzerland and EU Center, Pavia, Italy")
+cg = Calculationgroup(cgcode="OPENGEMDEV", cgname="OPENGEMDEV",\
+        cgdesc="Opengem Development Team", cgauthlevel="1", \ 
+        cgadddate=datetime.datetime.now(),\
+        cgremarks="Opengem Development Team,\
+        ETH Zurich, Zurich, Switzerland and EU Center, Pavia, Italy")
 cg.save()
-cg = Calculationgroup(cgcode="SHAREDEV", cgname="SHAREDEV", 
+cg = Calculationgroup(cgcode="SHAREDEV", cgname="SHAREDEV", \ 
         cgdesc="Share Development Team", cgauthlevel="1", \
         cgadddate=datetime.datetime.now(), cgremarks="Share Development Team, \
         ETH Zurich, Zurich, Switzerland")
