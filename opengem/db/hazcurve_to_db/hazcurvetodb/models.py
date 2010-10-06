@@ -442,7 +442,7 @@ class Hazardmap(models.Model):
     hmaptimestamp = models.DateTimeField("Timestamp")
     hmaptimedepstartdate = models.DateTimeField("Time Dep Map Start Timestamp")
     hmaptimedependdate = models.DateTimeField("Time Dep Map End Timestamp")
-    hmapexceedprob = models.IntegerField("Probability of Exceedance, i.e. 10")
+    hmapexceedprob = models.FloatField("Probability of Exceedance, i.e. 10")
     hmapexceedyears = models.IntegerField("Years, i.e. 50")
     hmapdamping = models.IntegerField("Damping")
     hmapgridsize = models.FloatField("Grid Size, i.e. 0.1")

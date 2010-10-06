@@ -42,6 +42,7 @@ import sys
 import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from psycopg2 import IntegrityError
+from django.contrib.gis.geos import *
 
 import datetime
 from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
@@ -53,7 +54,7 @@ from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
 # if not yet existent, create calculation owner record
 # if not yet existent, create intensity measure type record
 # if not yet existent, Create hazardinputltreemodel record
-#      If logictree endpath, create corresponding hilmpath record
+#za      If logictree endpath, create corresponding hilmpath record
 # Create hazardcalculation with this related hazardinputltreemodel
 #      and/or endpath 
 # Hardcode values in hazard curve object and repository
@@ -66,16 +67,7 @@ from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
 def usage():
     print __doc__
 
-def main(argv):
-    logtreename = "GSHAP_SEA_LTree"
-    hazswstr = "OPENSHA"
-    calcownerStr = "DM"
-    ltmodelname = "GSHAP_SEA_Model"
-    ltmodellongname = "GSHAP Southeast Asia Model"
-    imtname = "PGA"
-    hazcalcname = "GSHAP_SEA_Calc"
-    hazcalcpolygon = "POLYGON((40 0,160 0,160 60, 40 60,40 0))"
- 
+def create_access_imt(imtname):
     # Create intensity measure type if not yet existing   
     imtresults = Intensitymeasuretype.objects.filter(pk=imtname)
     # imtresults = Intensitymeasuretype.objects.all() //prints all
@@ -89,8 +81,9 @@ def main(argv):
                                    imvaluemax=12.0, imunittype="none",
                                    imunitdescr="none", imremarks=imtname)
         imt.save()
-        
-    # Create Logic Tree Structure record
+    return imt 
+
+def create_access_lts(logtreename):
     ltsresults = Logictreestruc.objects.filter(ltsshortname=logtreename)
     if (ltsresults):
         print logtreename, "exists"
@@ -101,6 +94,111 @@ def main(argv):
                              ltsdesc=logtreename, ltsremarks=logtreename, 
                              ltsnumlevels = 2)
         lts.save()
-     
+    return lts
+
+def create_access_hs(hazswcode):
+    hsresults = Hazardsoftware.objects.filter(hscode=hazswcode)
+    if (hsresults):
+        print hazswcode, "exists"
+        for hs in hsresults:
+            print hs.hsname
+    else:
+        hs = Hazardsoftware(hscode=hazswcode, hsname=hazswcode,
+                             hsdesc=hazswcode, hsremarks=hazswcode, 
+                             hsadddate = datetime.datetime.now())
+	hs.save()
+    return hs
+
+def create_access_co(calcownercode):
+    coresults = Calculationowner.objects.filter(cocode=calcownercode)
+    if (coresults):
+        print calcownercode, "exists"
+        for co in coresults:
+            print co.coname
+    else:
+        co = Calculationowner(cocode=calcownercode, coname=calcownercode,
+                             codesc=calcownercode, coauthlevel = "1",
+                             coremarks=calcownercode,
+                             coadddate = datetime.datetime.now(),
+                             cgcode=calcgrpcode)
+	co.save()
+    return co
+
+def create_access_hilm(hilmsname,hilmpolygonwkt, lts):
+    hilmresults = Hazardinputltreemodel.objects.filter(hilmshortname=hilmsname)
+    if (hilmresults):
+        print hilmsname, "exists"
+        for hilm in hilmresults:
+            print hilm.hilmname
+    else:
+        hilm = Hazardinputltreemodel(hilmshortname=hilmsname, 
+                             hilmname=hilmsname, hilmdesc=hilmsname, 
+                             hilmremarks=hilmsname, 
+                             hilmcvrgtypecode = 1,
+                             hilmareapolygon = hilmpolygonwkt,
+                             ltsid = lts,
+                             hilmpgareapolygon = GEOSGeometry(hilmpolygonwkt)) 
+	hilm.save()
+    return hilm
+
+def create_access_hc(hcsname, hcpolygonwkt, hilm, hs, co):
+    hcresults = Hazardcalculation.objects.filter(hcshortname=hcsname)
+    if (hcresults):
+        print hcsname, "exists"
+        for hc in hcresults:
+            print hc.hcname
+    else:
+        hc = Hazardcalculation(hcshortname=hcsname, hcname=hcsname,
+                             hcdesc=hcsname, 
+                             hcstarttimestamp = datetime.datetime.now(),
+                             hcprobdettag = "P",
+                             hcgemgentag = True,
+                             hcareapolygon=hcpolygonwkt,
+                             hcremarks=hcsname,
+                             hilmid=hilm,
+                             hscode=hs,
+                             cocode=co,
+                             hcpgareapolygon=GEOSGeometry(hcpolygonwkt))
+        hc.save()
+    return hc
+
+def main(argv):
+    imname = "PGA"
+    logtreename = "GSHAP_SEA_LTree"
+    hazswcode = "OPENSHA"
+    calcownercode = "DM"
+    calcgrpcode = "OPENGEMDEV"
+    hilmsname = "GSHAP_SEA_Model"
+    hilmlongname = "GSHAP Southeast Asia Model"
+    hazcalcsname = "GSHAP_SEA_Calc"
+    gshapeapolygon = "POLYGON ((50 5, 50 60, 150 60, 150 5, 50 5))"
+    
+     # Create intensity measure type if not yet existing   
+    imt = create_access_imt(imname)
+    print "in main, imt is", imt
+ 
+    # Create Logic Tree Structure record
+    lts = create_access_lts(logtreename)
+
+    print "in main, lts is", lts
+
+    # Create/access Hazard Software record
+    hs = create_access_hs(hazswcode)
+    print "in main, hs is", hs
+
+    # Create/access Calculation Owner 
+    co = create_access_co(calcownercode)
+    print "in main, co is", co
+
+   # Create/access Hazard Input Logic Tree Model Record
+    hilm = create_access_hilm(hilmsname, gshapeapolygon, lts)
+    print "in main, hilm is", hilm
+
+   # Create/access Hazard Calc Model 
+    hc = create_access_hc(hazcalcsname, gshapeapolygon, hilm, hs, co)
+    print "in main, hc is", hc
+
+
+
 if __name__ == "__main__":
     main(sys.argv[1:])

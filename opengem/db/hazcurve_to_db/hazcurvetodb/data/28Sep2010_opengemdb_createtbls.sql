@@ -2050,7 +2050,7 @@ CREATE TABLE hazardmap (
     hmaptimestamp timestamp without time zone,
     hmaptimedepstartdate timestamp without time zone,
     hmaptimedependdate timestamp without time zone,
-    hmapexceedprob integer,
+    hmapexceedprob double precision,
     hmapexceedyears integer,
     hmapdamping integer,
     hmapgridsize real,
