@@ -43,7 +43,9 @@ import os
 os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
 from psycopg2 import IntegrityError
 from django.contrib.gis.geos import *
+#from shapely.geometry import Polygon, Point
 
+import ordereddict
 import datetime
 from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
      Calculationowner, Intensitymeasuretype, Hazardinputltreemodel, \
@@ -124,6 +126,23 @@ def create_access_co(calcownercode):
 	co.save()
     return co
 
+def create_access_hilm_shapely(hilmsname,hilmpolygonwkt, lts):
+    hilmresults = Hazardinputltreemodel.objects.filter(hilmshortname=hilmsname)
+    if (hilmresults):
+        print hilmsname, "exists"
+        for hilm in hilmresults:
+            print hilm.hilmname
+    else:
+        hilm = Hazardinputltreemodel(hilmshortname=hilmsname, 
+                             hilmname=hilmsname, hilmdesc=hilmsname, 
+                             hilmremarks=hilmsname, 
+                             hilmcvrgtypecode = 1,
+                             hilmareapolygon = hilmpolygonwkt,
+                             ltsid = lts,
+                             hilmpgareapolygon = Polygon(hilmpolygonwkt)) 
+	hilm.save()
+    return hilm
+
 def create_access_hilm(hilmsname,hilmpolygonwkt, lts):
     hilmresults = Hazardinputltreemodel.objects.filter(hilmshortname=hilmsname)
     if (hilmresults):
@@ -162,18 +181,90 @@ def create_access_hc(hcsname, hcpolygonwkt, hilm, hs, co):
         hc.save()
     return hc
 
+
+def create_access_gp(gppointwkt, hilm, hs, co):
+    gpresults = Geopoint.objects.filter(gppoint=gppointwkt)
+    if (gpresults):
+        print gppointwkt, "exists"
+        for gp in gpresults:
+            print gp.gpid
+    else:
+        gp = Geopoint(gppoint=gppointwkt,
+                      gppgpoint=GEOSGeometry(gppgpoint))
+        gp.save()
+    return gp
+
+def create_access_hcrv(hcrvsname, hc, gp, imt):
+    hcrvresults = Hazardcurve.objects.filter(hcrvshortname=hcrvsname)
+    if (hcresults):
+        print hcrvsname, "exists"
+        for hcrv in hcrvresults:
+            print hcrv.hcrvsname
+    else:
+        hcrv = Hazardcalculation(hcrvshortname=hcrvsname, hcrvname=hcrvsname,
+                             hcrvdesc=hcrvsname, 
+                             hcrvstarttimestamp = datetime.datetime.now(),
+                             hcrvremarks=hcrvsname,
+                             hcid=hc,
+                             gpid=gp,
+                             imcode=imt)
+        hcrv.save()
+    return hcrv
+
+def create_access_hpv(hpval, hpep, hpey, hc, gp, imt):
+    hpvresults = Hazardpointvalue.objects.filter(gpid = gp.gpid)
+    if (hpvresults):
+        print hpv.hpid, "exists"
+        for hpv in hpvresults:
+            print hpv.hpid
+    else:
+        hpv = Hazardpointvalue(gpid = gp, 
+                      hpvalue=hpval, 
+                      hpexceedprob = hpexcprob,
+                      hpexceedyears = hpey,
+                      hcid = hc,
+                      imcode = imt)
+        hpv.save()
+    return hpv
+
+#curvetodict
+def curvestodict(imlevels,pgavalues):
+    hcdict = {}
+    i = 0
+    while i < len(imlevels):
+        hcdict[imlevels[i]] = pgavalues[i]
+        i += 1
+    return hcdict
+        
 def main(argv):
     imname = "PGA"
     logtreename = "GSHAP_SEA_LTree"
     hazswcode = "OPENSHA"
     calcownercode = "DM"
     calcgrpcode = "OPENGEMDEV"
-    hilmsname = "GSHAP_SEA_Model"
-    hilmlongname = "GSHAP Southeast Asia Model"
+    hilmsname = "SGSHAPSEAModel"
+    hilmlongname = "GSHAPSoutheastAsiaModel"
     hazcalcsname = "GSHAP_SEA_Calc"
     gshapeapolygon = "POLYGON ((50 5, 50 60, 150 60, 150 5, 50 5))"
+    #SHAPELY no need to close polygon
+    #shapelypolygon = "[(50, 5), (50 60), (150 60), (150 5)]"
     
-     # Create intensity measure type if not yet existing   
+    # hazardcurve from ~/workspace/gemHazardResults/europe
+    # /results_Europe_2010_03-26-14:49:07
+    # hazcrvpt is a point
+    #hazcrvpt = -3.1000 +72.6000   
+    #intmeaslvl is a list of 19 values
+    intmeaslvls = [5.0000e-03, 7.0000e-03, 9.8000e-03, 1.3700e-02, 1.9200e-02,
+                   2.6900e-02, 3.7600e-02, 5.2700e-02, 7.3800e-02, 1.0300e-01,
+                   1.4500e-01, 2.0300e-01, 2.8400e-01, 3.9700e-01, 5.5600e-01,
+                   7.7800e-01, 1.0900e+00, 1.5200e+00, 2.1300e+00]
+   #pgaval corr to intmeaslvl
+    pgavals = [9.9967e-01, 9.9618e-01, 9.7180e-01, 8.7730e-01, 6.7090e-01,
+            4.0944e-01, 1.9946e-01, 7.8763e-02, 2.6100e-02, 7.4365e-03,
+            1.7184e-03, 3.2060e-04, 4.1469e-05, 2.4926e-06, 4.7401e-09,
+            0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00] 
+  
+    # Create intensity measure type if not yet existing   
     imt = create_access_imt(imname)
     print "in main, imt is", imt
  
@@ -198,7 +289,15 @@ def main(argv):
     hc = create_access_hc(hazcalcsname, gshapeapolygon, hilm, hs, co)
     print "in main, hc is", hc
 
+   # Create/access Hazard Curve Model 
+    #hc = create_access_hcrv(hazcurvename, gshapeapolygon, hilm, hs, co)
+    #print "in main, hcrv is", hcrv
+    hcdict = curvestodict(intmeaslvls,pgavals)
+    print hcdict
 
+    odict = ordereddict.OrderedDict(sorted(hcdict.items(),key=lambda t:t[0]))
+    print "Ordered dictionary of imlevel, pgavalue"
+    print odict
 
 if __name__ == "__main__":
     main(sys.argv[1:])
