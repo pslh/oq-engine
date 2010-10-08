@@ -1,62 +1,21 @@
 #!/usr/bin/env python2
-# This file shows how to map the hazcurve object to the DB
-# Needed files: 
-# HazardInputLtreeModel
-# HazardCalculation
-# Hilmpath
-# Hazardcurve
-# For testing/illustration purposes only.
-# author: Aurea Moemke
-# date: 4 October 2010
-"""Load/OR Mapping from Hazardcurve object to database
-
-@author: Aurea Moemke
-
-This program maps hazardcurve object to the opengem db using
-OR mapping.
-
-Usage: python saveHazCurveToDb.py [options] [source]
-
-Options:
-  -l ..., --logictreestruc=...     specify logic tree structure id
-  -s ..., --hazsoftware=...         specify hazard software to use
-  -c ..., --calcowner=...       specify calculation owner
-  -i ..., --intmeastype=...     specify intensity measure type
-  -h ..., --hazinputltreemodel=... specify hazard input ltree model
-  -a ..., --hazardcalc=...    specify hazard calculation name
-  -z ..., --hazardcurve=...   specify hazard curve name
-  
-  -h, --help                  show this help
-
-Example:
-  saveHazCurveToDb.py -l 'GSHAPSEA_LTREE' -s 'OPENSHA' ...  
-
-"""
-__author__ = "Aurea Moemke (aurea.moemke@yahoo.com, aurea.moemke@sed.ethz.ch)"
-__version__ = "$Revision: 1.0 $"
-__date__ = "$Date: 2010/10/05 $"
-__copyright__ = "Copyright (c) 2010 Aurea Moemke"
-__license__ = "Python"
-
-import sys
-import os
-os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
-from psycopg2 import IntegrityError
-from django.contrib.gis.geos import *
-#from shapely.geometry import Polygon, Point
-
-import ordereddict
-import datetime
-from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
-     Calculationowner, Intensitymeasuretype, Hazardinputltreemodel, \
-     Hazardcalculation, Hazardinputltreemodel, Hilmpath, Hazardcurve, \
-     Hazardpointvalue, Geopoint
-# if not yet existent, create logic tree structure record
-# if not yet existent, create hazard software record
-# if not yet existent, create calculation owner record
-# if not yet existent, create intensity measure type record
-# if not yet existent, Create hazardinputltreemodel record
-#za      If logictree endpath, create corresponding hilmpath record
+# Load/OR Mapping from Hazardcurve object to database
+# Author: Aurea Moemke
+# Date: 8 October 2010
+# 
+# Description: 
+# This program maps hazardcurve object to the opengem db using
+# OR mapping.
+#
+# Usage: python saveHazCurveToDb.py
+# 
+# Steps to follow:
+# If not yet existent, create intensity measure type record
+# If not yet existent, create logic tree structure record
+# If not yet existent, create hazard software record
+# If not yet existent, create calculation owner record
+# If not yet existent, Create hazardinputltreemodel record
+#      If logictree endpath, create corresponding hilmpath record
 # Create hazardcalculation with this related hazardinputltreemodel
 #      and/or endpath 
 # Hardcode values in hazard curve object and repository
@@ -66,6 +25,22 @@ from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
 #    2. save hazard point values to model object
 #    3. write to db
 
+
+import sys
+sys.path.append('/home/apm/Projects/opengem')
+import os
+os.environ['DJANGO_SETTINGS_MODULE'] = 'settings'
+from psycopg2 import IntegrityError
+from django.contrib.gis.geos import *
+#from shapely.geometry import Polygon, Point
+
+from ordereddict import *
+import datetime
+from opengem.shapes import *
+from hazcurvetodb.models import Logictreestruc, Hazardsoftware, \
+     Calculationowner, Intensitymeasuretype, Hazardinputltreemodel, \
+     Hazardcalculation, Hazardinputltreemodel, Hilmpath, Hazardcurve, \
+     Hazardpointvalue, Geopoint
 def usage():
     print __doc__
 
@@ -182,7 +157,7 @@ def create_access_hc(hcsname, hcpolygonwkt, hilm, hs, co):
     return hc
 
 
-def create_access_gp(gppointwkt, hilm, hs, co):
+def create_access_gp(gppointwkt):
     gpresults = Geopoint.objects.filter(gppoint=gppointwkt)
     if (gpresults):
         print gppointwkt, "exists"
@@ -190,20 +165,21 @@ def create_access_gp(gppointwkt, hilm, hs, co):
             print gp.gpid
     else:
         gp = Geopoint(gppoint=gppointwkt,
-                      gppgpoint=GEOSGeometry(gppgpoint))
+                      gppgpoint=GEOSGeometry(gppointwkt))
         gp.save()
     return gp
 
 def create_access_hcrv(hcrvsname, hc, gp, imt):
     hcrvresults = Hazardcurve.objects.filter(hcrvshortname=hcrvsname)
-    if (hcresults):
+    if (hcrvresults):
         print hcrvsname, "exists"
         for hcrv in hcrvresults:
-            print hcrv.hcrvsname
+            print hcrv.hcrvname
     else:
-        hcrv = Hazardcalculation(hcrvshortname=hcrvsname, hcrvname=hcrvsname,
+        hcrv = Hazardcurve(hcrvshortname=hcrvsname, 
+                             hcrvname=hcrvsname,
                              hcrvdesc=hcrvsname, 
-                             hcrvstarttimestamp = datetime.datetime.now(),
+                             hcrvtimestamp = datetime.datetime.now(),
                              hcrvremarks=hcrvsname,
                              hcid=hc,
                              gpid=gp,
@@ -212,30 +188,23 @@ def create_access_hcrv(hcrvsname, hc, gp, imt):
     return hcrv
 
 def create_access_hpv(hpval, hpep, hpey, hc, gp, imt):
-    hpvresults = Hazardpointvalue.objects.filter(gpid = gp.gpid)
+    hpvresults = Hazardpointvalue.objects.filter(gpid = gp.gpid,
+                          hpexceedprob=hpep, hpexceedyears=hpey,
+                          hcid = hc.hcid, imcode = imt.imcode )
     if (hpvresults):
-        print hpv.hpid, "exists"
+        print hpval, "exists"
         for hpv in hpvresults:
             print hpv.hpid
     else:
-        hpv = Hazardpointvalue(gpid = gp, 
-                      hpvalue=hpval, 
-                      hpexceedprob = hpexcprob,
+        hpv = Hazardpointvalue(hpvalue=hpval, 
+                      hpexceedprob = hpep,
                       hpexceedyears = hpey,
                       hcid = hc,
+                      gpid = gp,
                       imcode = imt)
         hpv.save()
     return hpv
-
-#curvetodict
-def curvestodict(imlevels,pgavalues):
-    hcdict = {}
-    i = 0
-    while i < len(imlevels):
-        hcdict[imlevels[i]] = pgavalues[i]
-        i += 1
-    return hcdict
-        
+   
 def main(argv):
     imname = "PGA"
     logtreename = "GSHAP_SEA_LTree"
@@ -245,20 +214,19 @@ def main(argv):
     hilmsname = "SGSHAPSEAModel"
     hilmlongname = "GSHAPSoutheastAsiaModel"
     hazcalcsname = "GSHAP_SEA_Calc"
+    hazcurvename = "GSHAP_SEA_Crv1"
+    # Polygon in WKT
     gshapeapolygon = "POLYGON ((50 5, 50 60, 150 60, 150 5, 50 5))"
-    #SHAPELY no need to close polygon
-    #shapelypolygon = "[(50, 5), (50 60), (150 60), (150 5)]"
-    
     # hazardcurve from ~/workspace/gemHazardResults/europe
     # /results_Europe_2010_03-26-14:49:07
-    # hazcrvpt is a point
-    #hazcrvpt = -3.1000 +72.6000   
-    #intmeaslvl is a list of 19 values
+    # hazcrvpt is a point in WKT
+    hazcrvpt = "POINT (-3.1000 72.6000)"   
+    # intmeaslvl or prob of exceedance, a list of 19 values 
     intmeaslvls = [5.0000e-03, 7.0000e-03, 9.8000e-03, 1.3700e-02, 1.9200e-02,
                    2.6900e-02, 3.7600e-02, 5.2700e-02, 7.3800e-02, 1.0300e-01,
                    1.4500e-01, 2.0300e-01, 2.8400e-01, 3.9700e-01, 5.5600e-01,
                    7.7800e-01, 1.0900e+00, 1.5200e+00, 2.1300e+00]
-   #pgaval corr to intmeaslvl
+    # pgaval corr to intmeaslvl
     pgavals = [9.9967e-01, 9.9618e-01, 9.7180e-01, 8.7730e-01, 6.7090e-01,
             4.0944e-01, 1.9946e-01, 7.8763e-02, 2.6100e-02, 7.4365e-03,
             1.7184e-03, 3.2060e-04, 4.1469e-05, 2.4926e-06, 4.7401e-09,
@@ -267,10 +235,9 @@ def main(argv):
     # Create intensity measure type if not yet existing   
     imt = create_access_imt(imname)
     print "in main, imt is", imt
- 
+    
     # Create Logic Tree Structure record
     lts = create_access_lts(logtreename)
-
     print "in main, lts is", lts
 
     # Create/access Hazard Software record
@@ -289,15 +256,43 @@ def main(argv):
     hc = create_access_hc(hazcalcsname, gshapeapolygon, hilm, hs, co)
     print "in main, hc is", hc
 
-   # Create/access Hazard Curve Model 
-    #hc = create_access_hcrv(hazcurvename, gshapeapolygon, hilm, hs, co)
-    #print "in main, hcrv is", hcrv
-    hcdict = curvestodict(intmeaslvls,pgavals)
-    print hcdict
+    # Create/access Geopoint 
+    gp= create_access_gp(hazcrvpt)
+    print "in main, gp is", gp
 
-    odict = ordereddict.OrderedDict(sorted(hcdict.items(),key=lambda t:t[0]))
-    print "Ordered dictionary of imlevel, pgavalue"
-    print odict
+    # Create/access Hazard Curve Model 
+    hcrv= create_access_hcrv(hazcurvename, hc, gp, imt)
+    print "in main, hcrv is", hcrv
+
+    # Create hazardpointvalues for given hazardcurve calculation
+    hazardcurve_data = []
+    hazardcurve_data = zip(intmeaslvls, pgavals)
+    #for iml, pga in hazardcurve_data:
+    #      print iml, pga
+    #Fastcurve returns an ordered dict of imlevels and pgavals
+    values =FastCurve(hazardcurve_data)       
+    print values
+    
+    hazcurve = HazardCurve(hazardcurve_data)
+    print "id model", hazcurve.id_model
+#   Ordered dict is returned, not iterable
+#   
+#   method 1 to iterate over dictionaries
+#   for key in hazcurve.values.iterkeys():
+#       print key, hazcurve.values[key]
+#   method 2 to iterate over dictionaries
+#   for key in hazcurve.values.keys():
+#       print key, hazcurve.values[key]
+#   method 3 to iterate over dictionaries
+#   for key, value in hazcurve.values.items():
+#       print key, value
+    for key in hazcurve.values.iterkeys():
+        print key, hazcurve.values[key]
+        hpep = float(key)              # intensity measure level
+        hpval = hazcurve.values[key]   # pga val
+        hpey = 1
+        hpv = create_access_hpv(hpval, hpep, hpey, hc, gp, imt) 
+        print "in main, hpv is", hpv
 
 if __name__ == "__main__":
     main(sys.argv[1:])
