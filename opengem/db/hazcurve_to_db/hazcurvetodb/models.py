@@ -8,6 +8,7 @@ from django.contrib.gis.db import models
 # Initially generated with ogrinspect and modified manually
 # author aurea moemke
 # started: 29 Sep 2010
+# last updated: 13 Oct 2010
 
 class Seismotecenvt(models.Model):
     secode = models.CharField(max_length=10, primary_key=True)

@@ -2,12 +2,15 @@
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+TEST_RUNNER='django.contrib.gis.tests.run_tests'
 
 ADMINS = (
     # ('Your Name', 'your_email@domain.com'),
 )
 
 MANAGERS = ADMINS
+POSTGIS_VERSION=('1.4.1', 1, 4, 1)
+POSTGIS_TEMPLATE='template_postgis'
 
 DATABASE_ENGINE = 'postgresql_psycopg2'           # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 DATABASE_NAME = 'opengemtestdb'             # Or path to database file if using sqlite3.
@@ -79,4 +82,4 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.gis',
     'hazcurvetodb'
-)
+	)
