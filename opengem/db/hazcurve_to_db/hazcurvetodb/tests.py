@@ -52,7 +52,9 @@ calcownercode = "DM"
 calcgrpcode = "OPENGEMDEV"
 datenow = datetime.datetime.now()
 hilmsname = "Europe_LTree_V1"
-hilmpolygonwkt = "POLYGON ((50 5, 50 60, 150 60, 150 5, 50 5))"
+#counterclockwise
+hilmpolygonwkt = "POLYGON ((50 5, 150 5, 50 60, 50 5))"
+#clockwise hilmpolygonwkt = "POLYGON ((50 5, 50 60, 150 60, 150 5, 50 5))"
 hazcalcname = "Europe_Calc"
 geopoint_WKT = "POINT (-3.1 +72.6)"
 hazcurvename = "Test_EuHazcrv"
@@ -81,64 +83,17 @@ imtremarks = "Remarks for Peak Ground Acceleration"
 class IntensitymeasuretypeTestCase(unittest.TestCase):
     def setUp(self):
         print "This should output."
-
-    def testCreate(self):
-        pga = Intensitymeasuretype(imcode=intmeasuretype,
+        self.pga = Intensitymeasuretype(imcode=intmeasuretype,
                          imname=imtname,imdesc= imtdesc,imvaluemin=imtvalmin,
                          imvaluemax=imtvalmax,imunittype=imtunittype,
                          imunitdescr="g for pga",imremarks=imtremarks)
-        pga.save()
+        self.pga.save()
+    def testCreate(self):
         imtresults = Intensitymeasuretype.objects.filter(imcode=intmeasuretype)
         for pgafromdb in imtresults:
-            self.assertEquals(pgafromdb,pga)
+            self.assertEquals(pgafromdb,self.pga)
 
 class LogictreestrucTestCase(unittest.TestCase):
-    def setUp(self):
-        print "This should output."
-    def testCreate(self):
-        lts = Logictreestruc(ltsshortname=logtreestrname,
-                             ltsname=logtreestrname,
-                             ltsdesc=logtreestrname, 
-                             ltsremarks=logtreestrname, 
-                             ltsnumlevels = 2)
-        lts.save()
-        ltsresults = Logictreestruc.objects.filter(ltsshortname=logtreestrname)
-        for ltsfromdb in ltsresults:
-            self.assertEquals(ltsfromdb,lts)
-
-class HazardsoftwareTestCase(unittest.TestCase):
-    def setUp(self):
-        print "This should output."
-    def testCreate(self):
-        hs = Hazardsoftware(hscode=hazsoftware, 
-                            hsname=hazsoftware,
-                            hsdesc=hazsoftware,
-                            hsremarks=hazsoftware,
-                            hsadddate = datenow)
-        hs.save()
-        hsresults = Hazardsoftware.objects.filter(hscode=hazsoftware)
-        for hsfromdb in hsresults:
-            self.assertEquals(hsfromdb, hs)
-
-class CalculationownerTestCase(unittest.TestCase):
-    def setUp(self):
-        print "This should output."
-    def testCreate(self):
-   
-        co = Calculationowner(cocode=calcownercode, 
-                             coname=calcownercode,
-                             codesc=calcownercode,
-                             coauthlevel = "1",
-                             coremarks=calcownercode,
-                             coadddate = datenow,
-                             cgcode=calcgrpcode)
-        co.save()
-        coresults = Calculationowner.objects.filter(cocode=calcownercode)
-        for co in coresults:
-            self.assertEquals(co.cocode, calcownercode)
-            self.assertEquals(co.coadddate, datenow)
-
-class Hazardinputltreemodel(unittest.TestCase):
     def setUp(self):
         self.lts = Logictreestruc(ltsshortname=logtreestrname,
                              ltsname=logtreestrname,
@@ -146,9 +101,59 @@ class Hazardinputltreemodel(unittest.TestCase):
                              ltsremarks=logtreestrname, 
                              ltsnumlevels = 2)
         self.lts.save()
-
     def testCreate(self):
-        hilm = Hazardinputltreemodel(hilmshortname=hilmsname, 
+        ltsresults = Logictreestruc.objects.filter(ltsshortname=logtreestrname)
+        for ltsfromdb in ltsresults:
+            self.assertEquals(ltsfromdb,self.lts)
+
+class HazardsoftwareTestCase(unittest.TestCase):
+    def setUp(self):
+        self.hs = Hazardsoftware(hscode=hazsoftware, 
+                            hsname=hazsoftware,
+                            hsdesc=hazsoftware,
+                            hsremarks=hazsoftware,
+                            hsadddate = datenow)
+        self.hs.save()
+    def testCreate(self):
+        hsresults = Hazardsoftware.objects.filter(hscode=hazsoftware)
+        for hsfromdb in hsresults:
+            self.assertEquals(hsfromdb,self.hs)
+
+class CalculationownerTestCase(unittest.TestCase):
+    def setUp(self):
+        self.cg = Calculationgroup(cgcode=calcgrpcode,
+                                   cgname=calcgrpcode,
+                                   cgdesc=calcgrpcode,
+                                   cgadddate=datenow,
+                                   cgauthlevel="1",
+                                   cgremarks=calcgrpcode)
+        self.cg.save()
+        self.co = Calculationowner(cocode=calcownercode, 
+                             coname=calcownercode,
+                             codesc=calcownercode,
+                             coauthlevel = "1",
+                             coremarks=calcownercode,
+                             coadddate = datenow,
+                             cgcode=self.cg)
+        self.co.save()
+    def testCreate(self):
+        coresults = Calculationowner.objects.filter(cocode=calcownercode)
+        for cofromdb in coresults:
+            self.assertEquals(cofromdb, self.co)
+
+class Hazardinputltreemodel(unittest.TestCase):
+    def setUp(self):
+        ltsresults = Logictreestruc.objects.filter(ltsshortname=logtreestrname)
+        if (ltsresults):
+            for ltsval in ltsresults:
+                self.lts=ltsval
+        else:
+            self.lts = Logictreestruc(ltsshortname=logtreestrname,
+                             ltsname=logtreestrname,
+                             ltsdesc=logtreestrname, 
+                             ltsremarks=logtreestrname, 
+                             ltsnumlevels = 2)
+        self.hilm = Hazardinputltreemodel(hilmshortname=hilmsname, 
                              hilmname=hilmsname, 
                              hilmdesc=hilmsname, 
                              hilmremarks=hilmsname, 
@@ -156,11 +161,13 @@ class Hazardinputltreemodel(unittest.TestCase):
                              hilmareapolygon = hilmpolygonwkt,
                              ltsid = self.lts,
                              hilmpgareapolygon = Polygon(hilmpolygonwkt)) 
-	hilm.save()
+	self.hilm.save()
+
+    def testCreate(self):
         hilmresults = Hazardinputltreemodel.objects.filter(
                              hilmshortname=hilmsname)
         for hilmfromdb in hilmresults:
-            self.assertEquals(hilm, hilmfromdb)
+            self.assertEquals(hilmfromdb, self.hilm)
 
 
 #class HazardCurveToDbTestCase(unittest.TestCase):
