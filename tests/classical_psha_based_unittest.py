@@ -114,7 +114,7 @@ class ClassicalPSHABasedTestCase(unittest.TestCase):
         self.job_id = identifiers.generate_random_id()
 
         self.vuln_curve_code_test = "TEST"
-        vuln_curve_test = shapes.Curve(
+        vuln_curve_test = shapes.VulnerabilityFunction(
             [(5.0, (0.25, 0.5)),
              (6.0, (0.4, 0.4)),
              (7.0, (0.6, 0.3))])
@@ -123,7 +123,7 @@ class ClassicalPSHABasedTestCase(unittest.TestCase):
         # to vuln curves in memcached
         self.vulnerability_curves = vulnerability.register_vuln_curves(
             {self.vuln_curve_code_test: vuln_curve_test,
-             vulnerability.EMPTY_CODE: shapes.EMPTY_CURVE}, 
+             vulnerability.EMPTY_CODE: shapes.EMPTY_VULN_FUNCTION}, 
             self.job_id, 
             self.memcache_client)
 

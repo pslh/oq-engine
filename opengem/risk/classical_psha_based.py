@@ -83,7 +83,7 @@ def compute_loss_ratio_curve(vuln_function, hazard_curve):
     by applying a given vulnerability function."""
     
     if vuln_function is None:
-        vuln_function = shapes.EMPTY_CURVE
+        vuln_function = shapes.EMPTY_VULN_FUNCTION
 
     lrem = _compute_lrem(vuln_function)
     lrem_po = _compute_lrem_po(vuln_function, lrem, hazard_curve)
@@ -107,13 +107,13 @@ def _compute_lrem_po(vuln_function, lrem, hazard_curve):
     
     current_column = 0
     lrem_po = [None] * len(lrem)
-    imls = vuln_function.abscissae
+    imls = vuln_function.imls
     
     for iml in imls:
         prob_occ = hazard_curve.ordinate_for(iml)
         for row in range(len(lrem_po)):
             if not lrem_po[row]: 
-                lrem_po[row] = [None] * len(vuln_function.abscissae)
+                lrem_po[row] = [None] * len(vuln_function.imls)
             lrem_po[row][current_column] = lrem[row][current_column] * prob_occ
         current_column += 1
     
@@ -135,13 +135,7 @@ def _compute_loss_ratio_curve_from_lrem_po(loss_ratios, lrem_po):
 #@state.memoize
 def _generate_loss_ratios(vuln_function):
     """Loss ratios are a function of the vulnerability curve"""
-
-    if vuln_function.is_multi_value:
-        # means on first position
-        loss_ratios = list(vuln_function.ordinates[:,0])
-    else:
-        loss_ratios = list(vuln_function.ordinates)
-    
+    loss_ratios = list(vuln_function.loss_ratios)
     # we need to add 0.0 as first value
     loss_ratios.insert(0, 0.0)
     return _split_loss_ratios(loss_ratios)  
@@ -158,7 +152,7 @@ def _compute_lrem(vuln_function, distribution=None):
     
     current_column = 0
     lrem = [None] * (len(loss_ratios)+1)
-    imls = vuln_function.abscissae
+    imls = vuln_function.imls
 
     def fix_value(prob):
         """Fix negative probabilities for values close to zero. 
@@ -173,8 +167,8 @@ def _compute_lrem(vuln_function, distribution=None):
 
     for iml in imls:
         # we need to use std deviation, but we have cov
-        mean = vuln_function.ordinate_for(iml)
-        cov = vuln_function.ordinate_for(iml, 1)
+        mean = vuln_function.loss_ratio_for(iml)
+        cov = vuln_function.cov_for(iml)
         stddev = cov * mean
         variance = stddev ** 2.0
         mu = log(mean ** 2.0 / sqrt(variance + mean ** 2.0) )
@@ -182,7 +176,7 @@ def _compute_lrem(vuln_function, distribution=None):
         
         for row in range(len(loss_ratios)+1):
             if not lrem[row]: 
-                lrem[row] = [None] * len(vuln_function.abscissae)
+                lrem[row] = [None] * len(vuln_function.imls)
             # last loss ratio is fixed to be 1
             if row < len(loss_ratios): 
                 next_ratio = loss_ratios[row]

@@ -427,5 +427,38 @@ class Curve(object):
 
         return json.JSONEncoder().encode(as_dict)
 
+# TODO (ac): We could to move the loss ratio splitting algorith here
+class VulnerabilityFunction(Curve):
+    """This class describes a vulnerability function.
+    
+    A vulnerability function has IMLs (Intensity Measure Levels) as
+    abscissa values and pairs (mean loss ratio, cov) as ordinate values.
+
+    """
+    
+    def __init__(self, values):
+        super(VulnerabilityFunction, self).__init__(values)
+
+    def loss_ratio_for(self, iml):
+        """Return the loss ratio corresponding to the given IML."""
+        return self.ordinate_for(iml)
+
+    def cov_for(self, iml):
+        """Return the cov corresponding to the given IML."""
+        return self.ordinate_for(iml, 1)
+
+    @property
+    def imls(self):
+        """Return the IMLs to which this function is defined."""
+        return self.abscissae
+
+    @property
+    def loss_ratios(self):
+        """Return the set of loss ratios defined by this function."""
+        if self.is_multi_value:
+            return list(self.ordinates[:, 0])
+        else:
+            return list(self.ordinates)
 
 EMPTY_CURVE = Curve(())
+EMPTY_VULN_FUNCTION = VulnerabilityFunction(())
