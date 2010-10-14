@@ -171,8 +171,8 @@ class Geopoint(models.Model):
     gppoint = models.CharField("Point WKT", max_length=255)
     gpname = models.CharField("Name", max_length=50)
     gpdesc = models.CharField("Description", max_length=100)
-    sacode = models.ForeignKey(Siteamplification, db_column='sacode')
-    socode = models.ForeignKey(Soilclass, db_column='socode')
+    sacode = models.ForeignKey(Siteamplification, db_column='sacode',blank=True)
+    socode = models.ForeignKey(Soilclass, db_column='socode',blank=True)
     # Geospatial data
     gppgpoint = models.PointField()
     objects = models.GeoManager()
