@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:GroundMotionFieldSet xmlns:ns1="http://www.opengis.net/gml/profile/sfgml/1.0"
+ xmlns:ns2="http://opengem.org/xmlns/nrml/0.1"
+ xmlns:ns3="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://opengem.org/xmlns/nrml/0.1 file:/Users/damianomonelli/Projects/opengem/docs/schema/nrml_hazard.xsd">
+    <ns2:SimpleFaultRupture>
+        <ns2:magnitude value="1479345554.085"/>
+        <simpleFaultData AverageDip="19.678" AverageRake="-150.087" TectonicRegionType="Active Shallow Crust" SeimogenicLayerTopDepth="121761232.668"
+             SeimogenicLayerBottomDepth="1571301575.588">
+            <ns2:FaultTrace srsName="http://PcDNCUXV/" srsDimension="651604235" axisLabels="R_ReONVwcwiudPR6vax4-ty.QyyXH v2d4LC mDiizKLKodZNZTOdb Mev A3Xy h2UyowbQ VZdnbZRgosN2h_ h GgYdqZ-zApwvY0HhrOAhFHFbA2dtMK RkFKck-DZxJFsRtcij2wBuzn5Gq HkMzYmLDOosGDs66CZl umo7REsF.0-GWwg10h33VA_bbWJNu thTqr xluwb5GWPxvxSsloAs-XP"
+                 uomLabels="AwbDeLT Yo29heHUNX3V26Phr S6uB2D2b2HNyDTd14VKXZCKbOKa.x w19B8hYDvyysIpCQdEC LGbGV.RNX4wFT0hjK7gJ4fAd1Hu J2DC3jdNepy Ult.rnXAFyvybRw0 MQaKduejchaMheY6QC7K b3mZDLvTwx trfmtb vTRHvVjhP MkCkwwfatK1Uk IHdhG_FokK7xyeyP3dUq y"
+                 ns1:id="ID000">
+                    <ns1:posList srsName="http://nLrVnbKP/" srsDimension="1175416184" axisLabels="X1uGdEOnqVXZI_kfHyCMVBy5CJ jVPYl XpbNO2.zn8AqB_vy I_0UKC2.D9BXVxUBr"
+                         uomLabels="W. vL3LMgvkfQbvCBoLHCSEsKzgapbu0a uR2gULz5Ae.hy1UFWhrX izmvzVCNs RFfklaa0vUZfQTpbMX"
+                         count="1243939541">805202299.246 -1823477237.108 -226569396.712 -1900336631.696 1873332909.99 34533463.165</ns1:posList>
+            </ns2:FaultTrace>
+        </simpleFaultData>
+    </ns2:SimpleFaultRupture>
+    <ns2:GMPEParameters IMT="MMI" vs30method="None" groundMotionComponent="vertical" period="1314894294.926" damping="-1670045021.788"
+         truncationType="2 Sided" truncationLevel="326115886.805" stdDevType="none"/>
+    <ns2:field description="JQ9">
+        <ns2:site groundMotion="-1549043744.618">
+            <ns2:site srsName="http://URXQFaeC/" srsDimension="1096623623" axisLabels="lAC.xvUKUmT5PiCBEi7 ZOrmz6vpoA mAH9KNHzQcOr3UrdBhk8 ZhZJlrK0nODk5t.pgqTApgtaeJa WMvdsZ Q.uRj88CwwhP bpWmuJqt4HpYKohOziGeS17Mk2Z1 NufI R4qLfzgfM4x qClIe.4Y-LZ9N68Jkzr2qFrYW u1qPCT6hx Q2Ocut6FV8hudF1PRnWv4ju90mxKA LnilV Z.-MMh gnz8m7nyQ8QKkQKw"
+                 uomLabels="TqfIIxU.hwkwREvd KnRxXdwqeStbjQc2-10R7QFqgTB Oj yWrQJVoT2r7sNpHHESCMlBZ7CReH LUqWiBvRJa blvAMbUxSPLvMysD4EpNdh fA-gf1pMymXjST6SiGL4C Vl3JLBgEytUQh IVO0_MOgWXY54p7 sjRYTZqxV E"
+                 ns1:id="ID001">
+                    <ns1:pos srsName="http://mvPPgNju/" srsDimension="1743773799" axisLabels="YPFi9O_tYHwS ybRDDPoL h tv.vAa_fyBPMtv3CE5iVkAYGWP ttG _o-r4mcY Ki.CQDUhe-n7HgI Skg-RMaL0egbYftqyFi1PTNHE pJWn3nw7jKSJkaDiAOz gZvaSVXCr51."
+                         uomLabels="yO685d iIl1R70fd_DqQz3AGI kg3pvSATi9Sy2fYfH jksmJ74 sF30BwlJxiy1qkLgE1D tILbt1nK3Da5h.tiOe gXWNMx2zp Z01WQ lu6hjSXOfs69p5sATVti">451373682.367 -1445346200.945</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+        <ns2:site groundMotion="1515496623.642">
+            <ns2:site srsName="http://mCMZIhXA/" srsDimension="1442726517" axisLabels="f75pBMPFz-K_M oAFzYnmxR jd5HET2cGePl2DjL2irOheuX m8NMe64iBHOoVhI8 xyhi-LJp xo.5M _HBe7vK.U5. s5jdh_YIjvTbP43yFgJT KB5qaF7"
+                 uomLabels="ZHLqh9 EjIZn82S Bo" ns1:id="ID002">
+                    <ns1:pos srsName="http://BSUsflmc/" srsDimension="707357323" axisLabels="U4wJTpIfauoGw2H um.BtLAv9wT8Ki71vWjxt91 TMQpbbVGDsT_wgpHReLxxrmpZ6 E03to4jC GNO05J4XK66ZDsy K3poKpR._Upw4ohSLW EPmrGSMgFH5p5VRae.n qI56fbNO_Yqk W2TGIxyRVf fzEf12KnS76CwPRAndKN8MioFnl H N YIn o5"
+                         uomLabels="tu-.ewroPgXguYogAMNWfNIOdwi8. viKwM5Ge3p N.pBqE2 but00bn9_ooh6Vr0KGe mjphHENXQpEm6EKOp1pdPevz rXVrET-tFjP_Dg3_VAB ClY b6W9nYU LShUzcluoX _ncQisPTEy E6fKnXwz5erEfcI.hHira1b B6pqc_28LsMqel3Wx7 lgU4V14ydqRowSW gCvsA05aqzVz0gUtVYjS9oKj8R1">-1499754555.679 -1593631123.094 781740135.384 475803258.681 -72591174.594 799121099.737 -1411077968.016 49718168.978</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+    </ns2:field>
+    <ns2:field description="EcKI1QsWS1">
+        <ns2:site groundMotion="1985021843.257">
+            <ns2:site srsName="http://wqqScFfq/" srsDimension="636108003" axisLabels="YIME0X3 fpv33.hM02fmhd zg7nvcEbHMHUx81GsCyoG4fEtG"
+                 uomLabels="A8fKyuWBT7il7p6PWhpFpDhguTkkw JyurcHT f giUf83KZ-_lwR2yM2H6ePoFKp" ns1:id="ID003">
+                    <ns1:pos srsName="http://mmcUzFUd/" srsDimension="792464274" axisLabels="BYmNZdoc1lqG-5a-4IT7UiMghN ShH2PZBvuM_yNyosJ BnA7YX W49acKinq kVpW.1gkP0G.5FJafh0 u- p-.vUBMgXIv3PKAGa x Jw.aZG1VcNo Ks68bsD0H.PVO2KuhhfkvgL0k cj_Bz XsrPe4u6Ak.uBFNJ"
+                         uomLabels="PcU.pMmBDmymS92P8hrh3VMi1V NL9VNSvzskGVInl73W wT4 MHlVwK.Cft8sRHS">-243113535.633 1655432809.301 -331089509.272 -1185131392.327 1434768299.706 398120921.461 999096676.541 565142154.548 -238137330.95 1600606459.6 1861724295.013 176937577.619 -902590117.269</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+        <ns2:site groundMotion="729813128.733">
+            <ns2:site srsName="http://pBKadKfl/" srsDimension="951122397" axisLabels="IvmvJ Wwch6sN Xvl P3 Oxb9KniilvT3aY L9ALjt5aldRz HDI"
+                 uomLabels="I89Kx_7px.shTr Y_JnXbU l0WRH1vt38mDPK7Xo15m8Y1BI gSZvUN cumCyF_c9Y-zB GRmxFSZHnqHoxkDcECGbxEHYkKmAI- aaVwB_5p_BQW3RNGgCMfo3xwHxUkX1 OhqSB3dIuCD. nAILsR27ffIh0ZKb4Zpl.h5GTnPINb"
+                 ns1:id="ID004">
+                    <ns1:pos srsName="http://jIJZaTxA/" srsDimension="657667652" axisLabels="uhG8ChHcS5kEq Q pJVZcuqBWh L1gX2xEVt ltuVNQod6HQ10kJ.O"
+                         uomLabels="Vkk5YK w6SX4Rl4XAVUp _h6cE3gE vbvY1ZxFvOwT VvuQzNhg H4MZPBf00x26VCXF- WBL.A SQq YoK4q5PoD5Ihmpk3S HyxOxayfIh8ddMkOfg3c1Sy IDgH05BNK1_QhHmSD f2BRpOaWng91B4 C16okjcSt3lEZ4aiDND0k Ralg-Wnc1apVzWEPjlKULpF9RW86O PBhMX6f">590337562.791 -1710346708.147 -900885509.863 1472317204.698 -1784359956.367 270781487.778 -277792048.937 -1107975973.324 -152159911.624 1225841774.237 1161837713.462 1366680884.739 1611364996.113</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+    </ns2:field>
+</ns2:GroundMotionFieldSet>

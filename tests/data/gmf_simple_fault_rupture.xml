@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:GroundMotionFieldSet xmlns:ns1="http://www.opengis.net/gml/profile/sfgml/1.0"
+ xmlns:ns2="http://opengem.org/xmlns/nrml/0.1"
+ xmlns:ns3="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://opengem.org/xmlns/nrml/0.1 file:/Users/damianomonelli/Projects/opengem/docs/schema/nrml_hazard.xsd">
+    <ns2:SimpleFaultRupture>
+        <ns2:magnitude value="-1291350379.763"/>
+        <simpleFaultData AverageDip="89.673" AverageRake="240.082" TectonicRegionType="Subduction Interface" SeimogenicLayerTopDepth="806263610.045"
+             SeimogenicLayerBottomDepth="232148421.452">
+            <ns2:FaultTrace srsName="http://sPyniuRY/" srsDimension="199062325" axisLabels="STc3ZEYOM RpGPLzGxYUxxEHcsEcs XCrU9DHZxjvcS0v7.wnWqI- LlgD3A_ bKjE-zSj8uOn53u mVmq.Nb9sQFM1RtPl7P9"
+                 uomLabels="mWXXLT6COf3 u33owTJKb4G xUAtzqu-.f kxcrM88a6VYf8yhBV2Zx.t0eJaw2o oOffRhsFpRJXmXVaBqLyTWcL U53c. gDbEfJm2H4 ub5RTM1_nPdi-WQo4h0_YtYJ4iezi dkLgcjxs LpeRLYDSCa8n1jozyH7 wuPC_ _sIRWCbVmoIqqLofd1XLRin2M x jyJUD_.uETiHHtk4cOM KxTcaq"
+                 ns1:id="ID000">
+                    <ns1:posList srsName="http://IDmZWnOc/" srsDimension="419586574" axisLabels="iREdfhjim51-iMM0nN6 e0Qm6S1olvhmaKkWJ57_8X m.GNbxJ TXo07GyVQF05 Cl VTK-ah1-b0T8Thn ku-upN3K0ZKdC9Z4aWMBgZzjQNz IYEd f4Ik3hDzLhqkDYgxLKI.S3v5R1m P7mD02Qa_2kfr JgqC1ZF h9"
+                         uomLabels="OOJ InFhsu9dz.Rt19lXAHE1Kv yOmUp rLmLzsTP278CQezuLEkHn wEzgvjX0OiAWpcv-2ck4oM03D2NM0e z. zn3IEbc.mz3DzgS NB8IaIO_lz8tS2CDA90dIpS ZVJQUQzbU2JxCX2 cH99ShlfTDfB5jcX660vrIWEg8"
+                         count="66859068">-1754509949.363 7458193.152 -1649855040.63 -1759692723.86</ns1:posList>
+            </ns2:FaultTrace>
+        </simpleFaultData>
+    </ns2:SimpleFaultRupture>
+    <ns2:GMPEParameters IMT="PGV" vs30method="None" groundMotionComponent="random" period="162825363.792" damping="966636672.689"
+         truncationType="2 Sided" truncationLevel="-1632921212.15" stdDevType="inter"/>
+    <ns2:field description="n05pBt-b">
+        <ns2:site groundMotion="1071816162.149">
+            <ns2:site srsName="http://mqbLTzRn/" srsDimension="360598823" axisLabels="HM gsc3OYUmFPo JZaZsud4P2" uomLabels="Lcank1S UKzOERsXCDkdv sd iEPpAk1pzuJ-dlg2P9xjj5Q94 x- ZIlx-ryNvrDnSpy31FSZTVA5OEJnO _yVjB_cFYSnle-Ii5eKW"
+                 ns1:id="ID001">
+                    <ns1:pos srsName="http://qYHipYSh/" srsDimension="2068828751" axisLabels="tmtkSm1k5V8zS3rTULNLc f37U50nZI9 z2AP_dZHSyVN0k xgWeK.H_ ty5jFQXJyC-4k9"
+                         uomLabels="useVl-Pp18pL.t5 N8zX8hJvaVdMBdBdtd8Gj8">1473690503.831 373358336.11 -1007050589.163 275222553.1 1390897528.18 1709656811.27 527378962.6 1953646034.035 -1490317007.909 -1391307014.649</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+    </ns2:field>
+</ns2:GroundMotionFieldSet>

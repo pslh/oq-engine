@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:GroundMotionFieldSet xmlns:ns1="http://www.opengis.net/gml/profile/sfgml/1.0"
+ xmlns:ns2="http://opengem.org/xmlns/nrml/0.1"
+ xmlns:ns3="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://opengem.org/xmlns/nrml/0.1 file:/Users/damianomonelli/Projects/opengem/docs/schema/nrml_hazard.xsd">
+    <ns2:PointRupture ns2:AverageStrike="357.407" ns2:AverageDip="5.066" ns2:AverageRake="46.906" ns2:TectonicRegion="Subduction IntraSlab">
+        <hypocenterLocation srsName="http://JtcPfkSC/" srsDimension="760598914" axisLabels="iLrRFM Ebl4BHOuK5X533iG7dZPX1djyl1Bv8"
+             uomLabels="CwK8f8ZzULsQLv.Aw4 Bz8ylD-3dJ3ct OT_UqxU6NbjfVRpKM2rS5 X.eH RW" ns1:id="ID000">
+                <ns1:pos srsName="http://iGsGbVXR/" srsDimension="1422487926" axisLabels="k_Fvxo09Oyy.n_r.R-8aUV_vt uowOgMQqP68KK6DpTCIUe jvrce_pF11VnXPn0m7f6WKbhIG lNm.5OsqcrrQcZR"
+                     uomLabels="HYvDe8 H tp-lNCqcG.SAZ7 M0Uqdz.BYUDW2Z.M_x7q_AE3 TOU3EnrXWN80CHEPGrKFqmGE0 ZmiKH _rSY TFwozwbKv_Ys iyGchB2A4vn3 q1FV2S8WeGJJ4Jp7KcBg8XMEcKff kO.X7u GsdbFAmowu0lmFKydXADDza v5FhjUR5TxTzp.kYmm fLshYYHT6B">-318106347.989 578305579.075 1410743330.862 1697884665.136 -1004697127.317 -1034370710.031 -309320658.823</ns1:pos>
+        </hypocenterLocation>
+        <ns2:magnitude value="847809962.735"/>
+    </ns2:PointRupture>
+    <ns2:GMPEParameters IMT="PGA" vs30method="None" groundMotionComponent="greater" period="-1175706871.485" damping="1511712637.028"
+         truncationType="1 Sided" truncationLevel="929383397.857" stdDevType="total"/>
+    <ns2:field description="P.crIcodegdgp">
+        <ns2:site groundMotion="-1470209079.167">
+            <ns2:site srsName="http://dCzVhkBE/" srsDimension="782178856" axisLabels="een24B" uomLabels="SAyKck iwfxWfJbslso7d4WIJV08J5u uWYr2Z2CWav5etpUXked.ss9 U G5Wa1X2mW0Bo clOWGRH4-0-f5i41UVpGz VcF930aXM2r1EI UDQ9oLOj-ssl96K4O0Xu jhkh vRG-a _xlOck9BbQTh3dNT8vsPGa2v b4bJuJdZQA C62qQEHoLzH7aSQo6wrZE Z XSyv"
+                 ns1:id="ID001">
+                    <ns1:pos srsName="http://fgKERZdm/" srsDimension="121325270" axisLabels="Ws2JmCm_fn7l1VIINP3Byn8nt8 Ycz3BlGRKXQ ngrPX7kpatuwY DjgUlE UsQ5Sdc11eIbuf_w3"
+                         uomLabels="h.AnKy68vD1uw kkgl2qEQ4GT6qSx3WMu tp3w7Fbi_ XZGM1l6-A8eyniQ6yCqj J7oYjwK61.v8WkjT S">-252937999.619 -1823651420.612 -1641019228.392 413716636.663 1064518512.138 -1452174000.068 -1672406040.747</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+    </ns2:field>
+</ns2:GroundMotionFieldSet>

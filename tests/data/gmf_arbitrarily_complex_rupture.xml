@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ns2:GroundMotionFieldSet xmlns:ns1="http://www.opengis.net/gml/profile/sfgml/1.0"
+ xmlns:ns2="http://opengem.org/xmlns/nrml/0.1"
+ xmlns:ns3="http://www.w3.org/1999/xlink"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://opengem.org/xmlns/nrml/0.1 file:/Users/damianomonelli/Projects/opengem/docs/schema/nrml_hazard.xsd">
+    <ns2:ArbitrarilyComplexRupture AverageRake="21.071" TectonicRegion="Active Shallow Crust">
+        <ns1:Surface srsName="http://mZfcnJbF/" srsDimension="377677618" axisLabels="lfhz4I3OQBYNWiQg qAbGpDFgbPz4 XIKG6tQYbcRlOCpJCBDktnyyCP upWzib02ldgdXDzUiEMh hBHQ3-f MTQk5JA7uy _S1s URU EeP-0DtNZ. RGp1KkK7KcSVb_O"
+             uomLabels="JQPVeisjAcar.yN3QLJ1 dLUCQO3WH7FpkNIH8Z A73SX7o Fmnku6uPvB FjOYIxLI1oqeEzgWsyVW3LWImjEMwS W9jS.63P9Dm8C1YjnnmqlPIMPtg"
+             ns1:id="ID000">
+                <ns1:patches>
+                </ns1:patches>
+        </ns1:Surface>
+        <ns2:magnitude value="399297554.821"/>
+    </ns2:ArbitrarilyComplexRupture>
+    <ns2:GMPEParameters IMT="PGV" vs30method="None" groundMotionComponent="vertical" period="-1318501931.804" damping="-894886243.049"
+         truncationType="2 Sided" truncationLevel="685436411.991" stdDevType="total"/>
+    <ns2:field description="MNt1cGZ">
+        <ns2:site groundMotion="-159412076.693">
+            <ns2:site srsName="http://GutHrXWV/" srsDimension="1121664046" axisLabels="oRM3vq O0YoQWQnLYpj90bgXZDEFf nrjr-QBlL uVCyd-S0zMiZAkCOxa XaRdNWYVEXIutl8VS A.l.eBfGMkHj2IWKq87 GtTEaZNYMqASKCFPtWQpiwuvRusf Vs_GwEWFCfFr ovNygBd sA XGLzr9ydw1bj.j1.AeJpIfPVO LTbQ-ftC8zYHiOl nHW"
+                 uomLabels="WL A03SS.GfjVuin7k9l cPh y9N7VOdo07x.t HyML8so i73nysaSqHvGuh k0_mBlqU9.nnbaPgdRcpf_XrI"
+                 ns1:id="ID001">
+                    <ns1:pos srsName="http://UsjUPUxx/" srsDimension="958718393" axisLabels="G4Or sm EaDeekGypN0W7rDlwZ hgZm dOjuymd0 OWTvGcbIW5 X5eA"
+                         uomLabels="Rn0i JlCnrIf_W0cegdjrleZ-rB oPMROqvLyfCBREnr5 I NQ9 hsHHJeF4qXcwJfBpf5-i2VsI0n9 x4Ao5vgNjBnJ8-8MBUlTky9PdsrVJ kAM90HR0i29w2imxdNs19fkGQeZz2 Ya">15482227.999 -1630566156.567 -893135924.41 1189543906.179 -300701023.76 1072518565.468</ns1:pos>
+            </ns2:site>
+        </ns2:site>
+    </ns2:field>
+</ns2:GroundMotionFieldSet>
