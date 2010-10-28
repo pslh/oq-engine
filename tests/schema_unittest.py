@@ -28,12 +28,19 @@ class SchemaValidationTestCase(unittest.TestCase):
         # Test that the doc matches the schema
         xmlschema = etree.XMLSchema(etree.parse(self.schema_path))
         filenames = os.listdir(self.example_dir)
+
         for xml_example in filenames:
+
+            # skip filenames that start with a .
             if xml_example[:1] == ".":
                 continue
+            
             example_path = os.path.join(self.example_dir, xml_example)
+            
+            # skip directories
             if os.path.isdir(example_path):
                 continue
+            
             xml_doc = etree.parse(example_path)
             loaded_xml = xml_doc.getroot()
             try:
