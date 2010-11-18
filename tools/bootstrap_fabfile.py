@@ -14,7 +14,16 @@ def bootstrap():
     bootstrap_fn()                   # _bootstrap_linux()
 
 
-def virtualenv():
+def virualenv():
+    def _detect_os():
+        platforms = {'Darwin:' _virtual_env_osx, 'Linux': _virtual_env_linux}
+        return platforms.get(run('uname'), _virtual_env_other)
+
+    venv_fn = _detect_os()
+    venv_fn()
+
+
+def _virtual_env_osx():
     if not _pip_is_installed():
         print "You need to install pip to continue with virtualenv setup."
         print "Visit http://pip.openplans.org/ for more information."
@@ -51,13 +60,37 @@ def virtualenv():
     run("chgrp -R `id -g` %s" % local_venv_path)
 
 
+def _virtual_env_linux():
+    def _detect_distro():
+        if _distro_is_ubuntu():
+            return _virtual_env_ubuntu
+        else:
+            return _virtual_env_other
+
+    venv_fn = _detect_distro()
+    venv_fn() 
+
+
+def _virtual_env_ubuntu():
+    print "Not implemented."
+    sys.exit()
+
+
+def _virtual_env_other():
+    print "Platform not currently supported."
+    sys.exit()
+
 def _bootstrap_other():
     pass
 
+def _distro_is_ubuntu():
+    distro = run("lsb_release -is")
+    return distro == "Ubuntu"
+
+
 def _bootstrap_linux():
     def _detect_distro():
-        distro = run("lsb_release -is")
-        if distro == "Ubuntu":
+        if _distro_is_ubuntu():
             version = run("lsb_release -a | grep Release | sed -e 's/Release: *//'")
 
             if not float(version) >= 9.04:
