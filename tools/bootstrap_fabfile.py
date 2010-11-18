@@ -24,6 +24,25 @@ def virtualenv():
 
 
 def _virtual_env_osx():
+    _setup_venv("http://opengem.cloudfed.com/\
+documents/10156/11140/virtualenvs_osx.tar.gz")
+
+
+def _virtual_env_linux():
+    def _detect_distro():
+        if _distro_is_ubuntu():
+            return _virtual_env_ubuntu
+        else:
+            return _virtual_env_other
+
+    venv_fn = _detect_distro()
+    venv_fn() 
+
+
+def _setup_venv(venv_tar_url):
+    """The process of downloading and extracting the virtual env tarball is the
+same for Ubuntu and OSX (just a different tarball).
+    """ 
     if not _pip_is_installed():
         print "You need to install pip to continue with virtualenv setup."
         print "Visit http://pip.openplans.org/ for more information."
@@ -38,8 +57,6 @@ def _virtual_env_osx():
     _pip_install("virtualenvwrapper")
     
     # grab the virtualenv tar from Liferay:
-    venv_tar_url = "http://opengem.cloudfed.com/documents\
-/10156/11140/virtualenvs.tar.gz"
     venv_file_name = "virtualenvs.tar.gz"
     print "Downloading virtualenv package from:\n %s" % venv_tar_url
     print "This may take a few minutes."
@@ -58,23 +75,13 @@ def _virtual_env_osx():
     # to the current user and group, respectively
     run("chown -R `id -un` %s" % local_venv_path)
     run("chgrp -R `id -g` %s" % local_venv_path)
-
-
-def _virtual_env_linux():
-    def _detect_distro():
-        if _distro_is_ubuntu():
-            return _virtual_env_ubuntu
-        else:
-            return _virtual_env_other
-
-    venv_fn = _detect_distro()
-    venv_fn() 
+    sys.exit()
 
 
 def _virtual_env_ubuntu():
-    print "Not implemented."
-    sys.exit()
-
+    _setup_venv("http://opengem.cloudfed.com/\
+documents/10156/11140/virtualenvs_ubuntu.tar.gz")
+    
 
 def _virtual_env_other():
     print "Platform not currently supported."
@@ -139,7 +146,14 @@ def _bootstrap_linux():
 
         # GDAL.
         _apt_install(" ".join(gdal_packages))
-
+        # GDAL installs to /usr/lib/python2.6/
+        # copy it to the virtualenv
+        if not ls("/usr/lib/python2.6/dist-packages/osgeo"):
+            run("cp -R /usr/lib/python2.6/dist-packages/osgeo/\
+~/.virtualenvs/opengem/lib/python2.6/site-packages/")
+        else:
+            print "Couldn't find osgeo module; something is wrong with GDAL."
+            sys.exit()
         #download and install geohash
         geohash_url = "http://python-geohash.googlecode.com/files/python-geohash-0.6.tar.gz"
         geohash_file = "python-geohash-0.6.tar.gz"
@@ -151,8 +165,24 @@ def _bootstrap_linux():
                     run("python setup.py install --prefix=~/.virtualenvs/opengem")
 
         # Install jpype from source
-        _install_jpype_from_source(java_home="/usr/lib/jvm/java-6-sun-1.6.0.15/")
-
+        
+        # larsbutler: We'll try to look for the jvm in two places.
+        # /usr/lib/jvm/java-6-sun-1.6.0.15/ was the default previously,
+        # although I don't really like that because it's a very specific
+        # version number.
+        # However, on a fresh Ubuntu slice apt-get does not install java
+        # to this directory. Try both. Yes, I know it's kind of ugly;
+        # I'm going for minimal impact here.
+        jvm_locs = ["/usr/lib/jvm/java-6-sun-1.6.0.15/",\
+"/usr/lib/jvm/default-java/"]
+        jvm = ''
+        # look for an existing jvm dir
+        for loc in jvm_locs:
+            if not ls(loc):
+                # if the jvm dir exists, use it
+                jvm = loc
+                break
+        _install_jpype_from_source(java_home=jvm)
         # Add virtualenv source to .profile
         if "virtualenvwrapper.sh" not in _warn_only_run("cat ~/.profile"):
             run("echo %s >> ~/.profile" % _ubuntu_virtualenv_source())
@@ -264,7 +294,7 @@ def _bootstrap_osx():
     with cd("/tmp"):
         if not ls("/usr/local/lib/swq.h"):
             _curl("http://svn.osgeo.org/gdal/branches/1.7/gdal/ogr/swq.h", "swq.h")
-            sudo("mv {,/usr/local/lib/}swq.h")
+            sudo("mv swq.h /usr/local/lib/swq.h")
 
     _pip_install("gdal", virtualenv="opengem")
 
