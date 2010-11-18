@@ -8,6 +8,7 @@ import json
 import logging
 import pylibmc
 import uuid
+import redis
 from opengem import settings
 
 logging.getLogger('jpype').setLevel(logging.ERROR)
@@ -16,6 +17,42 @@ DEFAULT_LENGTH_RANDOM_ID = 8
 INTERNAL_ID_SEPARATOR = ':'
 MAX_LENGTH_RANDOM_ID = 36
 MEMCACHE_KEY_SEPARATOR = '!'
+
+
+class Redis(object):
+    """ A Borg-style wrapper for Redis client class. """
+    __shared_state = {}
+
+    def __new__(cls, host=settings.KVS_HOST, 
+                     port=settings.KVS_PORT, 
+                     **kwargs):
+        self = object.__new__(cls)
+        self.__dict__ = cls.__shared_state
+        return self
+
+    def __init__(self, host=settings.KVS_HOST,
+                       port=settings.KVS_PORT,
+                       **kwargs):
+        if not self.__dict__:
+            print "Opening a new redis connection"
+            args = {"host": host,
+                    "port": port}
+
+            self.conn = redis.Redis(**args)
+
+    def __getattr__(self, name):
+        def call(*args, **kwargs):
+            """ Pass through the query to our redis connection """
+            cmd = getattr(self.conn, name)
+            return cmd(*args, **kwargs)
+
+        if name in self.__dict__:
+            return self.__dict__.get(name)
+
+        return call
+
+    def get_multi(self, keys):
+        return self.mget(keys)
 
 
 def generate_job_key(job_id):
@@ -52,21 +89,12 @@ def generate_random_id(length=DEFAULT_LENGTH_RANDOM_ID):
         length = MAX_LENGTH_RANDOM_ID
     return str(uuid.uuid4())[0:length]
 
-CLIENT = None
-def get_client(memcached_host=settings.MEMCACHED_HOST,
-               memcached_port=settings.MEMCACHED_PORT,
-               **kwargs):
+def get_client(**kwargs):
     """possible kwargs:
         binary
     """
-    global CLIENT
-    if not CLIENT:
-        print "Constructing new pylibmc client..."
-        CLIENT = pylibmc.Client(["%s:%d" % (memcached_host, memcached_port)], 
-                          **kwargs)
-        CLIENT.behaviors["hash"] = "fnv1a_64"
-        CLIENT.behaviors["verify_keys"] = True
-    return CLIENT
+
+    return Redis(**kwargs)
 
 def get_sites_from_memcache(job_id, block_id):
     """ Get all of the sites for a block """

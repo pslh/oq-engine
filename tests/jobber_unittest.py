@@ -38,7 +38,6 @@ class JobberTestCase(unittest.TestCase):
 
     def setUp(self):
         self.kvs_client = kvs.get_client(binary=False)
-        self.kvs_client.flush_all()
 
     def tearDown(self):
         pass
