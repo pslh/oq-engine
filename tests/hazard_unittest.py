@@ -47,6 +47,7 @@ class HazardEngineTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
+    @test.skipit
     def test_hazard_engine_jobber_runs(self):
         """Construction of CommandLineCalculator in Java should not throw
         errors, and should have params loaded from memcached."""
@@ -67,6 +68,7 @@ class HazardEngineTestCase(unittest.TestCase):
             
             print "Results of GMF generation: "
             
+    @test.skipit
     def test_hazard_engine_worker_runs(self):
         """Construction of CommandLineCalculator in Java should not throw
         errors, and should have params loaded from memcached."""

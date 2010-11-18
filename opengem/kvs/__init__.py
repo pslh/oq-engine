@@ -52,7 +52,8 @@ class Redis(object):
         return call
 
     def get_multi(self, keys):
-        return self.mget(keys)
+        """ Return value of multiple keys identically to the memcached way """
+        return dict(zip(keys, self.mget(keys)))
 
 
 def generate_job_key(job_id):

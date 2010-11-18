@@ -27,6 +27,7 @@ class JobTestCase(unittest.TestCase):
         with Mixin(self.job, ProbabilisticEventMixin):
             self.assertTrue(ProbabilisticEventMixin in self.job.__class__.__bases__)
 
+    @test.skipit
     def test_job_runs_with_a_good_config(self):
         job = Job.from_file(TEST_JOB_FILE)
         self.assertTrue(job.launch())
