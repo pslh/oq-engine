@@ -5,6 +5,17 @@ from fabric.state import output as fabric_output
 CELLAR_PATH = "/usr/local/Cellar"
 PYTHON_PATH = "%s/python/2.6.5" % CELLAR_PATH
 
+"""
+This fab file assists with setting up a developer's environment.
+
+There are two primary functions implemented currently:
+    boostrap - installs required libs and sets up the opengem virtual
+environment
+    virtualenv - only sets up the opengem virtual environment (useful if a
+developer already has dependencies installed)
+"""
+
+
 def bootstrap():
     def _detect_os():
         platforms = {'Darwin': _bootstrap_osx, 'Linux': _bootstrap_linux}
@@ -15,6 +26,9 @@ def bootstrap():
 
 
 def virtualenv():
+    """This method installs virtualenv, virtualenvwrapper, and pre-built
+virtual environment tar ball specific to the platform.
+    """
     def _detect_os():
         platforms = {'Darwin': _virtual_env_osx, 'Linux': _virtual_env_linux}
         return platforms.get(run('uname'), _virtual_env_other)
