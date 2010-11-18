@@ -16,7 +16,7 @@ def bootstrap():
 
 def virualenv():
     def _detect_os():
-        platforms = {'Darwin:' _virtual_env_osx, 'Linux': _virtual_env_linux}
+        platforms = {'Darwin': _virtual_env_osx, 'Linux': _virtual_env_linux}
         return platforms.get(run('uname'), _virtual_env_other)
 
     venv_fn = _detect_os()
