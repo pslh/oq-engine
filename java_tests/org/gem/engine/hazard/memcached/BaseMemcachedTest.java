@@ -9,7 +9,7 @@ import org.junit.Before;
 
 public class BaseMemcachedTest {
 
-    protected static final int PORT = 11211;
+    protected static final int PORT = 6379;
     protected static final int EXPIRE_TIME = 3600;
     protected static final String LOCALHOST = "localhost";
 

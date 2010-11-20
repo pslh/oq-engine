@@ -477,7 +477,7 @@ public class CommandLineCalculator {
                 key.append(s.getLocation().getLatitude());
                 key.append('_');
                 key.append(s.getLocation().getLongitude());
-                cache.set(key.toString(), groundMotionField.get(s));
+                cache.set(key.toString(), groundMotionField.get(s).toString());
                 allKeys.add(key.toString());
             }
         }

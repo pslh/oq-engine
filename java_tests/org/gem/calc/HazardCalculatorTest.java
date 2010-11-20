@@ -243,7 +243,7 @@ public class HazardCalculatorTest {
                     valueFromCache);
             // This is not an assert mehtod, but in error case this cast to
             // Double would cause a ClassCastException and let the test fail.
-            Double value = (Double) valueFromCache;
+            Double value = Double.valueOf((String) valueFromCache);
             // If the ground motion map contains this value, I am satisfied.
             // ...but this may be an equal ground motion value belonging to an
             // different site.

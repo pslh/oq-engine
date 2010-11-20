@@ -96,7 +96,7 @@ public class JsonSerializerTest {
         sourceList.add(subduc);
 
         String json = JsonSerializer.getJsonSourceList(sourceList);
-        Cache cache = new Cache("localhost", 11211);
+        Cache cache = new Cache("localhost", 6379);
         cache.set("KEY", json);
 
         List<GEMSourceData> sourceListDeserialized =
@@ -303,7 +303,7 @@ public class JsonSerializerTest {
                 new TypeToken<HashMap<TectonicRegionType, ScalarIntensityMeasureRelationshipAPI>>() {
                 }.getType();
         String json = gson.create().toJson(gmpeMap, hashType);
-        Cache cache = new Cache("localhost", 11211);
+        Cache cache = new Cache("localhost", 6379);
         cache.set("KEY", json);
 
         HashMap<TectonicRegionType, ScalarIntensityMeasureRelationshipAPI> gmpeMapDeserialized =
