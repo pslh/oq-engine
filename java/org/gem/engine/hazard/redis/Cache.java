@@ -4,8 +4,7 @@ import java.net.InetSocketAddress;
 import org.jredis.ClientRuntimeException;
 import org.jredis.connector.ConnectionSpec;
 import org.jredis.ri.alphazero.connection.DefaultConnectionSpec;
-import org.jredis.ri.alphazero.JRedisAsynchClient;
-import org.jredis.ri.alphazero.JRedisFutureSupport.FutureStatus;
+import org.jredis.ri.alphazero.JRedisClient;
 
 
 /**
@@ -16,7 +15,7 @@ import org.jredis.ri.alphazero.JRedisFutureSupport.FutureStatus;
  * @author Christopher MacGown
  */
 public class Cache {
-    private JRedisAsynchClient client;
+    private JRedisClient client;
 
     /**
      * Default client constructor, defaults to database 10.
@@ -24,7 +23,7 @@ public class Cache {
     public Cache(String host, int port) { 
         try {
             // Do the connection.
-            client = new JRedisAsynchClient(getConnectionSpec(host, port, 10));
+            client = new JRedisClient(getConnectionSpec(host, port, 10));
         } catch (ClientRuntimeException e) { 
             throw new RuntimeException(e);
         }
@@ -36,7 +35,7 @@ public class Cache {
     public Cache(String host, int port, int db) {
         try {
             // Do the connection.
-            client = new JRedisAsynchClient(getConnectionSpec(host, port, db));
+            client = new JRedisClient(getConnectionSpec(host, port, db));
         } catch (ClientRuntimeException e) { 
             throw new RuntimeException(e);
         }
@@ -75,11 +74,9 @@ public class Cache {
      * @param value
      *            The value to be written.
      */
-    public boolean set(String key, String value) {
-        FutureStatus result = client.set(key, value);
-
+    public void set(String key, String value) {
         try { 
-            return result.isDone();
+        	client.set(key, value);
         } catch (Exception e) { 
             throw new RuntimeException(e);
         }
@@ -93,7 +90,7 @@ public class Cache {
      */
     public Object get(String key) {
     	try {
-    		return new String(client.get(key).get());
+    		return new String(client.get(key));
     	} catch (Exception e) {
     		throw new RuntimeException(e);
     	}
