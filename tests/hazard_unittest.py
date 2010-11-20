@@ -47,7 +47,6 @@ class HazardEngineTestCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @test.skipit
     def test_hazard_engine_jobber_runs(self):
         """Construction of CommandLineCalculator in Java should not throw
         errors, and should have params loaded from memcached."""
@@ -68,7 +67,6 @@ class HazardEngineTestCase(unittest.TestCase):
             
             print "Results of GMF generation: "
             
-    @test.skipit
     def test_hazard_engine_worker_runs(self):
         """Construction of CommandLineCalculator in Java should not throw
         errors, and should have params loaded from memcached."""
@@ -80,7 +78,6 @@ class HazardEngineTestCase(unittest.TestCase):
             # hazengine.execute()
             # hc = hazengine.compute_hazard_curve(site_id)
 
-    @test.skipit
     def test_basic_generate_erf_keeps_order(self):
         results = []
         for job_id in TASK_JOBID_SIMPLE:
@@ -89,7 +86,6 @@ class HazardEngineTestCase(unittest.TestCase):
         self.assertEqual(TASK_JOBID_SIMPLE,
                          [result.get() for result in results])
 
-    @test.skipit
     def test_generate_erf_returns_erf_via_memcached(self):
         results = []
         result_keys = []

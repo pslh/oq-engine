@@ -54,6 +54,7 @@ class Redis(object):
 
     def get_multi(self, keys):
         """ Return value of multiple keys identically to the memcached way """
+        res = self.mget(keys)
         return dict(zip(keys, self.mget(keys)))
 
 
