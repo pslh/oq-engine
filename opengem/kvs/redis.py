@@ -28,7 +28,7 @@ class Redis(object):
             print "Opening a new redis connection"
             args = {"host": host,
                     "port": port,
-                    "db": kwargs.get('db', 10)}
+                    "db": kwargs.get('db', 0)}
 
             self.conn = redis.Redis(**args)
 

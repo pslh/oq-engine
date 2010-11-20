@@ -15,10 +15,8 @@ TEST_JOB_FILE = test.smoketest_file('endtoend/config.gem')
 
 class JobTestCase(unittest.TestCase):
     def setUp(self):
-        self.job = Job.from_file(os.path.join(test.DATA_DIR,
-            CONFIG_FILE))
-        self.job_with_includes = Job.from_file(os.path.join(test.DATA_DIR,
-            CONFIG_WITH_INCLUDES))
+        self.job = Job.from_file(test_file(CONFIG_FILE))
+        self.job_with_includes = Job.from_file(test_file(CONFIG_WITH_INCLUDES))
 
     def test_configuration_is_the_same_no_matter_which_way_its_provided(self):
         self.assertEqual(self.job.params, self.job_with_includes.params)

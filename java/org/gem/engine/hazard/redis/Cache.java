@@ -23,7 +23,7 @@ public class Cache {
     public Cache(String host, int port) { 
         try {
             // Do the connection.
-            client = new JRedisClient(getConnectionSpec(host, port, 10));
+            client = new JRedisClient(getConnectionSpec(host, port, 0));
         } catch (ClientRuntimeException e) { 
             throw new RuntimeException(e);
         }
@@ -60,7 +60,7 @@ public class Cache {
     }
 
     /**
-     * Throw a fit and shit all over everything.
+     * Throw a fit and break everything.
      */
     public boolean set(String key, Object value) { 
         throw new RuntimeException("Lars frowns upon your shenanigans");
