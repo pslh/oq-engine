@@ -6,10 +6,8 @@ the underlying kvs systems.
 
 import json
 import logging
-import pylibmc
 import uuid
-import redis
-from opengem import settings
+from opengem.kvs.redis import Redis
 
 logging.getLogger('jpype').setLevel(logging.ERROR)
 
@@ -17,45 +15,6 @@ DEFAULT_LENGTH_RANDOM_ID = 8
 INTERNAL_ID_SEPARATOR = ':'
 MAX_LENGTH_RANDOM_ID = 36
 MEMCACHE_KEY_SEPARATOR = '!'
-
-
-class Redis(object):
-    """ A Borg-style wrapper for Redis client class. """
-    __shared_state = {}
-
-    def __new__(cls, host=settings.KVS_HOST, 
-                     port=settings.KVS_PORT, 
-                     **kwargs):
-        self = object.__new__(cls)
-        self.__dict__ = cls.__shared_state
-        return self
-
-    def __init__(self, host=settings.KVS_HOST,
-                       port=settings.KVS_PORT,
-                       **kwargs):
-        if not self.__dict__:
-            print "Opening a new redis connection"
-            args = {"host": host,
-                    "port": port,
-                    "db": kwargs.get('db', 10)}
-
-            self.conn = redis.Redis(**args)
-
-    def __getattr__(self, name):
-        def call(*args, **kwargs):
-            """ Pass through the query to our redis connection """
-            cmd = getattr(self.conn, name)
-            return cmd(*args, **kwargs)
-
-        if name in self.__dict__:
-            return self.__dict__.get(name)
-
-        return call
-
-    def get_multi(self, keys):
-        """ Return value of multiple keys identically to the memcached way """
-        res = self.mget(keys)
-        return dict(zip(keys, self.mget(keys)))
 
 
 def generate_job_key(job_id):
