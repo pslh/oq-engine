@@ -29,8 +29,8 @@ TEST_FILE = "nrml_test_result.xml"
 
 EMPTY_MODEL = '{"modelName":"","hcRepList":[],"endBranchLabels":[]}'
 ONE_CURVE_MODEL = '{"modelName":"","hcRepList":[{"gridNode":[{"location":{"lat":0.017453292519943295,"lon":0.03490658503988659,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[0.1,0.2,0.3]],"unitsMeas":"","intensityMeasureType":"IMT","timeSpan":50.0}],"endBranchLabels":["label"]}'
-MULTIPLE_CURVES_ONE_BRANCH = '{"modelName":"","hcRepList":[{"gridNode":[{"location":{"lat":0.017453292519943295,"lon":0.03490658503988659,"depth":0.0},"params":[],"constraintNameMap":{}},{"location":{"lat":0.06981317007977318,"lon":0.06981317007977318,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[5.1,5.2,5.3],[6.1,6.2,6.3]],"unitsMeas":"","intensityMeasureType":"IMT","timeSpan":50.0}],"endBranchLabels":["label"]}'
-MULTIPLE_CURVES_MULTIPLE_BRANCHES = '{"modelName":"","hcRepList":[{"gridNode":[{"location":{"lat":0.06981317007977318,"lon":0.06981317007977318,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[1.8,2.8,3.8]],"unitsMeas":"","intensityMeasureType":"IMT","timeSpan":50.0},{"gridNode":[{"location":{"lat":0.017453292519943295,"lon":0.06981317007977318,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[1.5,2.5,3.5]],"unitsMeas":"","intensityMeasureType":"IMT","timeSpan":50.0}],"endBranchLabels":["label1","label2"]}'
+MULTIPLE_CURVES_ONE_BRANCH = '{"modelName":"","hcRepList":[{"gridNode":[{"location":{"lat":0.017453292519943295,"lon":0.03490658503988659,"depth":0.0},"params":[],"constraintNameMap":{}},{"location":{"lat":0.06981317007977318,"lon":0.06981317007977318,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[5.1,5.2,5.3],[6.1,6.2,6.3]],"unitsMeas":"","intensityMeasureType":"PGA","timeSpan":50.0}],"endBranchLabels":["label"]}'
+MULTIPLE_CURVES_MULTIPLE_BRANCHES = '{"modelName":"","hcRepList":[{"gridNode":[{"location":{"lat":0.06981317007977318,"lon":0.06981317007977318,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[1.8,2.8,3.8]],"unitsMeas":"","intensityMeasureType":"PGA","timeSpan":50.0},{"gridNode":[{"location":{"lat":0.017453292519943295,"lon":0.06981317007977318,"depth":0.0},"params":[],"constraintNameMap":{}}],"gmLevels":[1.0,2.0,3.0],"probExList":[[1.5,2.5,3.5]],"unitsMeas":"","intensityMeasureType":"PGA","timeSpan":50.0}],"endBranchLabels":["label1","label2"]}'
 
 class KVSTestCase(unittest.TestCase):
     
@@ -39,7 +39,7 @@ class KVSTestCase(unittest.TestCase):
         # starting the jvm...
         print "About to start the jvm..."
         jpype = java.jvm()
-        java_class = jpype.JClass("org.gem.engine.hazard.memcached.Cache")
+        java_class = jpype.JClass("org.gem.engine.hazard.redis.Cache")
         print ("Not dead yet, and found the class...")
         self.java_client = java_class(settings.KVS_HOST, settings.KVS_PORT)
         
@@ -58,16 +58,17 @@ class KVSTestCase(unittest.TestCase):
         except OSError:
              pass
     
-    @test.skipit
     def test_can_wrap_the_java_client(self):
         self.java_client.set("KEY", "VALUE")
         
         # TODO (ac): I know, it's weird. Looking for something better...
         time.sleep(0.3)
+
+        result = self.java_client.get("KEY")
+        print result
         
         self.assertEqual("VALUE", self.java_client.get("KEY"))
 
-    @test.skipit
     def test_can_write_in_java_and_read_in_python(self):
         self.java_client.set("KEY", "VALUE")
         
@@ -75,7 +76,6 @@ class KVSTestCase(unittest.TestCase):
         
         self.assertEqual("VALUE", self.python_client.get("KEY"))
     
-    @test.skipit
     def test_can_write_in_python_and_read_in_java(self):
         self.python_client.set("KEY", "VALUE")
         
@@ -120,7 +120,6 @@ class KVSTestCase(unittest.TestCase):
         self.assertEqual(shapes.Curve(
                 ((1.0, 1.5), (2.0, 2.5), (3.0, 3.5))), curves[1])
 
-    @test.skipit
     def test_end_to_end_curves_reading(self):
         # Hazard object model serialization in JSON is tested in the Java side
         self.java_client.set("KEY", ONE_CURVE_MODEL)
@@ -157,7 +156,6 @@ class KVSTestCase(unittest.TestCase):
         self.assertEqual(1, len(nrmls.items()))
         self.assertEquals(data, nrmls)
     
-    @test.skipit
     def test_reads_multiple_curves_in_one_branch_nrml(self):
         self.python_client.set("KEY", MULTIPLE_CURVES_ONE_BRANCH)
         nrmls = self.reader.for_nrml("KEY")
@@ -181,7 +179,6 @@ class KVSTestCase(unittest.TestCase):
         self.assertEqual(2, len(nrmls.items()))
         self.assertEquals(data, nrmls)
     
-    @test.skipit
     def test_reads_multiple_curves_in_multiple_branches_nrml(self):
         self.python_client.set("KEY", MULTIPLE_CURVES_MULTIPLE_BRANCHES)
         nrmls = self.reader.for_nrml("KEY")
@@ -202,8 +199,12 @@ class KVSTestCase(unittest.TestCase):
                     "Values": [1.5,2.5,3.5]} 
                 }
 
+        print "data: %s" % data
+        print nrmls
+
         self.assertEqual(2, len(nrmls.items()))
         self.assertEquals(data, nrmls)
+
     @test.skipit
     def test_end_to_end_from_memcached_to_nrml(self):
         # storing in memcached from java side

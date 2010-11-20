@@ -40,7 +40,7 @@ import org.gem.engine.hazard.GEM1ERF;
 import org.gem.engine.hazard.GEMHazardCurveRepository;
 import org.gem.engine.hazard.GEMHazardCurveRepositoryList;
 import org.gem.engine.hazard.GemComputeHazard;
-import org.gem.engine.hazard.memcached.Cache;
+import org.gem.engine.hazard.redis.Cache;
 import org.gem.engine.logictree.LogicTree;
 import org.gem.engine.logictree.LogicTreeAPI;
 import org.gem.engine.logictree.LogicTreeBranch;

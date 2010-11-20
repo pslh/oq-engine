@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.gem.engine.hazard.memcached.Cache;
+import org.gem.engine.hazard.redis.Cache;
 import org.gem.engine.hazard.memcached.BaseMemcachedTest;
 import org.junit.Before;
 import org.junit.Test;

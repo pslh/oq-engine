@@ -17,7 +17,7 @@ import junit.framework.Assert;
 import net.spy.memcached.MemcachedClient;
 
 import org.gem.engine.CommandLineCalculator;
-import org.gem.engine.hazard.memcached.Cache;
+import org.gem.engine.hazard.redis.Cache;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

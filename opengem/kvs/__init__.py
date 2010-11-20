@@ -36,7 +36,8 @@ class Redis(object):
         if not self.__dict__:
             print "Opening a new redis connection"
             args = {"host": host,
-                    "port": port}
+                    "port": port,
+                    "db": kwargs.get('db', 10)}
 
             self.conn = redis.Redis(**args)
 
