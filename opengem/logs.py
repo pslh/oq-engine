@@ -38,18 +38,18 @@ def init_logs():
 
 def make_job_logger(job_id):
     """Make a special logger object to be used just for a specific job. Acts
-like normal logging.Logger object, but has additional logging method called
-validate which basically wraps a call to logger.log() with the level
-automatically specified as 'validate'."""
+    like normal logging.Logger object, but has additional logging method called
+    validate which basically wraps a call to logger.log() with the level
+    automatically specified as 'validate'."""
     # 
     def _validate(msg, *args, **kwargs):
         """Basically a clone of the standard logger methods (like 'debug()')."""
         # 'close' validate_logger instance inside this wrapper method
         # this is nice because now we can just call logger_obj.validate()
         # to make log entries at the 'validate' level.
-        validate_logger.log(LEVELS.get('validate'), msg, *args, **kwargs)
+        return validate_logger.log(LEVELS.get('validate'), msg, *args, **kwargs)
     
-    validate_logger = logging.getLogger()
+    validate_logger = logging.getLogger(job_id)
     # monkey patch _validate into the logger object
     validate_logger.validate = _validate
     # now the 'validate' logging method can be called on this object
@@ -57,9 +57,7 @@ automatically specified as 'validate'."""
     validate_logger.setLevel(LEVELS.get('validate'))
 
     # log to file in the CWD
-    # filename should contain the job_id
     log_file_path = "%s.log" % job_id
-    # make a FileHandler for the log
     handler = logging.FileHandler(log_file_path)
     validate_logger.addHandler(handler)
     return validate_logger
