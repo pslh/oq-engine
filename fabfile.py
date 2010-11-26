@@ -8,7 +8,7 @@
 import getpass
 import sys
 
-from fabric.api import env, run, sudo, cd, hosts
+from fabric.api import env, run, sudo, cd, hosts, local
 from fabric.state import output as fabric_output
 from time import gmtime, strftime
 
@@ -17,36 +17,57 @@ fabric_output.warnings = False
 
 @hosts('gemsun04.ethz.ch')
 def deploy_server():
-    """Install/update and restart redis-server and rabbitmq-server."""
+    """Restart redis-server and rabbitmq-server.
+
+    Note: This function assumes rabbitmq and redis are already installed."""
+    # Note: the target host of this deploy script should configure sudoer
+    # privileges of env.user such that the following commands (such as 
+    # rabbitmqctl, apt-get, etc.) can be run as sudo without a password.
     env.user = 'gemadmin'
     apt_get_pkgs = ['redis-server', 'rabbitmq-server']
     for pkg in apt_get_pkgs:
-        # Check if the app is installed
-        if not _warn_only(run, 'which %s' % pkg):
-            # If it's not installed, install it
-            sudo('apt-get install -y %s' % pkg, shell=False)
-        else:
-            # If the app is installed, kill it and update it
-            sudo('/etc/init.d/%s stop' % pkg, shell=False)
-            sudo('apt-get install -y --upgrade %s' % pkg, shell=False)
+        # Kill it
+        sudo('/etc/init.d/%s stop' % pkg, shell=False)
         # Now start/restart the app
-        sudo('/etc/init.d/%s restart'% pkg, shell=False) 
+        sudo('/etc/init.d/%s restart'% pkg, shell=False)
+    # as a final action, configure rabbitmq
+    #rabbit_cfg = ['rabbitmqctl delete_vhost celeryvhost',\
+    #    'rabbitmqctl add_vhost celeryvhost',\
+    #    'rabbitmqctl delete_user celeryuser',\
+    #    'rabbitmqctl add_user celeryuser celery',\
+    #    'rabbitmqctl set_permissions -p celeryvhost celeryuser ".*" ".*" ".*"']
+    #for command in rabbit_cfg:
+    #    env.warn_only = True
+    #    sudo(command, shell=False)
+    #    env.warn_only = False
 
+@hosts('gemsun03.ethz.ch') #, 'gemsun04.ethz.ch')
 def deploy_worker():
-    """Install/udpate and restart celery."""
+    """Update and restart celery.
+
+    Note: This function assumes that celery is already installed and configured
+    on the client. It is also assumed that the host of the worker has a clone
+    of the OpenQuake source in /home/gemadmin/proj/openquake/."""
+    
     env.user = 'gemadmin'
-    # env.hosts = ["gemsun03.ethz.ch", "gemsun04.ethz.ch"]
-    env.hosts = ["184.106.220.98", "184.106.248.104"] # TODO: remove  me; for testing only
-    # gemsun02.ethz.ch not currently included because it has a weird distro
-    # location of openquake tarball from which we can install/update celery
-    openquake_tarball_url = "http://opengem.globalquakemodel.org/job/OpenGEM\
-/lastSuccessfulBuild/artifact/dist/opengem-0.1.0.tar.gz"
+    # location of openquake tarball from which we can update celery
+    openquake_tarball_url = "http://opengem.globalquakemodel.org/job/OpenQuake/\
+lastSuccessfulBuild/artifact/dist/openquake-0.1.0.tar.gz"
     # check if pip is installed:
     if not _warn_only(run, 'which %s' % 'pip'):
         # install it
-        sudo('apt-get install pip-python')
-    run('pip install celery --upgrade -f %s' % openquake_tarball_url)
-    # TODO: should we check if celery is already installed?    
+        sudo('apt-get install python-pip -y', shell=False)
+    # kill celeryd processes
+    run("for pid in `ps aux | grep [c]elery | awk '{ print $2 }'`; do kill -9 \
+$pid; done")
+    #sudo('pip install openquake --upgrade -f %s' % openquake_tarball_url,\
+    #    shell=False)
+    # restart celery
+    # must be run from the source root
+    # TODO(LMB): I don't like this hard-coded path, nor do I like executing from
+    # this dir.
+    with cd('/home/gemadmin/proj/openquake/'):
+        local('./celeryd.sh')
 
 def deploy():
     """Deploy, configure, and start server/worker processes on the specified
@@ -96,3 +117,4 @@ def _warn_only(fn, command):
     output = fn(command)
     env.warn_only = False
     return output
+
