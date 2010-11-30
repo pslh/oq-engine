@@ -44,5 +44,5 @@ setup(name='openquake',
       scripts=scripts,
       install_requires=["pyyaml", "shapely", "python-gflags", "pylibmc==0.9.2",
                         "lxml", "sphinx", "eventlet", "guppy", "libLAS",
-                        "numpy", "scipy", "celery", "nose", "django",
+                        "numpy", "scipy", "celery==2.0.3", "nose", "django",
                         "ordereddict"])

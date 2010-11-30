@@ -15,6 +15,10 @@ from time import gmtime, strftime
 # We really don't care about warnings.
 fabric_output.warnings = False
 
+# temporary
+OPENQUAKE_DEMO_PKG_URL = "http://gemsun04.ethz.ch/geonode-client/temp/\
+openquake-0.11.tar.gz"
+
 @hosts('gemsun04.ethz.ch')
 def deploy_server():
     """Restart redis-server and rabbitmq-server.
@@ -24,58 +28,65 @@ def deploy_server():
     # privileges of env.user such that the following commands (such as 
     # rabbitmqctl, apt-get, etc.) can be run as sudo without a password.
     env.user = 'gemadmin'
-    apt_get_pkgs = ['redis-server', 'rabbitmq-server']
-    for pkg in apt_get_pkgs:
-        # Kill it
-        sudo('/etc/init.d/%s stop' % pkg, shell=False)
-        # Now start/restart the app
-        sudo('/etc/init.d/%s restart'% pkg, shell=False)
-    # as a final action, configure rabbitmq
-    #rabbit_cfg = ['rabbitmqctl delete_vhost celeryvhost',\
-    #    'rabbitmqctl add_vhost celeryvhost',\
-    #    'rabbitmqctl delete_user celeryuser',\
-    #    'rabbitmqctl add_user celeryuser celery',\
-    #    'rabbitmqctl set_permissions -p celeryvhost celeryuser ".*" ".*" ".*"']
-    #for command in rabbit_cfg:
-    #    env.warn_only = True
-    #    sudo(command, shell=False)
-    #    env.warn_only = False
+    if not _pip_is_installed():
+        _install_pip()
 
-@hosts('gemsun03.ethz.ch') #, 'gemsun04.ethz.ch')
+    redis = 'redis-server'
+    rabbitmq = 'rabbitmq-server'
+    
+    stop = '/etc/init.d/%s stop'
+    start = '/etc/init.d/%s start'
+
+    # stop server processes
+    _sudo_no_shell(stop % redis)
+    _sudo_no_shell(stop % rabbitmq)
+
+    # update the openquake package
+    _install_openquake()
+
+    # restart server processes
+    _sudo_no_shell(start % redis)
+    _sudo_no_shell(start % rabbitmq) 
+
+
+@hosts('gemsun03.ethz.ch', 'gemsun04.ethz.ch')
 def deploy_worker():
     """Update and restart celery.
 
     Note: This function assumes that celery is already installed and configured
-    on the client. It is also assumed that the host of the worker has a clone
-    of the OpenQuake source in /home/gemadmin/proj/openquake/."""
+    on the client."""
     
     env.user = 'gemadmin'
-    # location of openquake tarball from which we can update celery
-    openquake_tarball_url = "http://opengem.globalquakemodel.org/job/OpenQuake/\
-lastSuccessfulBuild/artifact/dist/openquake-0.1.0.tar.gz"
-    # check if pip is installed:
-    if not _warn_only(run, 'which %s' % 'pip'):
-        # install it
-        sudo('apt-get install python-pip -y', shell=False)
+    if not _pip_is_installed():
+        _install_pip()
     # kill celeryd processes
-    run("for pid in `ps aux | grep [c]elery | awk '{ print $2 }'`; do kill -9 \
-$pid; done")
-    #sudo('pip install openquake --upgrade -f %s' % openquake_tarball_url,\
-    #    shell=False)
+    _sudo_no_shell('/etc/init.d/celeryd stop')
+    
+    # update openquake package
+    _install_openquake() 
+    
     # restart celery
-    # must be run from the source root
-    # TODO(LMB): I don't like this hard-coded path, nor do I like executing from
-    # this dir.
-    with cd('/home/gemadmin/proj/openquake/'):
-        local('./celeryd.sh')
+    _sudo_no_shell('/etc/init.d/celeryd start')
+
+def _pip_is_installed():
+    return _warn_only(run, 'which pip')
+
+def _install_pip():
+    _sudo_no_shell('apt-get install python-pip -y')
+
+def _install_openquake():
+    _sudo_no_shell('pip install openquake -f %s' % OPENQUAKE_DEMO_PKG_URL)
+
+def _sudo_no_shell(command):
+    sudo(command, shell=False)
 
 def deploy():
     """Deploy, configure, and start server/worker processes on the specified
     nodes.
     
     Currently, node hosts are hard-coded into this script."""
-    server_deploy()
-    worker_deploy()
+    deploy_server()
+    deploy_worker()
 
 def development():
     """ Specify development hosts """
