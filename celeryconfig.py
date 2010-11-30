@@ -27,5 +27,4 @@ CELERY_RESULT_BACKEND = "amqp"
 
 
 CELERY_IMPORTS = ("openquake.risk.job",
-                  "openquake.hazard.tasks",
-                  "tests.tasks")
+                  "openquake.hazard.tasks")

@@ -20,7 +20,7 @@ OPENQUAKE_DEMO_PKG_URL = "http://gemsun04.ethz.ch/geonode-client/temp/\
 openquake-0.11.tar.gz"
 
 @hosts('gemsun04.ethz.ch')
-def deploy_server():
+def server():
     """Restart redis-server and rabbitmq-server.
 
     Note: This function assumes rabbitmq and redis are already installed."""
@@ -50,7 +50,7 @@ def deploy_server():
 
 
 @hosts('gemsun03.ethz.ch', 'gemsun04.ethz.ch')
-def deploy_worker():
+def worker():
     """Update and restart celery.
 
     Note: This function assumes that celery is already installed and configured
@@ -79,14 +79,6 @@ def _install_openquake():
 
 def _sudo_no_shell(command):
     sudo(command, shell=False)
-
-def deploy():
-    """Deploy, configure, and start server/worker processes on the specified
-    nodes.
-    
-    Currently, node hosts are hard-coded into this script."""
-    deploy_server()
-    deploy_worker()
 
 def development():
     """ Specify development hosts """
