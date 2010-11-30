@@ -43,6 +43,7 @@ GEOTIFF_FILENAME_SQUARE_REGION = "test.squareregion.tiff"
 GEOTIFF_FILENAME_LARGE_ASYMMETRIC_REGION = "test.asymmetric.region.tiff"
 GEOTIFF_FILENAME_COLORSCALE = "test.colorscale.tiff"
 GEOTIFF_FILENAME_COLORSCALE_CUTS = "test.colorscale-cuts.tiff"
+GEOTIFF_LOSS_RATIO_MAP_COLORSCALE = "test.loss_ratio_map.tiff"
 
 HAZARDCURVE_PLOT_SIMPLE_FILENAME = "hazard-curves-simple.svg"
 
@@ -89,6 +90,26 @@ class OutputTestCase(unittest.TestCase):
         self._fill_rasters(asymmetric_region, gwriter, reference_raster, 
             self._colorscale_fill)
         gwriter.close()
+
+    def test_geotiff_loss_ratio_map_colorscale(self):
+        path = test.test_file(GEOTIFF_LOSS_RATIO_MAP_COLORSCALE)
+        asymmetric_region = shapes.Region.from_coordinates(
+            TEST_REGION_LARGE_ASYMMETRIC ) 
+
+        gwriter = geotiff.LossMapGeoTiffFile(path, asymmetric_region.grid, normalize=True)
+        reference_raster = numpy.zeros((asymmetric_region.grid.rows, 
+                                        asymmetric_region.grid.columns),
+                                       dtype=numpy.float)
+
+        self._fill_rasters(asymmetric_region, gwriter, reference_raster,
+            self._colorscale_fill)
+        gwriter.close()
+
+        self._assert_geotiff_metadata_is_correct(path, asymmetric_region)
+        self._assert_geotiff_band_min_max_values(path, 
+            GEOTIFF_USED_CHANNEL_IDX, 0, 255)
+
+
 
     def test_loss_ratio_curve_plot_generation_multiple_sites(self):
         """Create SVG plots for loss ratio curves read from an NRML file. The

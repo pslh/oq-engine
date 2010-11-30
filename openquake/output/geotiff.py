@@ -100,13 +100,18 @@ class GeoTiffFile(writer.FileWriter):
         if value:
             self.alpha_raster[int(cell[0]), int(cell[1])] = 255.0
 
-    def close(self):
-        """Make sure the file is flushed, and send exit event"""
-        
+    def _normalize(self):
+        """ Normalize the raster matrix """
         # NOTE(fab): numpy raster does not have to be transposed, although
         # it has rows x columns
         if self.normalize:
             self.raster = self.raster * 254.0 / self.raster.max()
+
+
+    def close(self):
+        """Make sure the file is flushed, and send exit event"""
+
+        self._normalize()
 
         self.target.GetRasterBand(1).WriteArray(self.raster)
         self.target.GetRasterBand(2).Fill(0.0)
@@ -114,6 +119,12 @@ class GeoTiffFile(writer.FileWriter):
 
         # Write alpha channel
         self.target.GetRasterBand(4).WriteArray(self.alpha_raster)
+
+        # Try to write the HTML wrapper
+        try:
+            self._write_html_wrapper()
+        except AttributeError:
+            pass
 
         self.target = None  # This is required to flush the file
         self.finished.send(True)
@@ -127,6 +138,50 @@ class GeoTiffFile(writer.FileWriter):
             self.write((key.column, key.row), val)
         self.close()
 
+
+class LossMapGeoTiffFile(GeoTiffFile):
+    """ Write RGBA geotiff images for loss maps. Color scale is from
+    0(0x00)-100(0xff). In addition, we write out an HTML wrapper around
+    the TIFF with a color-scale legend."""
+
+    def write(self, cell, value):
+        """Stores the cell values in the NumPy array for later 
+        serialization. Make sure these are zero-based cell addresses."""
+        self.raster[int(cell[0]), int(cell[1])] = float(value)
+
+        # Set AlphaLayer
+        if value:
+            # 0x10 less than full opacity
+            self.alpha_raster[int(cell[0]), int(cell[1])] = float(0xfa)
+
+    def _normalize(self):
+        """ Normalize the raster matrix """
+        if self.normalize:
+            # This gives us a color scale of 0 to 100 with a 16 step.
+            self.raster = (255 * self.raster) / 100.0
+            modulo = self.raster % 0x10
+            self.raster -= modulo
+
+    def _write_html_wrapper(self):
+        """write an html wrapper that <embed>s the geotiff."""
+
+        if self.path.endswith(('tiff', 'TIFF')):
+            html_path = ''.join((self.path[0:-4], 'html'))
+        else:
+            html_path = ''.join((self.path, '.html'))
+
+        # replace placeholders in HTML template with filename, height, width
+        html_string = template.generate_html(os.path.basename(self.path), 
+                                             str(self.target.RasterXSize * SCALE_UP),
+                                             str(self.target.RasterYSize * SCALE_UP),
+                                             template=template.HTML_TEMPLATE_LOSSRATIO)
+
+        with open(html_path, 'w') as f:
+            f.write(html_string)
+
+
+
+
 class GMFGeoTiffFile(GeoTiffFile):
     """Writes RGB GeoTIFF image for ground motion fields. Color scale is
     from green (value 0.0) to red (value 2.0). In addition, writes an
@@ -135,27 +190,23 @@ class GMFGeoTiffFile(GeoTiffFile):
     CUT_LOWER = 0.0
     CUT_UPPER = 2.0
     
-    def __init__(self, path, image_grid, init_value=numpy.nan, 
-                 normalize=True):
+    def __init__(self, path, image_grid, init_value=numpy.nan, normalize=True):
         super(GMFGeoTiffFile, self).__init__(path, image_grid, init_value, 
                                              normalize)
 
         # set image rasters (RGB and alpha)
         self.raster_r = numpy.zeros((self.grid.rows, self.grid.columns),
                                  dtype=numpy.int)
-        self.raster_g = numpy.zeros((self.grid.rows, self.grid.columns),
-                                 dtype=numpy.int)
-        self.raster_b = numpy.zeros((self.grid.rows, self.grid.columns),
-                                 dtype=numpy.int)
+        self.raster_g = numpy.zeros_like(self.raster_r)
+        self.raster_b = numpy.zeros_like(self.raster_r)
 
         self.alpha_raster = numpy.ones((self.grid.rows, self.grid.columns),
                                  dtype=numpy.int) * 32
 
-    def close(self):
-        """Make sure the file is flushed, and send exit event"""
-        
-        if self.normalize:
+    def _normalize(self):
+        """ Normalize the raster matrix """
 
+        if self.normalize:
             self.raster_r = 255 * (self.raster - self.CUT_LOWER) / (
                 self.CUT_UPPER - self.CUT_LOWER)
 
@@ -164,16 +215,21 @@ class GMFGeoTiffFile(GeoTiffFile):
             numpy.putmask(self.raster_r, self.raster_r > 255, 255)
 
             self.raster_g = 255 - self.raster_r
-
-            self.target.GetRasterBand(1).WriteArray(self.raster_r)
-            self.target.GetRasterBand(2).WriteArray(self.raster_g)
-            self.target.GetRasterBand(3).WriteArray(self.raster_b)
-
-            # Write alpha channel
-            self.target.GetRasterBand(4).WriteArray(self.alpha_raster)
-
         else:
-            self.target.GetRasterBand(1).WriteArray(self.raster)
+            self.raster_g = 0 * self.raster
+            self.raster_b = 0 * self.raster
+            self.alpha_raster = numpy.ones_like(self.alpha_raster) * 255
+
+    def close(self):
+        """Make sure the file is flushed, and send exit event"""
+        self._normalize()
+
+        self.target.GetRasterBand(1).WriteArray(self.raster_r)
+        self.target.GetRasterBand(2).WriteArray(self.raster_g)
+        self.target.GetRasterBand(3).WriteArray(self.raster_b)
+
+        # Write alpha channel
+        self.target.GetRasterBand(4).WriteArray(self.alpha_raster)
 
         # write wrapper before closing file, so that raster dimensions are
         # still accessible
