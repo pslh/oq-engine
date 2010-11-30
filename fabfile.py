@@ -8,7 +8,7 @@
 import getpass
 import sys
 
-from fabric.api import env, run, sudo, cd, hosts, local
+from fabric.api import env, run, sudo, cd, hosts
 from fabric.state import output as fabric_output
 from time import gmtime, strftime
 
