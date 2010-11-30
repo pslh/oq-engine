@@ -22,25 +22,35 @@ from setuptools import find_packages
 scripts = ["bin/%s" % x for x in os.listdir('bin')]
 scripts.extend(
     ["openquake/utils/%s" % x for x in os.listdir('openquake/utils')])
+scripts.append('celeryconfig.py')
+
 libs = []
 for x in os.listdir('lib'):
     if x[-4:] == '.jar':
         libs.append("lib/%s" % x)
+
+dist = []
+for x in os.listdir('dist'):
+    if x[-4:] == '.jar':
+        libs.append("dist/%s" % x)
         
 with os.popen("which gfortran") as gf:
     if not gf:
-        raise EnvirontmentError("You need to install gfortran")
+        raise EnvironmentError("You need to install gfortran")
 
 setup(name='openquake',
-      version='0.1.0',
+      version='0.11',
       description='OpenQuake Platform',
       author='gem-core',
       author_email='openquake-dev@googlegroups.com',
       url='http://www.openquake.org/',
-      packages=['openquake','openquake.hazard','openquake.risk',
-                'openquake.output','openquake.parser', 'openquake.seismicsources'],
+      packages=['openquake','openquake.hazard',
+                'openquake.job','openquake.kvs',
+                'openquake.output','openquake.parser',
+                'openquake.risk', 'openquake.risk.job',
+                'openquake.seismicsources'],
       data_files=[('/etc/openquake', ['celeryconfig.py']),
-                  ('lib', libs),],
+                  ('lib', libs),('dist', dist)],
       scripts=scripts,
       install_requires=["pyyaml", "shapely", "python-gflags", "pylibmc==0.9.2",
                         "lxml", "sphinx", "eventlet", "guppy", "libLAS",

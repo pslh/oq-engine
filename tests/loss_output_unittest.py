@@ -58,9 +58,12 @@ class LossOutputTestCase(unittest.TestCase):
         second_site = shapes.Site(10.0, 20.0)
         first_curve = TEST_CURVE
         second_curve = first_curve
+        first_asset = {"AssetID" : "1711"}
+        second_asset = {"AssetID" : "1712"}
 
         # Then serialize them to XML
-        loss_curves = [(first_site, first_curve), (second_site, second_curve)] 
+        loss_curves = [(first_site, (first_curve, first_asset)), 
+                        (second_site, (second_curve, second_asset))] 
 
         xml_writer = risk_output.LossCurveXMLWriter(self.path)
         xml_writer.serialize(loss_curves)
@@ -91,10 +94,10 @@ class LossOutputTestCase(unittest.TestCase):
                 + xml.NRML + "LossCurve//"
                 + xml.NRML + "Values").text.strip().split()
 
-        for idx, val in enumerate(TEST_CURVE.ordinates):
-            self.assertAlmostEqual(val, float(xml_curve_pe[idx]), 6)
         for idx, val in enumerate(TEST_CURVE.abscissae):
-            self.assertEqual(val, float(xml_first_curve_value[idx]))
+            self.assertAlmostEqual(val, float(xml_curve_pe[idx]), 6)
+        for idx, val in enumerate(TEST_CURVE.ordinates):
+            self.assertAlmostEqual(val, float(xml_first_curve_value[idx]), 6)
 
     # TODO(jmc): Test that the lat and lon are correct for each curve
     # Optionally, compare it to another XML file.
@@ -111,8 +114,8 @@ class LossOutputTestCase(unittest.TestCase):
                 + xml.NRML + "LossRatioCurve//"
                 + xml.NRML + "Values").text.strip().split()
 
-        for idx, val in enumerate(TEST_CURVE.ordinates):
-            self.assertAlmostEqual(val, float(xml_curve_pe[idx]), 6)
         for idx, val in enumerate(TEST_CURVE.abscissae):
-            self.assertEqual(val, float(xml_first_curve_value[idx]))
+            self.assertAlmostEqual(val, float(xml_curve_pe[idx]), 6)
+        for idx, val in enumerate(TEST_CURVE.ordinates):
+            self.assertAlmostEqual(val, float(xml_first_curve_value[idx]), 6)
 

@@ -18,7 +18,7 @@ from osgeo import gdal, gdalconst
 from openquake import shapes
 from openquake import test
 from openquake.output import geotiff
-from openquake.output import hazardcurve
+from openquake.output import curve
 
 # we define some test regions which have a lower-left corner at 0.0/0.0
 # the default grid spacing of 0.1 degrees is used
@@ -41,37 +41,121 @@ GEOTIFF_FILENAME_WITHOUT_NUMBER = "test.smallregion.tiff"
 GEOTIFF_FILENAME_WITH_NUMBER = "test.smallregion.1.tiff"
 GEOTIFF_FILENAME_SQUARE_REGION = "test.squareregion.tiff"
 GEOTIFF_FILENAME_LARGE_ASYMMETRIC_REGION = "test.asymmetric.region.tiff"
+GEOTIFF_FILENAME_COLORSCALE = "test.colorscale.tiff"
+GEOTIFF_FILENAME_COLORSCALE_CUTS = "test.colorscale-cuts.tiff"
 
 HAZARDCURVE_PLOT_SIMPLE_FILENAME = "hazard-curves-simple.svg"
 
 HAZARDCURVE_PLOT_FILENAME = "hazard-curves.svg"
 HAZARDCURVE_PLOT_INPUTFILE = "example-hazard-curves-for-plotting.xml"
 
+LOSS_CURVE_PLOT_FILENAME = "loss-curves.svg"
+LOSS_CURVE_PLOT_INPUTFILE = "example-loss-curves-for-plotting.xml"
+
+LOSS_RATIO_CURVE_PLOT_FILENAME = "loss-ratio-curves.svg"
+LOSS_RATIO_CURVE_PLOT_INPUTFILE = "example-loss-ratio-curves-for-plotting.xml"
+
 GEOTIFF_USED_CHANNEL_IDX = 1
+GEOTIFF_TOTAL_CHANNELS = 4
 GEOTIFF_TEST_PIXEL_VALUE = 1.0
 
 class OutputTestCase(unittest.TestCase):
     """Test all our output file formats, generally against sample content"""
 
-    def test_simple_hazardcurve_plot_generation(self):
-        """Create an SVG plot of a single hazard curve for a single site
+    def test_geotiff_generation_colorscale_cuts(self):
+        """Check RGB geotiff generation with colorscale for GMF."""
+        path = test.test_file(GEOTIFF_FILENAME_COLORSCALE_CUTS)
+        asymmetric_region = shapes.Region.from_coordinates(
+            TEST_REGION_LARGE_ASYMMETRIC)
+        gwriter = geotiff.GMFGeoTiffFile(path, asymmetric_region.grid)
+
+        reference_raster = numpy.zeros((asymmetric_region.grid.rows, 
+                                        asymmetric_region.grid.columns),
+                                       dtype=numpy.float)
+        self._fill_rasters(asymmetric_region, gwriter, reference_raster, 
+            self._colorscale_cuts_fill)
+        gwriter.close()
+
+    def test_geotiff_generation_colorscale(self):
+        """Check RGB geotiff generation with colorscale for GMF."""
+        path = test.test_file(GEOTIFF_FILENAME_COLORSCALE)
+        asymmetric_region = shapes.Region.from_coordinates(
+            TEST_REGION_LARGE_ASYMMETRIC)
+        gwriter = geotiff.GMFGeoTiffFile(path, asymmetric_region.grid)
+
+        reference_raster = numpy.zeros((asymmetric_region.grid.rows, 
+                                        asymmetric_region.grid.columns),
+                                       dtype=numpy.float)
+        self._fill_rasters(asymmetric_region, gwriter, reference_raster, 
+            self._colorscale_fill)
+        gwriter.close()
+
+    def test_loss_ratio_curve_plot_generation_multiple_sites(self):
+        """Create SVG plots for loss ratio curves read from an NRML file. The
+        file contains data for several sites. 
+        For each site, a separate SVG file is created."""
+
+        path = test.test_file(LOSS_RATIO_CURVE_PLOT_FILENAME)
+        loss_ratio_curve_path = test.test_file(LOSS_RATIO_CURVE_PLOT_INPUTFILE)
+
+        plotter = curve.RiskCurvePlotter(path, loss_ratio_curve_path, 
+            mode='loss_ratio')
+
+        # delete expected output files, if existing
+        for svg_file in plotter.filenames():
+            if os.path.isfile(svg_file):
+                os.remove(svg_file)
+
+        plotter.plot(autoscale_y=False)
+
+        # assert that for each site in the NRML file an SVG has been created
+        for svg_file in plotter.filenames():
+            self.assertTrue(os.path.getsize(svg_file) > 0)
+
+    def test_loss_curve_plot_generation_multiple_sites(self):
+        """Create SVG plots for loss curves read from an NRML file. The
+        file contains data for several sites. 
+        For each site, a separate SVG file is created."""
+
+        path = test.test_file(LOSS_CURVE_PLOT_FILENAME)
+        loss_curve_path = test.test_file(LOSS_CURVE_PLOT_INPUTFILE)
+
+        plotter = curve.RiskCurvePlotter(path, loss_curve_path, mode='loss',
+            curve_title="This is a test loss curve")
+
+        # delete expected output files, if existing
+        for svg_file in plotter.filenames():
+            if os.path.isfile(svg_file):
+                os.remove(svg_file)
+
+        plotter.plot(autoscale_y=True)
+
+        # assert that for each site in the NRML file an SVG has been created
+        for svg_file in plotter.filenames():
+            self.assertTrue(os.path.getsize(svg_file) > 0)
+
+    def test_simple_curve_plot_generation(self):
+        """Create an SVG plot of a single (hazard) curve for a single site
         from a dictionary."""
 
         test_site = shapes.Site(-122, 38)
         test_end_branch = '1_1'
         test_hc_data = {test_end_branch: 
-                {'IMLValues': [0.0, 1.0, 1.8],
-                 'Values': [1.0, 0.5, 0.2],
-                 'IMT': 'PGA',
+                {'abscissa': [0.0, 1.0, 1.8],
+                 'ordinate': [1.0, 0.5, 0.2],
+                 'abscissa_property': 'PGA',
+                 'ordinate_property': 'Probability of Exceedance',
+                 'curve_title': 'Hazard Curve',
                  'Site': test_site}}
 
         path = test.test_file(HAZARDCURVE_PLOT_SIMPLE_FILENAME)
-        plot = hazardcurve.HazardCurvePlot(path)
+        plot = curve.CurvePlot(path)
         plot.write(test_hc_data)
         plot.close()
 
-        # assert that file has been created
-        self.assertTrue(os.path.isfile(path))
+        # assert that file has been created and is not empty
+        self.assertTrue(os.path.getsize(path) > 0)
+        os.remove(test.test_file(HAZARDCURVE_PLOT_SIMPLE_FILENAME))
 
     def test_hazardcurve_plot_generation_multiple_sites_multiple_curves(self):
         """Create SVG plots for hazard curves read from an NRML file. The
@@ -81,12 +165,21 @@ class OutputTestCase(unittest.TestCase):
         path = test.test_file(HAZARDCURVE_PLOT_FILENAME)
         hazardcurve_path = test.test_file(HAZARDCURVE_PLOT_INPUTFILE)
 
-        plotter = hazardcurve.HazardCurvePlotter(path, hazardcurve_path)
+        plotter = curve.HazardCurvePlotter(path, hazardcurve_path,
+            curve_title='Example Hazard Curves')
+
+        # delete expected output files, if existing
+        for svg_file in plotter.filenames():
+            if os.path.isfile(svg_file):
+                os.remove(svg_file)
+
         plotter.plot()
 
         # assert that for each site in the NRML file an SVG has been created
+        # and is not empty
         for svg_file in plotter.filenames():
-            self.assertTrue(os.path.isfile(svg_file))
+            self.assertTrue(os.path.getsize(svg_file) > 0)
+            os.remove(svg_file)
 
     def test_geotiff_generation_and_metadata_validation(self):
         """Create a GeoTIFF, and check if it has the
@@ -191,7 +284,7 @@ class OutputTestCase(unittest.TestCase):
         dataset = gdal.Open(path, gdalconst.GA_ReadOnly)
         self.assertEqual(dataset.RasterXSize, region.grid.columns)
         self.assertEqual(dataset.RasterYSize, region.grid.rows)
-        self.assertEqual(dataset.RasterCount, GEOTIFF_USED_CHANNEL_IDX)
+        self.assertEqual(dataset.RasterCount, GEOTIFF_TOTAL_CHANNELS)
 
         (origin_lon, lon_pixel_size, lon_rotation, origin_lat, lat_rotation, 
             lat_pixel_size ) = dataset.GetGeoTransform()
@@ -248,3 +341,11 @@ class OutputTestCase(unittest.TestCase):
 
     def _trivial_fill(self, row_idx, col_idx):
         return float((row_idx + 1) * (col_idx + 1))
+
+    def _colorscale_fill(self, row_idx, col_idx):
+        """if used with asymmetic region, return value range 0..2"""
+        return row_idx * col_idx / (4.0 * 9.0)
+
+    def _colorscale_cuts_fill(self, row_idx, col_idx):
+        """if used with asymmetic region, return value range -1..2.6"""
+        return (row_idx * col_idx / 10.0 ) - 1.0
