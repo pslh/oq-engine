@@ -164,6 +164,7 @@ class MonteCarloMixin: # pylint: disable=W0232
 
                 gwriter.close()
                 files.append(path)
+                # TODO(JMC): Group tiffs by event_set in the html
                 html_writer.add_geotiff(
                         "Event %s Rupture %s" % (event_set, rupture), 
                         path, image_grid.rows, image_grid.columns)
