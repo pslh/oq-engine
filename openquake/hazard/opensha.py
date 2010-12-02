@@ -7,7 +7,6 @@ Wrapper around the OpenSHA-lite java library.
 import math
 import os
 import random
-import string
 
 import numpy
 
@@ -105,8 +104,10 @@ class MonteCarloMixin: # pylint: disable=W0232
                 for site_list in self.site_list_generator():
                     stochastic_set_id = "%s!%s" % (i, j)
                     # pylint: disable=E1101
-                    pending_tasks.append(tasks.compute_ground_motion_fields.delay(
-                            self.id, site_list, 
+                    pending_tasks.append(
+                        tasks.compute_ground_motion_fields.delay(
+                            self.id,
+                            site_list,
                             stochastic_set_id, gmf_generator.getrandbits(32)))
         
             for task in pending_tasks:
@@ -146,7 +147,8 @@ class MonteCarloMixin: # pylint: disable=W0232
                     site = ses[event_set][rupture][site_key]
                     site_obj = shapes.Site(site['lon'], site['lat'])
                     point = image_grid.point_at(site_obj)
-                    LOG.debug("Writing GMF %s by %s" % (point.row, point.column))
+                    LOG.debug("Writing GMF %s by %s" % 
+                        (point.row, point.column))
                     gwriter.write((point.row, point.column), 
                         math.exp(float(site['mag'])))
 
@@ -161,7 +163,6 @@ class MonteCarloMixin: # pylint: disable=W0232
         key = kvs.generate_product_key(self.id, hazard.SOURCE_MODEL_TOKEN)
         sources = java.jclass("JsonSerializer").getSourceListFromCache(
                     self.cache, key)
-        timespan = float(self.params['INVESTIGATION_TIME'])
         erf = java.jclass("GEM1ERF")(sources)
         self.calc.setGEM1ERFParams(erf)
         return erf
@@ -267,7 +268,8 @@ class MonteCarloMixin: # pylint: disable=W0232
         jsite_list = self.parameterize_sites(site_list)
         key = kvs.generate_product_key(
                     self.id, hazard.STOCHASTIC_SET_TOKEN, stochastic_set_id)
-        correlate = (self.params['GROUND_MOTION_CORRELATION'] == "true" and True or False)
+        gmc = self.params['GROUND_MOTION_CORRELATION']
+        correlate = (gmc == "true" and True or False)
         java.jclass("HazardCalculator").generateAndSaveGMFs(
                 self.cache, key, stochastic_set_id, jsite_list,
                  self.generate_erf(), 
@@ -277,6 +279,7 @@ class MonteCarloMixin: # pylint: disable=W0232
 
 
 def gmf_id(history_idx, realization_idx, rupture_idx):
+    """ Return a GMF id suitable for use as a KVS key """
     return "%s!%s!%s" % (history_idx, realization_idx, rupture_idx)
 
 

@@ -148,7 +148,7 @@ class ProbabilisticEventMixin:
                     'CONDITIONAL_LOSS_POE', "0.01").split()]
         self.slice_gmfs(block_id)
         self.vuln_curves = \
-                vulnerability.load_vulnerability_curves_from_kvs(self.job_id)
+                vulnerability.load_vuln_curves_from_kvs(self.job_id)
 
         # TODO(jmc): DONT assumes that hazard and risk grid are the same
         decoder = json.JSONDecoder()

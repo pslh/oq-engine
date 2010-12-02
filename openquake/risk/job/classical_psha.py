@@ -66,7 +66,7 @@ class ClassicalPSHABasedMixin:
         # TODO(jmc): DONT assumes that hazard, assets, and output risk grid are the same
         # (no nearest-neighbour search to find hazard)
         block = job.Block.from_kvs(block_id)
-        sites_list = block.sites # kvs.get_sites_from_memcache(job_id, block_id)
+        sites_list = block.sites
 
         LOGGER.debug("sites list for job_id %s, block_id %s:\n%s" % (
             job_id, block_id, sites_list))
@@ -100,7 +100,7 @@ class ClassicalPSHABasedMixin:
                 loss_conditional = engines.compute_loss(loss_curve, 
                                                         conditional_loss_poe)
                 key = kvs.generate_product_key(job_id, 
-                    risk.LOSS_TOKEN(conditional_loss_poe), block_id, gridpoint)
+                    risk.loss_token(conditional_loss_poe), block_id, gridpoint)
 
                 logger.debug("RESULT: conditional loss is %s, write to key %s" % (
                     loss_conditional, key))

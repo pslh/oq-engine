@@ -71,7 +71,7 @@ from scipy import log # pylint: disable=F0401,E0611
 from openquake import logs
 from openquake import shapes
 
-logger = logs.RISK_LOG
+LOGGER = logs.RISK_LOG
 
 STEPS_PER_INTERVAL = 5
 
@@ -117,8 +117,7 @@ def _compute_lrem_po(vuln_function, lrem, hazard_curve):
     
     return lrem_po
 
-
-def _compute_loss_ratio_curve_from_lrem_po(loss_ratios, lrem_po):
+def _compute_loss_ratio_curve_from_lrem_po(loss_ratios, lrem_po): 
     """Computes the loss ratio curve."""
     
     loss_ratio_curve_values = []
@@ -136,7 +135,7 @@ def _generate_loss_ratios(vuln_function):
 
     if vuln_function.is_multi_value:
         # means on first position
-        loss_ratios = list(vuln_function.ordinates[:,0])
+        loss_ratios = list(vuln_function.ordinates[:0])
     else:
         loss_ratios = list(vuln_function.ordinates)
     
@@ -289,4 +288,4 @@ def compute_mean_loss(loss_ratio_pe_curve, loss_ratio_po_mid_curve):
     mean_loss_ratio = sum(i*j for i, j in zip(loss_ratio_pe_curve_float, 
         loss_ratio_po_mid_curve))
 
-    logger.debug('%s= mean_loss_ratio', mean_loss_ratio)
+    LOGGER.debug('%s= mean_loss_ratio', mean_loss_ratio)
