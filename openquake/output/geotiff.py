@@ -217,7 +217,7 @@ class GMFGeoTiffFile(GeoTiffFile):
 
         # write wrapper before closing file, so that raster dimensions are
         # still accessible
-        self._write_html_wrapper()
+        # self._write_html_wrapper()
 
         self.target = None  # This is required to flush the file
         self.finished.send(True)

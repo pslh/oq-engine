@@ -16,17 +16,19 @@ import org.jredis.ri.alphazero.connection.DefaultConnectionSpec;
  * @author Christopher MacGown
  */
 public class Cache {
-    private JRedisClient client;
+    private static JRedisClient client = null;
 
     /**
      * Default client constructor, defaults to database 0.
      */
     public Cache(String host, int port) {
-        try {
-            // Do the connection.
-            client = new JRedisClient(getConnectionSpec(host, port, 0));
-        } catch (ClientRuntimeException e) {
-            throw new RuntimeException(e);
+        if (client == null) {
+            try {
+                // Do the connection.
+                client = new JRedisClient(getConnectionSpec(host, port, 0));
+            } catch (ClientRuntimeException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -34,11 +36,13 @@ public class Cache {
      * Constructor for specifying database.
      */
     public Cache(String host, int port, int db) {
-        try {
-            // Do the connection.
-            client = new JRedisClient(getConnectionSpec(host, port, db));
-        } catch (ClientRuntimeException e) {
-            throw new RuntimeException(e);
+        if (client == null) {
+            try {
+                // Do the connection.
+                client = new JRedisClient(getConnectionSpec(host, port, db));
+            } catch (ClientRuntimeException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

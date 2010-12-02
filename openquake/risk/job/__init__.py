@@ -36,7 +36,7 @@ def output(fn):
     return output_writer
 
 
-@task
+@task(default_retry_delay=10.0)
 def compute_risk(job_id, block_id, **kwargs):
     engine = job.Job.from_kvs(job_id)
     with mixins.Mixin(engine, RiskJobMixin, key="risk") as mixed:

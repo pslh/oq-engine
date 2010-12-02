@@ -18,7 +18,7 @@ from openquake import kvs
 from celery.decorators import task
 
 
-@task
+@task(default_retry_delay=10.0)
 def generate_erf(job_id):
     """
     Stubbed ERF generator 
@@ -36,12 +36,18 @@ def generate_erf(job_id):
 
     return job_id
 
-@task
-def compute_ground_motion_fields(job_id, site_list, gmf_id, seed):
+
+@task(default_retry_delay=10.0, max_retries=3)
+def compute_ground_motion_fields(job_id, site_list, gmf_id, seed, **kwargs):
     # TODO(JMC): Use a block_id instead of a site_list
-    hazengine = job.Job.from_kvs(job_id)
-    with mixins.Mixin(hazengine, hazjob.HazJobMixin, key="hazard"):
-        hazengine.compute_ground_motion_fields(site_list, gmf_id, seed)
+    try:
+        hazengine = job.Job.from_kvs(job_id)
+        with mixins.Mixin(hazengine, hazjob.HazJobMixin, key="hazard"):
+            hazengine.compute_ground_motion_fields(site_list, gmf_id, seed)
+    except Exception, exc:
+        compute_ground_motion_fields.retry(
+                args=[job_id, site_list, gmf_id, seed], kwargs=kwargs, exc=exc)
+        
 
 
 def write_out_ses(job_file, stochastic_set_key):
@@ -50,7 +56,8 @@ def write_out_ses(job_file, stochastic_set_key):
         ses = kvs.get_value_json_decoded(stochastic_set_key)
         hazengine.write_gmf_files(ses)
 
-@task
+
+@task(default_retry_delay=10.0)
 def compute_hazard_curve(job_id, block_id, site_id=None):
     """
     Stubbed Compute Hazard Curve
@@ -101,7 +108,8 @@ def compute_hazard_curve(job_id, block_id, site_id=None):
     if sites is not None:
         return [_compute_hazard_curve(job_id, block_id, site) for site in sites]
 
-@task
+
+@task(default_retry_delay=10.0)
 def compute_mgm_intensity(job_id, block_id, site_id):
     """
     Compute mean ground intensity for a specific site.
