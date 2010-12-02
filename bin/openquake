@@ -145,9 +145,7 @@ if __name__ == '__main__':
     
     if FLAGS.profile:
         import cProfile
-        cProfile.run('tasks.main(FLAGS.vulnerability, \
-                        FLAGS.hazard_curves, FLAGS.region, \
-                        FLAGS.exposure, FLAGS.loss_map)', FLAGS.profile_log)
+        cProfile.run('job.run_job(FLAGS.config_file)', FLAGS.profile_log)
     elif FLAGS.load_profile:
         import pstats
         p = pstats.Stats(FLAGS.profile_log)

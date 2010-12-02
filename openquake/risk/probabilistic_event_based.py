@@ -11,9 +11,11 @@ from numpy import histogram # pylint: disable=E1101, E0611
 from numpy import where # pylint: disable=E1101, E0611
 
 from openquake import shapes
+from openquake import state
 
 DEFAULT_NUMBER_OF_SAMPLES = 25
 
+@state.memoize
 def compute_loss_ratios(vuln_function, ground_motion_field):
     """Compute loss ratios using the ground motion field passed."""
     if vuln_function == shapes.EMPTY_CURVE or not \
@@ -34,7 +36,6 @@ def compute_loss_ratios(vuln_function, ground_motion_field):
         else:
             loss_ratios.append(vuln_function.ordinate_for(
                     ground_motion_value))
-    
     return array(loss_ratios)
 
 
@@ -99,8 +100,11 @@ def compute_loss_ratio_curve(vuln_function, ground_motion_field):
                 loss_ratios_range[idx + 1]) / 2
         data.append((mean_loss_ratios, probs_of_exceedance[idx]))
     
-    return shapes.Curve(data)
-
+    loss_ratio_curve = shapes.Curve(data)
+    # NOTE(JMC): Early exit if the loss ratio is all zeros
+    if not False in (loss_ratio_curve.ordinates == 0.0):
+        return None
+    return loss_ratio_curve
 
 # TODO (ac): Test with pre computed data!
 def compute_loss_ratio_curve_from_aggregate(aggregate_hist, tses, time_span):

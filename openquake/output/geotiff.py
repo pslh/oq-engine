@@ -247,8 +247,9 @@ class GMLGeoTiffHTML(object):
         self.html_path = html_path
     
     def add_geotiff(self, name, path, width, height):
+        # TODO(JMC): Might need to build up a www-safe path later...
         self.geotiffs.append(
-                {'name': name, 'path': path, 
+                {'name': name, 'path': path.split("/")[-1], 
                  'width': width * SCALE_UP, 'height': height * SCALE_UP})
     
     def close(self):

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
@@ -30,17 +31,30 @@ from openquake.risk import job as riskjob
 from openquake.risk.job import probabilistic
 FLAGS = flags.FLAGS
 
+flags.DEFINE_boolean('profile', False, 'Run profiler?')
+flags.DEFINE_boolean('load_profile', False, 'Load profiler data?')
+flags.DEFINE_string('profile_log', 'gem-risk.profile', 'Profiling log')
+
 CHECKOUT_DIR = os.path.abspath(os.path.join(
         os.path.dirname(__file__), '../OpenGemModel'))
 
 REPO_URL = "git@github.com:gem/OpenGemModel.git"
 
 if __name__ == '__main__':
-    sys.argv = FLAGS(sys.argv)  
+    args = FLAGS(sys.argv)  
     logs.init_logs()
     
     # Make sure there's a checkout and it's up to date (of OpenGemModel)
     if not os.path.exists(CHECKOUT_DIR):
         repo = Repo.clone_from(REPO_URL, CHECKOUT_DIR)
-    job_path = os.path.join(CHECKOUT_DIR, "tests", sys.argv[1], "config.gem")
-    job.run_job(job_path)
+    job_path = os.path.join(CHECKOUT_DIR, "tests", args[1], "config.gem")
+    if FLAGS.profile:
+        import cProfile
+        cProfile.run('job.run_job(job_path)', FLAGS.profile_log)
+    elif FLAGS.load_profile:
+        import pstats
+        p = pstats.Stats(FLAGS.profile_log)
+        p.sort_stats('time').print_stats(100)   
+        p.print_callees(1.0, 'recv')
+    else:
+        job.run_job(job_path)

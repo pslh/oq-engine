@@ -37,6 +37,7 @@ LOGGER = logs.LOG
 
 DEFAULT_conditional_loss_poe = 0.01
 
+
 def preload(fn):
     """ Preload decorator """
     def preloader(self, *args, **kwargs):
@@ -56,7 +57,6 @@ class ProbabilisticEventMixin:
     @output
     def execute(self):
         """ Execute a ProbabilisticLossRatio Job """
-
         results = []
         tasks = []
         for block_id in self.blocks_keys:
@@ -81,7 +81,9 @@ class ProbabilisticEventMixin:
         # TODO(JMC): Confirm this works regardless of the method of haz calc.
         histories = int(self['NUMBER_OF_SEISMICITY_HISTORIES'])
         realizations = int(self['NUMBER_OF_HAZARD_CURVE_CALCULATIONS'])
+        timespan = float(self['INVESTIGATION_TIME'])
         num_ses = histories * realizations
+        tses = num_ses * timespan
         
         block = job.Block.from_kvs(block_id)
         sites_list = block.sites
@@ -89,32 +91,25 @@ class ProbabilisticEventMixin:
         for site in sites_list:
             risk_point = self.region.grid.point_at(site)
             key = "%s!%s" % (risk_point.row, risk_point.column)
-            gmfs[key] = []
+            gmfs[key] = {"IMLs": [], "TSES": tses, "TimeSpan": timespan}
             
+        ses_keys = []    
         for i in range(0, histories):
-            for j in range(0, realizations):
-                key = kvs.generate_product_key(
-                        self.id, hazard.STOCHASTIC_SET_TOKEN, "%s!%s" % (i, j))
-                fieldset = shapes.FieldSet.from_json(kvs.get(key), self.region.grid)
-                for field in fieldset:
-                    for key in gmfs.keys():
-                        (row, col) = key.split("!")
-                        gmfs[key].append(field.get(int(row), int(col)))
-                                        
-        for key, gmf_slice in gmfs.items():
-            (row, col) = key.split("!")
-            key_gmf = kvs.generate_product_key(self.id,
-                risk.GMF_KEY_TOKEN, col, row)
-            LOGGER.debug( "GMF_SLICE for %s X %s : \n\t%s" % (
-                    col, row, gmf_slice ))
-            timespan = float(self['INVESTIGATION_TIME'])
-            gmf = {"IMLs": gmf_slice, "TSES": num_ses * timespan, 
-                    "TimeSpan": timespan}
-            kvs.set_value_json_encoded(key_gmf, gmf)
+            ses_keys.extend([kvs.generate_product_key(
+                        self.id, hazard.STOCHASTIC_SET_TOKEN, 
+                        "%s!%s" % (i, j)) for j in range(0, realizations)])
+            
+        seses = kvs.get_client().get_multi(ses_keys).values()
+        for ses in seses:
+            fieldset = shapes.FieldSet.from_json(ses, self.region.grid)
+            for field in fieldset:
+                for key in gmfs.keys():
+                    (row, col) = key.split("!")
+                    gmfs[key]["IMLs"].append(field.get(int(row), int(col)))
+        self.gmf_slices = gmfs
 
     def store_exposure_assets(self):
         """ Load exposure assets and write to memcache """
-        
         exposure_parser = exposure.ExposurePortfolioFile("%s/%s" % 
             (self.base_path, self.params[job.EXPOSURE]))
 
@@ -122,8 +117,8 @@ class ProbabilisticEventMixin:
             # TODO(JMC): This is kludgey
             asset['lat'] = site.latitude
             asset['lon'] = site.longitude
-            gridpoint = self.region.grid.point_at(site)
-            asset_key = risk.asset_key(self.id, gridpoint.row, gridpoint.column)
+            point = self.region.grid.point_at(site)
+            asset_key = risk.asset_key(self.id, point.row, point.column)
             kvs.get_client().rpush(asset_key, json.JSONEncoder().encode(asset))
 
     def store_vulnerability_model(self):
@@ -131,6 +126,12 @@ class ProbabilisticEventMixin:
         vulnerability.load_vulnerability_model(self.id,
             "%s/%s" % (self.base_path, self.params["VULNERABILITY"]))
     
+    def assets_at_point(self, point):
+        decoder = json.JSONDecoder()
+        asset_key = risk.asset_key(self.id, point.row, point.column)
+        asset_list = kvs.get_client().lrange(asset_key, 0, -1)
+        return [decoder.decode(x) for x in asset_list]
+                
     def compute_risk(self, block_id, **kwargs):
         """This task computes risk for a block of sites. It requires to have
         pre-initialized in memcache:
@@ -144,83 +145,54 @@ class ProbabilisticEventMixin:
         the job configuration.
         """
 
-        conditional_loss_poes = [float(x) for x in self.params.get(
+        self.conditional_loss_poes = [float(x) for x in self.params.get(
                     'CONDITIONAL_LOSS_POE', "0.01").split()]
         self.slice_gmfs(block_id)
         self.vuln_curves = \
                 vulnerability.load_vulnerability_curves_from_kvs(self.job_id)
 
-        # TODO(jmc): DONT assumes that hazard and risk grid are the same
-        decoder = json.JSONDecoder()
-        
         block = job.Block.from_kvs(block_id)
+        curves = {}        
         
+        # TODO(jmc): DONT assumes that hazard and risk grid are the same
         for point in block.grid(self.region):
-            key = kvs.generate_product_key(self.job_id, 
-                risk.GMF_KEY_TOKEN, point.column, point.row)
-            gmf_slice = kvs.get_value_json_decoded(key)
-            
-            asset_key = risk.asset_key(self.id, point.row, point.column)
-            asset_list = kvs.get_client().lrange(asset_key, 0, -1)
-            for asset in [decoder.decode(x) for x in asset_list]:
-                LOGGER.debug("processing asset %s" % (asset))
-                loss_ratio_curve = self.compute_loss_ratio_curve(
-                        point.column, point.row, asset, gmf_slice)
-                if loss_ratio_curve is not None:
-
-                    # compute loss curve
-                    loss_curve = self.compute_loss_curve(
-                            point.column, point.row, 
-                            loss_ratio_curve, asset)
-                    
-                    for loss_poe in conditional_loss_poes:
-                        self.compute_conditional_loss(point.column, point.row,
-                                loss_curve, asset, loss_poe)
+            gmf_key = "%s!%s" % (point.row, point.column)
+            gmf_slice = self.gmf_slices[gmf_key]
+            for asset in self.assets_at_point(point):
+                curves.update(
+                        self.compute_risk_for_asset(asset, gmf_slice, point))
+        kvs.get_client().mset(curves)
         return True
     
-    def compute_conditional_loss(self, column, row, loss_curve, asset, loss_poe):
-        loss_conditional = probabilistic_event_based. \
-                compute_conditional_loss(loss_curve, loss_poe)
-        key = risk.loss_key(self.id, row, column, asset["AssetID"], loss_poe)
-
-        LOGGER.debug("RESULT: conditional loss is %s, write to key %s" % (
-            loss_conditional, key))
-        kvs.set(key, loss_conditional)
-
-    def compute_loss_ratio_curve(self, column, row, asset, gmf_slice ): # site_id
-        """Compute the loss ratio curve for a single site."""
-        # If the asset has a vuln function code we don't have loaded, return fail
-        vuln_function = self.vuln_curves.get(
-                asset["VulnerabilityFunction"], None)
-        if not vuln_function:
-            LOGGER.error("Unknown vulnerability function %s for asset %s"
+    def compute_risk_for_asset(self, asset, gmf_slice, point):
+        curves = {}
+        LOGGER.debug("processing asset %s" % (asset))
+        if not asset["VulnerabilityFunction"] in self.vuln_curves:
+            LOGGER.error("Unknown vuln function %s for asset %s"
                 % (asset["VulnerabilityFunction"], asset["AssetID"]))
-            return None
-
+            return curves
+        
         loss_ratio_curve = probabilistic_event_based.compute_loss_ratio_curve(
-                vuln_function, gmf_slice)
-        # NOTE(JMC): Early exit if the loss ratio is all zeros
-        if not False in (loss_ratio_curve.ordinates == 0.0):
-            return None
-        key = risk.loss_ratio_key(self.id, row, column, asset["AssetID"])
-        
-        LOGGER.warn("RESULT: loss ratio curve is %s, write to key %s" % (
-                loss_ratio_curve, key))
+                self.vuln_curves[asset["VulnerabilityFunction"]], gmf_slice)
+        if loss_ratio_curve is None:
+            return curves
             
-        kvs.set(key, loss_ratio_curve.to_json())
-        return loss_ratio_curve
-
-    def compute_loss_curve(self, column, row, loss_ratio_curve, asset):
-        """Compute the loss curve for a single site."""
-        if asset is None:
-            return None
-        
+        key = risk.loss_ratio_key(
+                self.id, point.row, point.column, asset["AssetID"])
+        curves[key] = loss_ratio_curve.to_json()
+            
         loss_curve = loss_ratio_curve.rescale_abscissae(asset["AssetValue"])
-        key = risk.loss_curve_key(self.id, row, column, asset["AssetID"])
+        key = risk.loss_curve_key(
+                self.id, point.row, point.column, asset["AssetID"])
+        curves[key] = loss_curve.to_json()
+        
+        for loss_poe in self.conditional_loss_poes:
+            loss = probabilistic_event_based. \
+                    compute_conditional_loss(loss_curve, loss_poe)
+            key = risk.loss_key(self.id, point.row, point.column, 
+                    asset["AssetID"], loss_poe)
+            curves[key] = loss
+        return curves
 
-        LOGGER.warn("RESULT: loss curve is %s, write to key %s" % (
-                loss_curve, key))
-        kvs.set(key, loss_curve.to_json())
-        return loss_curve
 
 RiskJobMixin.register("Probabilistic Event", ProbabilisticEventMixin)

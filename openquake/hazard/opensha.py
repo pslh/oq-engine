@@ -4,6 +4,7 @@ Wrapper around the OpenSHA-lite java library.
 
 """
 
+import json
 import math
 import os
 import random
@@ -121,14 +122,14 @@ class MonteCarloMixin: # pylint: disable=W0232
                     self.base_path, self['OUTPUT_DIR'], 
                     "gmfs-history-%s.html" % i)
             html_writer = geotiff.GMLGeoTiffHTML(html_path)
-            for j in range(0, realizations):
-                stochastic_set_id = "%s!%s" % (i, j)
-                stochastic_set_key = kvs.generate_product_key(
-                        self.id, hazard.STOCHASTIC_SET_TOKEN, stochastic_set_id)
-                print "Writing output for ses %s" % stochastic_set_key
-                ses = kvs.get_value_json_decoded(stochastic_set_key)
-                if ses:
-                    results.extend(self.write_gmf_files(ses, html_writer))
+            ses_keys = [kvs.generate_product_key(
+                        self.id, hazard.STOCHASTIC_SET_TOKEN, 
+                        "%s!%s" % (i, j)) for j in range(0, realizations)]
+            dejson = json.JSONDecoder()
+            seses = [dejson.decode(x) for x in kvs.get_client().get_multi(
+                        ses_keys).values()]
+            for ses in seses:
+                results.extend(self.write_gmf_files(ses, html_writer))
                     
             html_writer.close()
             results.append(html_path)
@@ -168,8 +169,6 @@ class MonteCarloMixin: # pylint: disable=W0232
                 html_writer.add_geotiff(
                         "Event %s Rupture %s" % (event_set, rupture), 
                         path, image_grid.rows, image_grid.columns)
-                
-            
         return files
         
     def generate_erf(self):
