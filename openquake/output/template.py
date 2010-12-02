@@ -92,6 +92,25 @@ HTML_TEMPLATE_GREENRED = """<!DOCTYPE html PUBLIC
 </html>
 """
 
+WRAPPER_HTML = """<!DOCTYPE html PUBLIC 
+    "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>GMF</title>
+</head>
+<body>
+<center>
+$geotiff_files
+$legend
+</center>
+</body>
+</html>
+ """
+
+GEOTIFF_IMG_SNIPPET = """<img width="$width" height="$height" 
+    src="$path" type="image/tiff" negative="yes"/>"""
+                    
+
 def generate_html(path, width="", height=""):
     curr_html = HTML_TEMPLATE_GREENRED
     for (token, new_value) in (

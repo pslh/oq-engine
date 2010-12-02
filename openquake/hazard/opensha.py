@@ -116,6 +116,11 @@ class MonteCarloMixin: # pylint: disable=W0232
                     raise Exception(task.result)
                     
             # if self.params['OUTPUT_GMF_FILES']
+            
+            html_path = os.path.join(
+                    self.base_path, self['OUTPUT_DIR'], 
+                    "gmfs-history-%s.html" % i)
+            html_writer = geotiff.GMLGeoTiffHTML(html_path)
             for j in range(0, realizations):
                 stochastic_set_id = "%s!%s" % (i, j)
                 stochastic_set_key = kvs.generate_product_key(
@@ -123,10 +128,13 @@ class MonteCarloMixin: # pylint: disable=W0232
                 print "Writing output for ses %s" % stochastic_set_key
                 ses = kvs.get_value_json_decoded(stochastic_set_key)
                 if ses:
-                    results.extend(self.write_gmf_files(ses))
+                    results.extend(self.write_gmf_files(ses, html_writer))
+                    
+            html_writer.close()
+            results.append(html_path)
         return results
     
-    def write_gmf_files(self, ses):
+    def write_gmf_files(self, ses, html_writer):
         """Generate a GeoTiff file for each GMF."""
         image_grid = self.region.grid
         iml_list = map(float, 
@@ -136,14 +144,14 @@ class MonteCarloMixin: # pylint: disable=W0232
         LOG.debug("IML: %s" % (iml_list))
         files = []
         for event_set in ses:
+            # NOTE(fab): we have to explicitly convert the JSON-decoded 
+            # tokens from Unicode to string, otherwise the path will not
+            # be accepted by the GeoTiffFile constructor
+            event_set_name = str(event_set.replace("!", "_"))
             for rupture in ses[event_set]:
-
-                # NOTE(fab): we have to explicitly convert the JSON-decoded 
-                # tokens from Unicode to string, otherwise the path will not
-                # be accepted by the GeoTiffFile constructor
+                rupture_name = str(rupture.replace("!", "_"))
                 path = os.path.join(self.base_path, self['OUTPUT_DIR'],
-                        "gmf-%s-%s.tiff" % (str(event_set.replace("!", "_")),
-                                            str(rupture.replace("!", "_"))))
+                        "gmf-%s-%s.tiff" % (event_set_name, rupture_name))
                 gwriter = geotiff.GMFGeoTiffFile(path, image_grid, 
                     init_value=0.0, normalize=True, iml_list=iml_list,
                     discrete=True)
@@ -156,7 +164,11 @@ class MonteCarloMixin: # pylint: disable=W0232
 
                 gwriter.close()
                 files.append(path)
-                files.append(gwriter.html_path)
+                html_writer.add_geotiff(
+                        "Event %s Rupture %s" % (event_set, rupture), 
+                        path, image_grid.rows, image_grid.columns)
+                
+            
         return files
         
     def generate_erf(self):

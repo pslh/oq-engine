@@ -15,6 +15,7 @@ PYTHONPATH in my .bash_profile file to get them to load.
 
 import numpy
 import os
+import string
 
 from osgeo import osr, gdal
 
@@ -238,6 +239,35 @@ class GMFGeoTiffFile(GeoTiffFile):
 
         with open(self.html_path, 'w') as f:
             f.write(html_string)
+
+class GMLGeoTiffHTML(object):
+    
+    def __init__(self, html_path):
+        self.geotiffs = []
+        self.html_path = html_path
+    
+    def add_geotiff(self, name, path, width, height):
+        self.geotiffs.append(
+                {'name': name, 'path': path, 
+                 'width': width * SCALE_UP, 'height': height * SCALE_UP})
+    
+    def close(self):
+        self._write_html_wrapper()
+        
+    def _write_html_wrapper(self):
+        """write an html wrapper that <embed>s the geotiff."""
+        # replace placeholders in HTML template with filename, height, width
+        geotiff_strings = []
+        snippet_template = string.Template(template.GEOTIFF_IMG_SNIPPET)
+        for snippet_kwargs in self.geotiffs:
+            geotiff_strings.append(snippet_template.substitute(**snippet_kwargs))
+        html_template = string.Template(template.WRAPPER_HTML)
+        html_string = html_template.substitute(
+                **{'geotiff_files' : "\n".join(geotiff_strings),
+                 'legend': "TODO: ADD LEGEND" })
+
+        with open(self.html_path, 'w') as f:
+            f.write(html_string)    
 
 def _rgb_for(fractional_values, colormap):
     """Return a triple (r, g, b) of numpy arrays with R, G, and B 
