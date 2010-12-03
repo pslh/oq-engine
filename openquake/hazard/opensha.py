@@ -130,8 +130,10 @@ class MonteCarloMixin: # pylint: disable=W0232
     def write_gmf_files(self, ses):
         """Generate a GeoTiff file for each GMF."""
         image_grid = self.region.grid
-        iml_list = map(float, 
-            self.params['INTENSITY_MEASURE_LEVELS'].split(","))
+        iml_list = [float(param) 
+                    for param
+                    in self.params['INTENSITY_MEASURE_LEVELS'].split(",")]
+
         LOG.debug("Generating GMF image, grid is %s col by %s rows" % (
                 image_grid.columns, image_grid.rows))
         LOG.debug("IML: %s" % (iml_list))
