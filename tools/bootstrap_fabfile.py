@@ -124,6 +124,12 @@ def _bootstrap_linux():
             raise "I don't know this distro."
 
     def _bootstrap_ubuntu():
+        
+        # we need easy_install
+        if not run('which easy_install'):
+            print "easy_install is required, but could not be found."
+            print "Visit http://pypi.python.org/pypi/setuptools for more info."
+            sys.exit()
         apt_packages = ["build-essential", "python2.6", "python2.6-dev", 
                         "python-setuptools", "python-pip", "gfortran", 
                         "rabbitmq-server", "memcached", "libmemcache-dev", 
@@ -136,9 +142,12 @@ def _bootstrap_linux():
                                "eventlet", "python-gflags", "guppy", 
                                "libLAS", "numpy", "scipy", "celery",
                                "nose", "django", "ordereddict"] 
+        easy_install_packages = ["matplotlib"]
 
-        _apt_install(" ".join(apt_packages)) 
+        _apt_install(" ".join(apt_packages))
         _pip_install(" ".join(pip_packages))
+        for pkg in easy_install_packages:
+            _easy_install(pkg) 
         sudo("rm -rf ~/build/")
 
         _configure_postgresql(pgsql_path="/usr/lib/postgresql/8.4/bin/")
@@ -226,6 +235,11 @@ def _bootstrap_osx():
         print 'ruby -e "$(curl -fsS https://gist.github.com/raw/323731/install_homebrew.rb)"'
         sys.exit()
 
+    if not run('which easy_install'):
+        print "easy_install is required, but could not be found."
+        print "Visit http://pypi.python.org/pypi/setuptools for more info."
+        sys.exit() 
+    
     # Install python2.6
     _install_python()
 
@@ -273,7 +287,8 @@ def _bootstrap_osx():
     virtualenv_packages = ["lxml", "pyyaml", "sphinx", "shapely", "eventlet",
                            "python-gflags", "guppy", "celery", "nose", "django",
                            "ordereddict", "pylint"]
-
+    easy_install_packages = ["matplotlib"]
+    _easy_install(package, to_venv=True)
     _pip_install(" ".join(virtualenv_packages), virtualenv="openquake")
     _pip_install("pylibmc", version="0.9.2", virtualenv="openquake")
 
@@ -435,6 +450,15 @@ def _homebrew_exists(package):
         return False
 
     return True
+
+def _easy_install(package, to_venv=False):
+    """Set to_venv=True to install this package to your virtual environment."""
+    if to_venv:
+        return sudo("easy_install \
+--install-dir=~/.virtualenvs/openquake/lib/python2.6/site-packages/ %s" \
+% package, pty=True)
+    else:
+        return sudo("easy install %s" % package, pty=True)
 
 def _apt_install(package):
     return sudo("apt-get -y install %s" % package, pty=True)
