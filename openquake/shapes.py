@@ -473,7 +473,7 @@ class Curve(object):
         """Return true if this curve describes multiple ordinate values,
         false otherwise."""
         return self.y_values.ndim > 1
-    
+
     def ordinate_for(self, x_value, y_index=0):
         """Return the y value corresponding to the given x value."""
         

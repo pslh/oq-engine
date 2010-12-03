@@ -20,7 +20,6 @@ def loss_token(poe):
 
 def vuln_key(job_id):
     """Generate the key used to store vulnerability curves."""
-    print kvs.generate_product_key(job_id, "VULN_CURVES")
     return kvs.generate_product_key(job_id, "VULN_CURVES")
 
 def asset_key(job_id, row, col):

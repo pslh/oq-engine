@@ -1,3 +1,5 @@
+#pylint: disable-all
+""" Mixin for Classical PSHA Risk Calculation """
 
 
 class ClassicalPSHABasedMixin:
@@ -55,16 +57,13 @@ class ClassicalPSHABasedMixin:
         """
 
         if conditional_loss_poe is None:
-            conditional_loss_poe = DEFAULT_conditional_loss_poe
+            conditional_loss_poe = DEFAULT_CONDITIONAL_LOSS_POE
 
-        # start up memcache client
-        memcache_client = kvs.get_client(binary=False)
+        risk_engine = engines.ClassicalPSHABasedLossRatioCalculator(job_id,
+            block_id)
 
-        risk_engine = engines.ClassicalPSHABasedLossRatioCalculator(
-                job_id, block_id, memcache_client)
-
-        # TODO(jmc): DONT assumes that hazard, assets, and output risk grid are the same
-        # (no nearest-neighbour search to find hazard)
+        # TODO(jmc): DONT assumes that hazard, assets, and output risk grid are
+        # the same (no nearest-neighbour search to find hazard)
         block = job.Block.from_kvs(block_id)
         sites_list = block.sites
 
@@ -82,8 +81,8 @@ class ClassicalPSHABasedMixin:
                 key = kvs.generate_product_key(job_id,
                     risk.LOSS_RATIO_CURVE_KEY_TOKEN, block_id, gridpoint)
 
-                logger.debug("RESULT: loss ratio curve is %s, write to key %s" % (
-                    loss_ratio_curve, key))
+                logger.debug("RESULT: loss ratio curve is %s, write to key %s" 
+                     % (loss_ratio_curve, key))
                 memcache_client.set(key, loss_ratio_curve)
             
                 # compute loss curve
@@ -102,8 +101,8 @@ class ClassicalPSHABasedMixin:
                 key = kvs.generate_product_key(job_id, 
                     risk.loss_token(conditional_loss_poe), block_id, gridpoint)
 
-                logger.debug("RESULT: conditional loss is %s, write to key %s" % (
-                    loss_conditional, key))
+                logger.debug("RESULT: conditional loss is %s, write to key %s"
+                    % (loss_conditional, key))
                 memcache_client.set(key, loss_conditional)
 
         # assembling final product needs to be done by jobber, collecting the

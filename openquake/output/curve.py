@@ -232,6 +232,7 @@ class CurvePlot(writer.FileWriter):
         strings for abscissa and ordinate properties, and the title of the plot,
         and the site as shapes.Site object.."""
 
+        print data
         for curve in data: 
             #pylint: disable=E1101
             pylab.plot(data[curve]['abscissa'], 
@@ -244,6 +245,7 @@ class CurvePlot(writer.FileWriter):
         if autoscale_y is False:
             pylab.ylim(self._plotAxes['ymin'], self._plotAxes['ymax'])
 
+        curve = data.keys()[0] # We apparently only need to get this once?
         pylab.xlabel(data[curve]['abscissa_property'], self._plotLabelsFont)
         pylab.ylabel(data[curve]['ordinate_property'], self._plotLabelsFont)
 

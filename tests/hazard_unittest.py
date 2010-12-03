@@ -60,7 +60,7 @@ class HazardEngineTestCase(unittest.TestCase):
         hazengine = job.Job.from_file(TEST_JOB_FILE)
         self.generated_files.append(hazengine.super_config_path)
         with mixins.Mixin(hazengine, openquake.hazard.job.HazJobMixin, key="hazard"):
-            # hc = hazengine.execute()
+            hc = hazengine.execute()
             
             source_model_key = kvs.generate_product_key(hazengine.id, 
                                 hazard.SOURCE_MODEL_TOKEN)
