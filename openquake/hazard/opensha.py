@@ -49,6 +49,7 @@ class MonteCarloMixin: # pylint: disable=W0232
         other files.
     
         config_file should be an absolute path."""
+        print "Store source model from %s" % (config_file)
         engine = java.jclass("CommandLineCalculator")(config_file)
         key = kvs.generate_product_key(self.id, hazard.SOURCE_MODEL_TOKEN)
         engine.sampleAndSaveERFTree(self.cache, key, seed)
@@ -129,8 +130,11 @@ class MonteCarloMixin: # pylint: disable=W0232
     def write_gmf_files(self, ses):
         """Generate a GeoTiff file for each GMF."""
         image_grid = self.region.grid
-        print "Generating GMF image, grid is %s col by %s rows" % (
-                image_grid.columns, image_grid.rows)
+        iml_list = map(float, 
+            self.params['INTENSITY_MEASURE_LEVELS'].split(","))
+        LOG.debug("Generating GMF image, grid is %s col by %s rows" % (
+                image_grid.columns, image_grid.rows))
+        LOG.debug("IML: %s" % (iml_list))
         files = []
         for event_set in ses:
             for rupture in ses[event_set]:
@@ -142,19 +146,18 @@ class MonteCarloMixin: # pylint: disable=W0232
                         "gmf-%s-%s.tiff" % (str(event_set.replace("!", "_")),
                                             str(rupture.replace("!", "_"))))
                 gwriter = geotiff.GMFGeoTiffFile(path, image_grid, 
-                        init_value=0.0, normalize=True)
+                    init_value=0.0, normalize=True, iml_list=iml_list,
+                    discrete=True)
                 for site_key in ses[event_set][rupture]:
                     site = ses[event_set][rupture][site_key]
                     site_obj = shapes.Site(site['lon'], site['lat'])
                     point = image_grid.point_at(site_obj)
-                    LOG.debug("Writing GMF %s by %s" % 
-                        (point.row, point.column))
                     gwriter.write((point.row, point.column), 
                         math.exp(float(site['mag'])))
 
-                # LOG.debug("GMF: %s" % (gwriter.raster))
                 gwriter.close()
                 files.append(path)
+                files.append(gwriter.html_path)
         return files
         
     def generate_erf(self):
