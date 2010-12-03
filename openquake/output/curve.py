@@ -232,7 +232,6 @@ class CurvePlot(writer.FileWriter):
         strings for abscissa and ordinate properties, and the title of the plot,
         and the site as shapes.Site object.."""
 
-        print data
         for curve in data: 
             #pylint: disable=E1101
             pylab.plot(data[curve]['abscissa'], 
