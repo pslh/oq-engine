@@ -17,6 +17,10 @@ developer already has dependencies installed)
 
 
 def bootstrap():
+    
+    _assert_we_can_remote_login()
+    sys.exit() 
+    
     def _detect_os():
         platforms = {'Darwin': _bootstrap_osx, 'Linux': _bootstrap_linux}
         return platforms.get(run('uname'), _bootstrap_other)
@@ -29,6 +33,10 @@ def virtualenv():
     """This method installs virtualenv, virtualenvwrapper, and pre-built
 virtual environment tar ball specific to the platform.
     """
+    
+    _assert_we_can_remote_login()
+    sys.exit()
+ 
     def _detect_os():
         platforms = {'Darwin': _virtual_env_osx, 'Linux': _virtual_env_linux}
         return platforms.get(run('uname'), _virtual_env_other)
@@ -110,6 +118,7 @@ def _distro_is_ubuntu():
 
 
 def _bootstrap_linux():
+ 
     def _detect_distro():
         if _distro_is_ubuntu():
             version = run("lsb_release -a | grep Release | sed -e 's/Release: *//'")
@@ -225,7 +234,7 @@ def _bootstrap_osx():
         python2.6.x
         pip
     """
-
+    
     # We really don't care about warnings.
     fabric_output.warnings = False
 
@@ -535,3 +544,54 @@ def _install_python():
 
     _homebrew_install("python")
 
+def _assert_we_can_remote_login():
+    """Remote login is required for running bootstrap/virtualenv setup  on 
+    localhost. This function verifies that remote login is enabled.
+    If it is not, the script will print an error message and exit.
+
+    If fabric's env.hosts == ['localhost'], no check is performed.""" 
+   
+    if env.hosts != ['localhost']:
+        return
+    
+    with os.popen("uname") as fp:
+        platform = fp.read()
+    platform = platform.strip('\n')
+ 
+    REMOTE_LOGIN_NOT_ENABLED = "It looks like remote login is not enabled on \
+the local machine."
+    
+    def _osx():
+        with os.popen("sudo systemsetup -getremotelogin") as fp:
+            result = fp.read()
+    
+        if result != 'Remote Login: On\n':
+            print
+            print REMOTE_LOGIN_NOT_ENABLED
+            print
+            print "You need to enable it to continue."
+            print "To do so, select Apple -> System \
+Preferences -> Sharing and make sure 'Remote Login' is checked."
+            sys.exit()
+
+    def _linux():
+        with os.popen("ps aux | grep [s]shd") as fp:
+            result = fp.read()
+
+        if result == '':
+            print
+            print REMOTE_LOGIN_NOT_ENABLED
+            print
+            print "Please start sshd and try again."
+            sys.exit()
+
+    if platform == 'Darwin':
+        _osx()
+    elif platform == 'Linux':
+        _linux()
+    else:
+        print
+        print "Unknown platform '%s'" % platform
+        print
+        print "This is probably a bug."
+        sys.exit()
