@@ -134,6 +134,10 @@ class GeoTiffFile(writer.FileWriter):
 
         self.target = None  # This is required to flush the file
         self.finished.send(True)
+
+    def _write_html_wrapper(self):
+        """write an html wrapper that <embed>s the geotiff."""
+        pass
     
     def serialize(self, iterable):
         # TODO(JMC): Normalize the values
@@ -178,9 +182,9 @@ class LossMapGeoTiffFile(GeoTiffFile):
 
         # replace placeholders in HTML template with filename, height, width
         html_string = template.generate_html(os.path.basename(self.path), 
-                                             str(self.target.RasterXSize * SCALE_UP),
-                                             str(self.target.RasterYSize * SCALE_UP),
-                                             template=template.HTML_TEMPLATE_LOSSRATIO)
+                                 str(self.target.RasterXSize * SCALE_UP),
+                                 str(self.target.RasterYSize * SCALE_UP),
+                                 template=template.HTML_TEMPLATE_LOSSRATIO)
 
         with open(html_path, 'w') as f:
             f.write(html_string)
@@ -227,9 +231,6 @@ class GMFGeoTiffFile(GeoTiffFile):
                                     dtype=numpy.int)
         self.raster_g = numpy.zeros_like(self.raster_r)
         self.raster_b = numpy.zeros_like(self.raster_r)
-
-    def _normalize(self):
-        """ Normalize the raster matrix """
 
     def _normalize(self):
         """ Normalize the raster matrix """
