@@ -13,7 +13,7 @@ For the most part the Python packages in here can be installed using `pip`
  * python-numpy
  * python-scipy
  * libmemcache-dev
- 
+ * celery >= 2.0.3 
 
 On OS X a good way to install the pieces that are not Python (if you don't
 already use MacPorts or Fink) is called homebrew: http://mxcl.github.com/homebrew/
