@@ -152,7 +152,7 @@ class ProbabilisticEventMixin:
                 vulnerability.load_vulnerability_curves_from_kvs(self.job_id)
 
         block = job.Block.from_kvs(block_id)
-        curves = {}        
+        curves = {}
         
         # TODO(jmc): DONT assumes that hazard and risk grid are the same
         for point in block.grid(self.region):

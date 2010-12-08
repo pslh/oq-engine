@@ -202,7 +202,7 @@
             <xs:simpleType>
                 <xs:restriction base="xs:double">
                     <xs:minInclusive fixed="true" value="-180.0"/>
-                    <xs:maxInclusive fixed="true" value="+360.0"/>
+                    <xs:maxInclusive fixed="true" value="+180.0"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
@@ -422,7 +422,7 @@
         </xs:attribute>
         <xs:attribute name="sigma" type="xs:double">
             <xs:annotation>
-                <xs:documentation>Standard deviatio of the normal distribution used to account for aleatoric uncertainty about the characteristic magnitude. </xs:documentation>
+                <xs:documentation>Standard deviation of the normal distribution used to account for aleatoric uncertainty about the characteristic magnitude. </xs:documentation>
             </xs:annotation>
         </xs:attribute>
         <xs:attribute name="truncation" type="xs:double">
@@ -583,7 +583,7 @@ a complex fault data
             <xs:simpleType>
                 <xs:restriction base="xs:double">
                     <xs:minInclusive fixed="true" value="-180.0"/>
-                    <xs:maxInclusive fixed="true" value="+360.0"/>
+                    <xs:maxInclusive fixed="true" value="+180.0"/>
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>
