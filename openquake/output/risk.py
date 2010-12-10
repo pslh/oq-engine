@@ -11,7 +11,7 @@ from lxml import etree
 from openquake import logs
 from openquake import shapes
 from openquake import writer
-from openquake.xml import GML, NRML, NSMAP
+from openquake.xmly import GML, NRML, NSMAP
 
 LOGGER = logs.RISK_LOG
 

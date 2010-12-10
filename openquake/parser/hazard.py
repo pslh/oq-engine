@@ -11,7 +11,7 @@ from lxml import etree
 
 from openquake import producer
 from openquake import shapes
-from openquake.xml import NRML_NS, GML_NS, NRML
+from openquake.xmly import NRML_NS, GML_NS, NRML
                 
 
 def _to_site(element):

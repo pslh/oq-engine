@@ -13,7 +13,7 @@ from openquake.risk import engines
 from openquake.output import risk as risk_output
 from openquake import test
 from openquake import shapes
-from openquake import xml
+from openquake import xmly as xml
 
 log = logs.RISK_LOG
 

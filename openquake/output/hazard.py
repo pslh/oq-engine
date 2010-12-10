@@ -14,7 +14,7 @@ objects are received.
 from lxml import etree
 
 from openquake import writer
-from openquake.xml import NSMAP, NRML, GML
+from openquake.xmly import NSMAP, NRML, GML
 
 class HazardCurveXMLWriter(writer.FileWriter):
     """This class writes an hazard curve into the nrml format."""

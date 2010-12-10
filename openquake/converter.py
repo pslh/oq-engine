@@ -23,7 +23,7 @@ import jpype
 
 from lxml import etree
 
-from openquake.xml import GML, NRML, NSMAP
+from openquake.xmly import GML, NRML, NSMAP
 from openquake.logs import LOG
 
 
