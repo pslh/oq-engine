@@ -97,6 +97,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.databrowse',
+    'south',
+    'openquake.faults'
     # 'django.contrib.gis',
     # 'openquake.seismicsources',
 )
