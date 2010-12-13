@@ -14,7 +14,7 @@ from openquake import shapes
 
 #TODO BW create a 'real' connection to a DB for mapping hazard curves.
 #TODO Change echo to False when you’re ready to put the code into production.
-engine = create_engine('sqlite:///test.db', echo=True)
+engine = create_engine('sqlite:///hazard_curve_table_test.db', echo=True)
 """sqlEngine/connection object, temporary connection to in-memory-only
        SQLite database"""
 
@@ -22,7 +22,7 @@ engine = create_engine('sqlite:///test.db', echo=True)
 metadata = MetaData(bind=engine)
 #Table generation
 hazard_curve_table = Table('hazard_curve', metadata,
-                        Column('model_id', String, primary_key=True),
+                        Column('model_id', String),
                         Column('end_branch_label', String),
                         Column('_values', String),
                         Column('imt', String(40)),
@@ -52,9 +52,7 @@ hcg = HazardCurveGenerator('1', 'test_endBranchLabel', 'test_valuse',
     'test_IMT', 'test_timeSpan', 'test_IMLValues')
     
 print hcg.model_id
-
 print hcg.end_branch_label
-
 print hcg.values
 print hcg.imt
 print hcg.time_span_duration

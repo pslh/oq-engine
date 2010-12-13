@@ -1,9 +1,9 @@
 
 from classical_psha_based_unittest import *
 from converter_unittest import *
-from db_mapper_unittest import *
 from geo_unittest import *
 from handlers_unittest import *
+from hazard_curve_to_db_unittest import *
 from hazard_nrml_unittest import *
 from hazard_unittest import *
 from job_unittest import *
