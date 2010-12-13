@@ -8,7 +8,7 @@ SITE_PKG_PATH = "~/.virtualenvs/openquake/lib/python2.6/site-packages/"
 
 VIRTUALENV_PACKAGES = ["lxml", "pyyaml", "sphinx", "shapely",
     "eventlet", "python-gflags", "guppy",
-    "libLAS", "numpy", "scipy", "celery",
+    "libLAS", "numpy", "scipy", "celery==2.0.3",
     "nose", "django", "ordereddict", "redis"]
 
 """
@@ -219,7 +219,8 @@ def _bootstrap_linux():
         _install_jpype_from_source(java_home=jvm)
         # Add virtualenv source to .profile
         if "virtualenvwrapper.sh" not in _warn_only_run("cat ~/.profile"):
-            run("echo %s >> ~/.profile" % _ubuntu_virtualenv_source())
+            run("echo %s >> ~/.profile" % \
+                _ubuntu_virtualenv_source().replace('\n', ''))
 
     def _bootstrap_fedora():
         pass
