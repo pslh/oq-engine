@@ -276,7 +276,8 @@ def _bootstrap_osx():
     with cd("~"):
         if not ls(".virtualenvs"):
             run("mkdir -p .virtualenvs")
-            run("%s mkvirtualenv openquake" % _osx_virtualenv_source())
+            run(_osx_virtualenv_source())
+            run("mkvirtualenv openquake")
 
     easy_install_packages = ["matplotlib"]
     
