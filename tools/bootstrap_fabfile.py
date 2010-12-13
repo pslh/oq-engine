@@ -143,9 +143,9 @@ def _bootstrap_linux():
             print "easy_install is required, but could not be found."
             print "Visit http://pypi.python.org/pypi/setuptools for more info."
             sys.exit()
-        apt_packages = ["rabbitmq-server", "build-essential", "python2.6",
+        apt_packages = ["default-jdk", "rabbitmq-server", "build-essential",
                         "python2.6-dev", "python-setuptools", "python-pip",
-                        "gfortran", "postgresql", "postgis",
+                        "gfortran", "postgresql", "postgis", "python2.6",
                         "libxml2-dev", "libxslt-dev", "libblas-dev",
                         "liblapack-dev", "pylint", "unzip", "libfreetype6-dev"] 
         gdal_packages = ["gdal-bin", "libgeos-dev", "libgdal1-dev", "python-gdal"]
@@ -159,7 +159,7 @@ def _bootstrap_linux():
         with cd("~"):
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
-                run("%s mkvirtualenv openquake " % _ubuntu_virtualenv_source())
+                run("%s mkvirtualenv openquake; " % _ubuntu_virtualenv_source())
 
         for pkg in easy_install_packages:
             _easy_install(pkg, to_venv=True) 
@@ -196,13 +196,7 @@ def _bootstrap_linux():
 
         # Install jpype from source
         
-        # larsbutler: We'll try to look for the jvm in two places.
-        # /usr/lib/jvm/java-6-sun-1.6.0.15/ was the default previously,
-        # although I don't really like that because it's a very specific
-        # version number.
-        # However, on a fresh Ubuntu slice apt-get does not install java
-        # to this directory. Try both. Yes, I know it's kind of ugly;
-        # I'm going for minimal impact here.
+        # First, try to find a jvm. Search the most likely places.
         jvm_locs = ["/usr/lib/jvm/java-6-sun", "/usr/lib/jvm/default-java/"]
         jvm = ''
         # look for an existing jvm dir
