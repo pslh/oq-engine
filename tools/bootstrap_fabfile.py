@@ -5,6 +5,11 @@ from fabric.state import output as fabric_output
 CELLAR_PATH = "/usr/local/Cellar"
 PYTHON_PATH = "%s/python/2.6.5" % CELLAR_PATH
 
+VIRTUALENV_PACKAGES = ["lxml", "pyyaml", "sphinx", "shapely",
+    "eventlet", "python-gflags", "guppy",
+    "libLAS", "numpy", "scipy", "celery",
+    "nose", "django", "ordereddict", "redis"]
+
 """
 This fab file assists with setting up a developer's environment.
 
@@ -144,12 +149,8 @@ def _bootstrap_linux():
                         "gfortran", "postgresql", "postgis",
                         "libxml2-dev", "libxslt-dev", "libblas-dev",
                         "liblapack-dev", "pylint", "unzip"] 
-        gdal_packages = ["gdal-bin", "libgdal1-dev", "python-gdal"]
+        gdal_packages = ["gdal-bin", "libgeos-dev", "libgdal1-dev", "python-gdal"]
         pip_packages = ["virtualenv", "virtualenvwrapper"]
-        virtualenv_packages = ["lxml", "pyyaml", "sphinx", "shapely", 
-                               "eventlet", "python-gflags", "guppy", 
-                               "libLAS", "numpy", "scipy", "celery",
-                               "nose", "django", "ordereddict"] 
         easy_install_packages = ["matplotlib"]
 
         _apt_install(" ".join(apt_packages))
@@ -170,17 +171,15 @@ def _bootstrap_linux():
                 run("%s mkvirtualenv openquake" % _ubuntu_virtualenv_source())   
 
 
-        for venv_package in virtualenv_packages:
+        for venv_package in VIRTUALENV_PACKAGES:
             _pip_install(venv_package, virtualenv="openquake")
-
-        _pip_install("pylibmc", version="0.9.2", virtualenv="openquake")
 
         # GDAL.
         _apt_install(" ".join(gdal_packages))
         # GDAL installs to /usr/lib/python2.6/
         # copy it to the virtualenv
-        if not ls("/usr/lib/python2.6/dist-packages/osgeo"):
-            run("cp -R /usr/lib/python2.6/dist-packages/osgeo/\
+        if ls("/usr/lib/python2.6/dist-packages/osgeo"):
+            run("cp -R /usr/lib/python2.6/dist-packages/osg/eo/ \
 ~/.virtualenvs/openquake/lib/python2.6/site-packages/")
         else:
             print "Couldn't find osgeo module; something is wrong with GDAL."
@@ -204,12 +203,11 @@ def _bootstrap_linux():
         # However, on a fresh Ubuntu slice apt-get does not install java
         # to this directory. Try both. Yes, I know it's kind of ugly;
         # I'm going for minimal impact here.
-        jvm_locs = ["/usr/lib/jvm/java-6-sun-1.6.0.15/",\
-"/usr/lib/jvm/default-java/"]
+        jvm_locs = ["/usr/lib/jvm/java-6-sun", "/usr/lib/jvm/default-java/"]
         jvm = ''
         # look for an existing jvm dir
         for loc in jvm_locs:
-            if not ls(loc):
+            if ls(loc):
                 # if the jvm dir exists, use it
                 jvm = loc
                 break
@@ -280,13 +278,9 @@ def _bootstrap_osx():
             run("mkdir -p .virtualenvs")
             run("%s mkvirtualenv openquake" % _osx_virtualenv_source())
 
-    virtualenv_packages = ["redis-server==2.0.3", "pylibmc==0.9.2", "lxml", 
-                           "pyyaml", "sphinx", "shapely", "eventlet",
-                           "python-gflags", "guppy", "celery", "nose", "django",
-                           "ordereddict", "pylint"]
     easy_install_packages = ["matplotlib"]
     _easy_install(" ".join(easy_install_packages), to_venv=True)
-    _pip_install(" ".join(virtualenv_packages), virtualenv="openquake")
+    _pip_install(" ".join(VIRTUALENV_PACKAGES), virtualenv="openquake")
 
 
     #download and install geohash
@@ -457,7 +451,7 @@ def _easy_install(package, to_venv=False):
         return sudo("easy install %s" % package, pty=True)
 
 def _apt_install(package):
-    return sudo("apt-get -y install %s" % package, pty=True)
+    return sudo("DEBIAN_FRONTEND=noninteractive apt-get -q -y install %s" % package, pty=True)
 
 def _homebrew_install(package):
     if not _homebrew_exists(package):
