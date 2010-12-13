@@ -161,7 +161,7 @@ def _bootstrap_linux():
                         "liblapack-dev", "pylint", "unzip", "libfreetype6-dev"] 
         gdal_packages = ["gdal-bin", "libgeos-dev", "libgdal1-dev", "python-gdal"]
         pip_packages = ["virtualenv", "virtualenvwrapper"]
-        easy_install_packages = ["matplotlib"]
+        #easy_install_packages = ["matplotlib"]
 
         _apt_install(" ".join(apt_packages))
         _pip_install(" ".join(pip_packages))
@@ -171,9 +171,11 @@ def _bootstrap_linux():
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
                 run("%s; mkvirtualenv openquake" % _ubuntu_virtualenv_source())
+       
+        run('echo PYTHONPATH="%s:$PYTHONPATH" >> ~/.profile' % SITE_PKG_PATH)
 
-        for pkg in easy_install_packages:
-            _easy_install(pkg, to_venv=True) 
+        #for pkg in easy_install_packages:
+        #    _easy_install(pkg, to_venv=True) 
         sudo("rm -rf ~/build/")
 
         _configure_postgresql(pgsql_path="/usr/lib/postgresql/8.4/bin/")
@@ -181,8 +183,8 @@ def _bootstrap_linux():
         _adduser_posgresql()
         _createdb_postgresql()
 
-
-        for venv_package in VIRTUALENV_PACKAGES:
+        venv_packages = VIRTUALENV_PACKAGES + ['matplotlib']
+        for venv_package in venv_packages:
             _pip_install(venv_package, virtualenv="openquake")
 
         # GDAL.
