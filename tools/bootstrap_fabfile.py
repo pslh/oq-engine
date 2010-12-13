@@ -147,7 +147,7 @@ def _bootstrap_linux():
                         "python2.6-dev", "python-setuptools", "python-pip",
                         "gfortran", "postgresql", "postgis",
                         "libxml2-dev", "libxslt-dev", "libblas-dev",
-                        "liblapack-dev", "pylint", "unzip"] 
+                        "liblapack-dev", "pylint", "unzip", "libfreetype6-dev"] 
         gdal_packages = ["gdal-bin", "libgeos-dev", "libgdal1-dev", "python-gdal"]
         pip_packages = ["virtualenv", "virtualenvwrapper"]
         easy_install_packages = ["matplotlib"]
