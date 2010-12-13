@@ -153,6 +153,13 @@ def _bootstrap_linux():
 
         _apt_install(" ".join(apt_packages))
         _pip_install(" ".join(pip_packages))
+
+        # Build the virtual environment
+        with cd("~"):
+            if not ls(".virtualenvs"):
+                run("mkdir -p .virtualenvs")
+                run("%s mkvirtualenv openquake" % _ubuntu_virtualenv_source())   
+
         for pkg in easy_install_packages:
             _easy_install(pkg, to_venv=True) 
         sudo("rm -rf ~/build/")
@@ -161,12 +168,6 @@ def _bootstrap_linux():
         _start_postgresql(initd="/etc/init.d/postgresql-8.4")
         _adduser_posgresql()
         _createdb_postgresql()
-
-        # Build the environment
-        with cd("~"):
-            if not ls(".virtualenvs"):
-                run("mkdir -p .virtualenvs")
-                run("%s mkvirtualenv openquake" % _ubuntu_virtualenv_source())   
 
 
         for venv_package in VIRTUALENV_PACKAGES:
