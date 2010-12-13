@@ -24,7 +24,6 @@ developer already has dependencies installed)
 def bootstrap():
     
     _assert_we_can_remote_login()
-    sys.exit() 
     
     def _detect_os():
         platforms = {'Darwin': _bootstrap_osx, 'Linux': _bootstrap_linux}
@@ -40,7 +39,6 @@ virtual environment tar ball specific to the platform.
     """
     
     _assert_we_can_remote_login()
-    sys.exit()
  
     def _detect_os():
         platforms = {'Darwin': _virtual_env_osx, 'Linux': _virtual_env_linux}
