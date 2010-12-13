@@ -23,7 +23,18 @@ developer already has dependencies installed)
 
 
 def bootstrap():
-    
+    """Prior to running this bootstrap, you may need to perform a few 
+    prerequisite steps. See platform notes below.
+
+    Mac OS X:
+        * None yet determined
+
+    Ubuntu (10.04):
+        * sudo apt-get update
+        * sudo apt-get install python-setuptools build-essential python-dev postgresql-8.4
+        * sudo easy_install fabric
+        * sudo easy_install pip
+    """
     _assert_we_can_remote_login()
     
     def _detect_os():
@@ -230,8 +241,9 @@ def _bootstrap_osx():
     fabric_output.warnings = False
 
     if not _homebrew_is_installed():
-        print "You need to install Homebrew to bootstrap_osx"
+        print "You need to install Homebrew to bootstrap osx"
         print 
+        print "Suggestion:"
         print 'ruby -e "$(curl -fsS https://gist.github.com/raw/323731/install_homebrew.rb)"'
         sys.exit()
 
@@ -244,6 +256,7 @@ def _bootstrap_osx():
     _install_python()
 
     _homebrew_install("pip")
+    _homebrew_install("redis")
 
     # Install rabbitmq
     _homebrew_install("rabbitmq")
