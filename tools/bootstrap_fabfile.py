@@ -139,10 +139,9 @@ def _bootstrap_linux():
             print "easy_install is required, but could not be found."
             print "Visit http://pypi.python.org/pypi/setuptools for more info."
             sys.exit()
-        apt_packages = ["build-essential", "python2.6", "python2.6-dev", 
-                        "python-setuptools", "python-pip", "gfortran", 
-                        "rabbitmq-server", "memcached", "libmemcache-dev", 
-                        "libmemcached-dev", "postgresql", "postgis",
+        apt_packages = ["rabbitmq-server", "build-essential", "python2.6",
+                        "python2.6-dev", "python-setuptools", "python-pip",
+                        "gfortran", "postgresql", "postgis",
                         "libxml2-dev", "libxslt-dev", "libblas-dev",
                         "liblapack-dev", "pylint", "unzip"] 
         gdal_packages = ["gdal-bin", "libgdal1-dev", "python-gdal"]
@@ -259,18 +258,6 @@ def _bootstrap_osx():
     _start_rabbitmq()
     _configure_rabbitmq_auth()
 
-    # Install memcached
-    _homebrew_install("memcached")
-    with cd("/tmp"):
-        libmcd_url = "http://download.tangent.org/libmemcached-0.38.tar.gz"
-        libmcd_file = "libmemcached-0.38.tar.gz"
-        if not ls(libmcd_file):
-            _curl(libmcd_url, libmcd_file)
-            run("tar xzf %s" % libmcd_file)
-            with cd("libmemcached-0.38"):
-                run("./configure `brew diy`")
-                sudo("make && make install && brew ln libmemcached")
-
     # Install virtualenv
     _pip_install("virtualenv")
 
@@ -293,13 +280,13 @@ def _bootstrap_osx():
             run("mkdir -p .virtualenvs")
             run("%s mkvirtualenv openquake" % _osx_virtualenv_source())
 
-    virtualenv_packages = ["lxml", "pyyaml", "sphinx", "shapely", "eventlet",
+    virtualenv_packages = ["redis-server==2.0.3", "pylibmc==0.9.2", "lxml", 
+                           "pyyaml", "sphinx", "shapely", "eventlet",
                            "python-gflags", "guppy", "celery", "nose", "django",
                            "ordereddict", "pylint"]
     easy_install_packages = ["matplotlib"]
-    _easy_install(package, to_venv=True)
+    _easy_install(" ".join(easy_install_packages), to_venv=True)
     _pip_install(" ".join(virtualenv_packages), virtualenv="openquake")
-    _pip_install("pylibmc", version="0.9.2", virtualenv="openquake")
 
 
     #download and install geohash
