@@ -179,7 +179,7 @@ def _bootstrap_linux():
         # GDAL installs to /usr/lib/python2.6/
         # copy it to the virtualenv
         if ls("/usr/lib/python2.6/dist-packages/osgeo"):
-            run("cp -R /usr/lib/python2.6/dist-packages/osg/eo/ \
+            run("cp -R /usr/lib/python2.6/dist-packages/osgeo/ \
 ~/.virtualenvs/openquake/lib/python2.6/site-packages/")
         else:
             print "Couldn't find osgeo module; something is wrong with GDAL."
