@@ -159,8 +159,7 @@ def _bootstrap_linux():
         with cd("~"):
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
-                run(_ubuntu_virtualenv_source())
-                run('mkvirtualenv openquake')
+                run("%s mkvirtualenv openquake " % _ubuntu_virtualenv_source())
 
         for pkg in easy_install_packages:
             _easy_install(pkg, to_venv=True) 
@@ -467,7 +466,7 @@ def _homebrew_uninstall(package):
 
 
 def _ubuntu_virtualenv_source():
-    return "source /usr/local/bin/virtualenvwrapper.sh"
+    return "\nsource /usr/local/bin/virtualenvwrapper.sh"
 
 def _osx_virtualenv_source():
     # todo(chris) THIS IS SUPER UGLY. 
