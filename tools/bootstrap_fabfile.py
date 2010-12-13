@@ -159,6 +159,7 @@ def _bootstrap_linux():
         with cd("~"):
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
+                run(_ubuntu_virtualenv_source())
                 run('mkvirtualenv openquake')
 
         for pkg in easy_install_packages:
@@ -276,7 +277,6 @@ def _bootstrap_osx():
     with cd("~"):
         if not ls(".virtualenvs"):
             run("mkdir -p .virtualenvs")
-            run(_osx_virtualenv_source())
             run("mkvirtualenv openquake")
 
     easy_install_packages = ["matplotlib"]
