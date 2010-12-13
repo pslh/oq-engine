@@ -4,6 +4,7 @@ from fabric.state import output as fabric_output
 
 CELLAR_PATH = "/usr/local/Cellar"
 PYTHON_PATH = "%s/python/2.6.5" % CELLAR_PATH
+SITE_PKG_PATH = "~/.virtualenvs/openquake/lib/python2.6/site-packages/"
 
 VIRTUALENV_PACKAGES = ["lxml", "pyyaml", "sphinx", "shapely",
     "eventlet", "python-gflags", "guppy",
@@ -158,7 +159,7 @@ def _bootstrap_linux():
         with cd("~"):
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
-                run("%s mkvirtualenv openquake" % _ubuntu_virtualenv_source())   
+                run('mkvirtualenv openquake')
 
         for pkg in easy_install_packages:
             _easy_install(pkg, to_venv=True) 
@@ -445,9 +446,9 @@ def _homebrew_exists(package):
 def _easy_install(package, to_venv=False):
     """Set to_venv=True to install this package to your virtual environment."""
     if to_venv:
-        return sudo("easy_install \
+        return sudo("PYTHONPATH=%s easy_install \
 --install-dir=~/.virtualenvs/openquake/lib/python2.6/site-packages/ %s" \
-% package, pty=True)
+% (SITE_PKG_PATH, package), pty=True)
     else:
         return sudo("easy install %s" % package, pty=True)
 
