@@ -170,7 +170,7 @@ def _bootstrap_linux():
         with cd("~"):
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
-                run("%s mkvirtualenv openquake; " % _ubuntu_virtualenv_source())
+                run("%s; mkvirtualenv openquake" % _ubuntu_virtualenv_source())
 
         for pkg in easy_install_packages:
             _easy_install(pkg, to_venv=True) 

@@ -41,7 +41,7 @@ already use MacPorts or Fink) is called homebrew: http://mxcl.github.com/homebre
   * requires geos (c library, also called libgeos)
 * Sphinx (for building documentation only)
 * Guppy (http://guppy-pe.sourceforge.net)
-* Redis >= 2.0.3 (http://code.google.com/p/redis/downloads/list)
+* Redis >= 2.0.0 (http://packages.ubuntu.com/natty/amd64/redis-server/download)
 
 You'll need to mess with PYTHONPATH (in your .bash_profile file), or add a .pth file, both for gdal and for openquake itself.
 
