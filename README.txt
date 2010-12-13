@@ -1,4 +1,4 @@
-OpenGEM System
+OpenQuake System
 ==============
 
 Dependencies
@@ -12,7 +12,6 @@ For the most part the Python packages in here can be installed using `pip`
  * gfortran
  * python-numpy
  * python-scipy
- * libmemcache-dev
 
 Is it recommended that you install the following Python packages with
 easy_install (http://pypi.python.org/pypi/setuptools).
@@ -42,7 +41,7 @@ already use MacPorts or Fink) is called homebrew: http://mxcl.github.com/homebre
   * requires geos (c library, also called libgeos)
 * Sphinx (for building documentation only)
 * Guppy (http://guppy-pe.sourceforge.net)
-
+* Redis >= 2.0.3 (http://code.google.com/p/redis/downloads/list)
 
 You'll need to mess with PYTHONPATH (in your .bash_profile file), or add a .pth file, both for gdal and for openquake itself.
 
