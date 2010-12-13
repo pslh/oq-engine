@@ -156,7 +156,7 @@ def _bootstrap_linux():
         _apt_install(" ".join(apt_packages))
         _pip_install(" ".join(pip_packages))
         for pkg in easy_install_packages:
-            _easy_install(pkg) 
+            _easy_install(pkg, to_venv=True) 
         sudo("rm -rf ~/build/")
 
         _configure_postgresql(pgsql_path="/usr/lib/postgresql/8.4/bin/")
@@ -279,7 +279,9 @@ def _bootstrap_osx():
             run("%s mkvirtualenv openquake" % _osx_virtualenv_source())
 
     easy_install_packages = ["matplotlib"]
-    _easy_install(" ".join(easy_install_packages), to_venv=True)
+    
+    for pkg in easy_install_packages:
+        _easy_install(pkg, to_venv=True)
     _pip_install(" ".join(VIRTUALENV_PACKAGES), virtualenv="openquake")
 
 
