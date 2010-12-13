@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><rss version="2.0"><channel>
+<title>Lars Butler's Git Achievements</title>
+<description></description>
+<link></link>
+<item><title>Goldsmith (Level 4)</title><description>Reviewed patches before committing with git diff --cached.</description></item>
+<item><title>Apprentice Merchant (Level 2)</title><description>Added an external repository with git remote add.</description></item>
+<item><title>Stone Mason (Level 6)</title><description>Added files to the index area for inclusion in the next commit with git add</description></item>
+<item><title>Socialite (Level 5)</title><description>pushed a branch to a remote repository using git push</description></item>
+<item><title>Apprentice Product Manager (Level 3)</title><description>Stash the changes in a dirty working directory away with git stash.</description></item>
+<item><title>Apprentice Goldsmith (Level 3)</title><description>Reviewed patches before committing with git diff --cached.</description></item>
+<item><title>Cherry Picker</title><description>Used git cherry-pick to add a sha from another branch into the current branch.</description></item>
+<item><title>Author (Level 5)</title><description>Made 2^Level commits using git commit.</description></item>
+<item><title>Apprentice Goldsmith (Level 2)</title><description>Reviewed patches before committing with git diff --cached.</description></item>
+<item><title>Banker (Level 4)</title><description>Join two or more development histories together with git merge.</description></item>
+<item><title>Apprentice Goldsmith (Level 1)</title><description>Reviewed patches before committing with git diff --cached.</description></item>
+<item><title>Apprentice Presenter (Level 2)</title><description>Shows one or more objects (blobs, trees, tags and commits) with git show</description></item>
+<item><title>Apprentice Investigator (Level 2)</title><description>Used git blame to annotates a file with information about how each line changed.</description></item>
+<item><title>Apprentice Blacksmith (Level 3)</title><description>Created a branch using git checkout -b.</description></item>
+<item><title>Stone Mason (Level 5)</title><description>Added files to the index area for inclusion in the next commit with git add</description></item>
+<item><title>Apprentice Traveler (Level 2)</title><description>Streamed changes between another rcs with git svn or git p4.</description></item>
+<item><title>Apprentice Merchant (Level 1)</title><description>Added an external repository with git remote add.</description></item>
+<item><title>Socialite (Level 4)</title><description>pushed a branch to a remote repository using git push</description></item>
+<item><title>Apprentice Investigator (Level 1)</title><description>Used git blame to annotates a file with information about how each line changed.</description></item>
+<item><title>Apprentice Product Manager (Level 2)</title><description>Stash the changes in a dirty working directory away with git stash.</description></item>
+</channel></rss>
