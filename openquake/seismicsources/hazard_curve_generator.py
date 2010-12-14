@@ -20,24 +20,31 @@ from sqlalchemy.ext.declarative import declarative_base
        SQLite database"""
 engine = create_engine('sqlite:///:memory:', echo=True)
 
+
+#Table definition
 metadata = MetaData(bind=engine)
-                  
+#Table generation
+hazard_result_table = Table('hazard_curve', metadata,
+                        Column('id_key', Integer, primary_key=True),
+                        Column('model_id', String),
+                        Column('time_span_duration', String),
+                        Column('sa_period', String),
+                        Column('sa_damping', String)
+                    )
+                    
+hazard_curve_list_table = Table('hazard_curve_list', metadata,
+                        Column('id_key', Integer, primary_key=True),
+                        Column('parent_id', Integer, ForeignKey('hazard_curve.id_key'))
+                    ) 
+                    
+
 #SQLAlchemy SQL construction method
 """ The hazard curve need to be split into thee classes: HazardResult,
 HazardCurveList and HazardCurve in order reduce duplicate saved information
 to the DB"""
 Base = declarative_base()
 class HazardResult(object):
-    #Table generation
-    __tablename__ = hazard_result_table
     
-    id_key = Column(Integer, primary_key=True),
-    model_id = Column(String),
-    time_span_duration = Column(String),
-    sa_period = Column(String),
-    sa_damping = Column(String)
-    
-    #Table definition
     def __init__(self, model_id, time_span_duration, sa_period, sa_damping):
         #self.id_key = id_key
         self.model_id = model_id
@@ -46,15 +53,10 @@ class HazardResult(object):
         self.sa_damping = sa_damping
         
     def __repr__(self):
-        return "<User('%s','%s', '%s', '%s', '%s')>" % (self.id_key,
-        self.model_id, self.timeSpanDuration, self.sa_period, self.sa_damping)
+        return "<User('%s','%s', '%s', '%s', '%s')>" % (self.id_key, self.model_id,
+            self.timeSpanDuration, self.sa_period, self.sa_damping)
             
 class HazardCurveList(object):
-    #Table generation
-    __tablename__ = hazard_curve_list_table
-    
-    id_key = Column(Integer, primary_key=True),
-    parent_id = Column('parent_id', Integer, ForeignKey('hazard_curve.id_key'))
     
     def __init__(self, id_key, parent_id):
         self.id_key = id_key
@@ -94,7 +96,7 @@ new_curve = ins.values(id_key=hr.id_key, model_id=hr.model_id,
 # create a database connection
 conn = engine.connect()
 # add user to database by executing SQL
-conn.execute(new_curve)
+#conn.execute(new_curve)
 # close the db connection
 conn.close()
         
