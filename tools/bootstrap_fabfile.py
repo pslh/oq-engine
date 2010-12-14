@@ -154,7 +154,7 @@ def _bootstrap_linux():
             print "easy_install is required, but could not be found."
             print "Visit http://pypi.python.org/pypi/setuptools for more info."
             sys.exit()
-        apt_packages = ["default-jdk", "build-essential",
+        apt_packages = ["default-jdk", "build-essential", "python-matplotlib",
                         "erlang-inets", "erlang-os-mon", "erlang-nox",
                         "python2.6-dev", "python-setuptools", "python-pip",
                         "gfortran", "postgresql", "postgis", "python2.6",
@@ -178,8 +178,8 @@ def _bootstrap_linux():
                 run("%s; mkvirtualenv openquake" % _ubuntu_virtualenv_source())
       
         if "PYTHONPATH" not in _warn_only_run("cat ~/.profile"): 
-            run('echo PYTHONPATH="%s:$PYTHONPATH" >> ~/.profile' % SITE_PKG_PATH)
-
+            run('echo export PYTHONPATH="%s:$PYTHONPATH" >> ~/.profile' % SITE_PKG_PATH)
+	
         sudo("rm -rf ~/build/")
 
         _configure_postgresql(pgsql_path="/usr/lib/postgresql/8.4/bin/")
@@ -188,7 +188,7 @@ def _bootstrap_linux():
         _createdb_postgresql()
 
         run('source ~/.profile')
-        venv_packages = VIRTUALENV_PACKAGES + ['matplotlib']
+        venv_packages = VIRTUALENV_PACKAGES
         for venv_package in venv_packages:
             _pip_install(venv_package, virtualenv="openquake")
 
@@ -222,6 +222,9 @@ def _bootstrap_linux():
             if ls(loc):
                 # if the jvm dir exists, use it
                 jvm = loc
+		# set java home in .profile
+		if "JAVA_HOME" not in _warn_only_run("cat ~/.profile"):
+			run('echo export JAVA_HOME="%s:$JAVA_HOME" >> ~/.profile' % jvm)
                 break
         _install_jpype_from_source(java_home=jvm)
         # Add virtualenv source to .profile
