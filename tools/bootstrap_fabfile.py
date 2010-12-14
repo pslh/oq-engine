@@ -154,7 +154,7 @@ def _bootstrap_linux():
             print "easy_install is required, but could not be found."
             print "Visit http://pypi.python.org/pypi/setuptools for more info."
             sys.exit()
-        apt_packages = ["default-jdk", "build-essential",
+        apt_packages = ["default-jdk", "build-essential", "erlang-inets",
                         "python2.6-dev", "python-setuptools", "python-pip",
                         "gfortran", "postgresql", "postgis", "python2.6",
                         "libxml2-dev", "libxslt-dev", "libblas-dev",
@@ -249,7 +249,7 @@ def _ubuntu_install_rabbit():
 def _ubuntu_config_rabbit(): 
     rabbit_cfg = ['rabbitmqctl add_user celeryuser celery',
         'rabbitmqctl add_vhost celeryvhost',
-        'rabbitmqctl set_permisstions -p celeryvhost celeryuser ".*" ".*" ".*"',
+        'rabbitmqctl set_permissions -p celeryvhost celeryuser ".*" ".*" ".*"',
         '/etc/init.d/rabbitmq-server restart']
     for cfg in rabbit_cfg:
         sudo(cfg)
