@@ -175,8 +175,9 @@ def _bootstrap_linux():
             if not ls(".virtualenvs"):
                 run("mkdir -p .virtualenvs")
                 run("%s; mkvirtualenv openquake" % _ubuntu_virtualenv_source())
-       
-        run('echo PYTHONPATH="%s:$PYTHONPATH" >> ~/.profile' % SITE_PKG_PATH)
+      
+        if "PYTHONPATH" not in _warn_only_run("cat ~/.profile"): 
+            run('echo PYTHONPATH="%s:$PYTHONPATH" >> ~/.profile' % SITE_PKG_PATH)
 
         sudo("rm -rf ~/build/")
 
