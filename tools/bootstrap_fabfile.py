@@ -233,6 +233,7 @@ def _bootstrap_linux():
     bootstrap_fn()
 
 def _ubuntu_install_rabbit():
+    env.warn_only = True
     print "Installing rabbitmq-server..."
     rabbit_deb = 'rabbitmq-server_2.2.0-1_all.deb'
     rabbit_url = 'http://www.rabbitmq.com/releases/rabbitmq-server/v2.2.0/%s' \
@@ -245,14 +246,17 @@ def _ubuntu_install_rabbit():
     print "Finished installing rabbitmq-server."
     # now configure rabbit
     _ubuntu_config_rabbit()
+    env.warn_only = False
 
 def _ubuntu_config_rabbit(): 
+    env.warn_only = True
     rabbit_cfg = ['rabbitmqctl add_user celeryuser celery',
         'rabbitmqctl add_vhost celeryvhost',
         'rabbitmqctl set_permissions -p celeryvhost celeryuser ".*" ".*" ".*"',
         '/etc/init.d/rabbitmq-server restart']
     for cfg in rabbit_cfg:
         sudo(cfg)
+    env.warn_only = False
 
 def _ubuntu_install_redis():
     print "Installing redis-server..."
