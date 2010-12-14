@@ -261,7 +261,7 @@ def _ubuntu_install_redis():
     env.warn_only = True
     print "Installing redis-server..."
     redis_deb = 'redis-server_2.0.1-2_amd64.deb'
-    reids_url = 'http://ubuntu.linux-bg.org/ubuntu//pool/universe/r/redis/%s' \
+    redis_url = 'http://ubuntu.linux-bg.org/ubuntu//pool/universe/r/redis/%s' \
 % redis_deb
     _deb_install(redis_url, redis_deb)
     sudo('/etc/init.d/redis-server restart')
