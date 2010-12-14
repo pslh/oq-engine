@@ -8,7 +8,7 @@ GEOGRAPHIC_ADMIN_DIR = os.path.dirname(__file__)
 # Your user must be a postgrest superuser
 # Avoid specifying your password with: ~/.pgpass
 # http://www.postgresql.org/docs/8.3/interactive/libpq-pgpass.html
-# TEST_RUNNER = 'django.contrib.gis.tests.run_gis_tests'
+TEST_RUNNER = 'django.contrib.gis.tests.run_gis_tests'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -19,15 +19,26 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# SPATIALITE_LIBRARY_PATH = '/Library/Frameworks/SQLite3.framework/SQLite3'
-# 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+# # SPATIALITE_LIBRARY_PATH = '/Library/Frameworks/SQLite3.framework/SQLite3'
+# # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
 # DATABASE_ENGINE = 'postgresql_psycopg2'
-DATABASE_ENGINE = 'sqlite3'
-DATABASE_NAME = 'openquake.db' # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
-DATABASE_PASSWORD = ''         # Not used with sqlite3.
-DATABASE_HOST = ''             # Set to empty string for localhost.
-DATABASE_PORT = ''             # Set to empty string for default.
+# DATABASE_NAME = 'openquake'
+# # DATABASE_ENGINE = 'sqlite3'
+# # DATABASE_NAME = 'openquake.db' # Or path to database file if using sqlite3.
+# DATABASE_USER = 'postgres'             # Not used with sqlite3.
+# DATABASE_PASSWORD = ''         # Not used with sqlite3.
+# DATABASE_HOST = ''             # Set to empty string for localhost.
+# DATABASE_PORT = ''             # Set to empty string for default.
+
+DATABASES = {
+    'default': {
+        'NAME': 'openquakeTWO',
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
+        'USER': 'postgres',
+        'PASSWORD': '',
+    }
+}
 
 # Not used at this point but you'll need it here if you 
 # want to enable a google maps baselayer within your
@@ -97,9 +108,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.databrowse',
+    'django.contrib.gis',
     'south',
-    'openquake.faults'
-    # 'django.contrib.gis',
+    'openquake.faults',
     # 'openquake.seismicsources',
 )
 
