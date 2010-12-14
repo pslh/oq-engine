@@ -1,5 +1,6 @@
 from openquake.faults.models import Fault, FaultSection
 from django.contrib import admin
+from django.contrib.gis.admin import OSMGeoAdmin
 from django.forms.models import ModelForm
 
 class SectionInlineForm(ModelForm):
@@ -12,7 +13,7 @@ class SectionInline(admin.StackedInline): # TabularInline
     # formset = inlineformset_factory(Fault, FaultSection)
     form = SectionInlineForm
 
-class FaultAdmin(admin.ModelAdmin):
+class FaultAdmin(OSMGeoAdmin): # admin.ModelAdmin
     # date_hierarchy = 'last_updated'
     list_display = ('name', 'completeness', 'last_updated')
     fieldsets = [

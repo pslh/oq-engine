@@ -43,7 +43,7 @@ class FaultSection(models.Model):
     slip_rate = models.DecimalField(**DECIMAL_FIELD)
     dip_angle = models.DecimalField(**DECIMAL_FIELD)
     rake_angle = models.DecimalField(**DECIMAL_FIELD)
-    geometry = models.MultiLineStringField(blank=True)
+    geometry = models.MultiLineStringField(blank=True, null=True)
     upper_depth = models.DecimalField(**DECIMAL_FIELD)
     lower_depth = models.DecimalField(**DECIMAL_FIELD)
     objects = models.GeoManager()
