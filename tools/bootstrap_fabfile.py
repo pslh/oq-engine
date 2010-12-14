@@ -260,6 +260,7 @@ def _ubuntu_config_rabbit():
     env.warn_only = False
 
 def _ubuntu_install_redis():
+    env.warn_only = True
     print "Installing redis-server..."
     redis_tar = 'redis-2.0.4.tar.gz'
     redis_url = 'http://redis.googlecode.com/files/%s' % redis_tar
@@ -273,6 +274,8 @@ def _ubuntu_install_redis():
         # clean up
         run('rm -rf ./%s' % redis_dir)
         run('rm %s' % redis_tar)
+    sudo('/etc/init.d/redis-server restart')
+    env.warn_only = False
     print "Finished installing redis-server."
            
 def _bootstrap_osx():
