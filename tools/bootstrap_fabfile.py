@@ -154,7 +154,8 @@ def _bootstrap_linux():
             print "easy_install is required, but could not be found."
             print "Visit http://pypi.python.org/pypi/setuptools for more info."
             sys.exit()
-        apt_packages = ["default-jdk", "build-essential", "erlang-inets",
+        apt_packages = ["default-jdk", "build-essential",
+                        "erlang-inets", "erlang-os-mon", "erlang-nox",
                         "python2.6-dev", "python-setuptools", "python-pip",
                         "gfortran", "postgresql", "postgis", "python2.6",
                         "libxml2-dev", "libxslt-dev", "libblas-dev",
@@ -186,6 +187,7 @@ def _bootstrap_linux():
         _adduser_posgresql()
         _createdb_postgresql()
 
+        run('source ~/.profile')
         venv_packages = VIRTUALENV_PACKAGES + ['matplotlib']
         for venv_package in venv_packages:
             _pip_install(venv_package, virtualenv="openquake")
@@ -239,14 +241,10 @@ def _ubuntu_install_rabbit():
     rabbit_deb = 'rabbitmq-server_2.2.0-1_all.deb'
     rabbit_url = 'http://www.rabbitmq.com/releases/rabbitmq-server/v2.2.0/%s' \
 % rabbit_deb
-    with cd('~'):
-        run('curl %s -o %s' % (rabbit_url, rabbit_deb))
-        sudo('dpkg -i %s' % rabbit_deb)
-        # clean up
-        run('rm %s' % rabbit_deb)
-    print "Finished installing rabbitmq-server."
+    _deb_install(rabbit_url, rabbit_deb)
     # now configure rabbit
     _ubuntu_config_rabbit()
+    print "Finished installing rabbitmq-server."
     env.warn_only = False
 
 def _ubuntu_config_rabbit(): 
@@ -262,21 +260,20 @@ def _ubuntu_config_rabbit():
 def _ubuntu_install_redis():
     env.warn_only = True
     print "Installing redis-server..."
-    redis_tar = 'redis-2.0.4.tar.gz'
-    redis_url = 'http://redis.googlecode.com/files/%s' % redis_tar
-    redis_dir = 'redis-2.0.4'
-    with cd('~'):
-        run('curl %s -o %s' % (redis_url, redis_tar))
-        run('tar -xzf %s' % redis_tar)
-        with cd(redis_dir):
-            run('make')
-            sudo('make install')
-        # clean up
-        run('rm -rf ./%s' % redis_dir)
-        run('rm %s' % redis_tar)
+    redis_deb = 'redis-server_2.0.1-2_amd64.deb'
+    reids_url = 'http://ubuntu.linux-bg.org/ubuntu//pool/universe/r/redis/%s' \
+% redis_deb
+    _deb_install(redis_url, redis_deb)
     sudo('/etc/init.d/redis-server restart')
     env.warn_only = False
     print "Finished installing redis-server."
+
+def _deb_install(url, file):
+    with cd('~'):
+        run('curl %s -o %s' % (rabbit_url, rabbit_deb))
+        sudo('dpkg -i %s' % rabbit_deb)
+        # clean up
+        run('rm %s' % rabbit_deb)
            
 def _bootstrap_osx():
     """
