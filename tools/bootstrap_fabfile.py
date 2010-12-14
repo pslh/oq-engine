@@ -270,10 +270,10 @@ def _ubuntu_install_redis():
 
 def _deb_install(url, file):
     with cd('~'):
-        run('curl %s -o %s' % (rabbit_url, rabbit_deb))
-        sudo('dpkg -i %s' % rabbit_deb)
+        run('curl %s -o %s' % (url, file))
+        sudo('dpkg -i %s' % file)
         # clean up
-        run('rm %s' % rabbit_deb)
+        run('rm %s' % file)
            
 def _bootstrap_osx():
     """
