@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # vim: tabstop=4 shiftwidth=4 softtabstop=4
 
-
 """ 
 This code is intended to use SQLAlchemy to write hazard curves from the OpenQuake engine to a database. The SQLAlchemy Object Relational Mapper presents a method of associating user-defined Python classes with database tables, and instances of those classes (objects) with rows in their corresponding tables."""
-
 
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, MetaData, ForeignKey
@@ -13,18 +11,12 @@ from sqlalchemy import Integer, String
 from openquake import shapes
 from sqlalchemy.ext.declarative import declarative_base
 
-#TODO BW create a 'real' connection to a DB for mapping hazard curves.
-#TODO Change echo to False when you’re ready to put the code into production.
-#engine = create_engine('sqlite:///hazard_result_table_test.db', echo=True)
-"""sqlEngine/connection object, temporary connection to in-memory-only
-       SQLite database"""
-#engine = create_engine('sqlite:///:memory:', echo=True)
-
-                    
 
 #SQLAlchemy SQL construction method
-""" The hazard curve need to be split into thee classes: HazardResult,
-HazardCurveList and HazardCurve in order reduce duplicate saved information
+
+""" 
+The hazard curve is split into thee classes: HazardResult,
+HazardCurveList and HazardCurve in order avoid duplicate saved information
 to the DB"""
 Base = declarative_base()
 
@@ -34,9 +26,9 @@ class HazardResult(Base):
     # table metadata
     id = Column(Integer, primary_key=True)
     model_id = Column(String)
-    sa_period = Column(String)
-    sa_damping = Column(String)
-    time_span_duration = Column(String)
+    sa_period = Column(Integer)
+    sa_damping = Column(Integer)
+    time_span_duration = Column(Integer)
 
     # one to many relationship with HazardCurveList
     children = relationship("HazardCurveList", backref="hazard_result")
@@ -57,11 +49,30 @@ class HazardCurveList(Base):
     # table metadata
     id = Column(Integer, primary_key=True)
     result_id = Column(Integer, ForeignKey('hazard_result.id'))
-
-    def __init__(self, result_id):
-        self.result_id = result_id
-
+    end_branch_label = Column(String)
+    abscissae = Column(String)
+    imt = Column(String)
+    
+    # one to many relationship with HazardCurve
+    #children = relationship("HazardCurve", backref="hazard_curve_list")
+    
+    def __init__(self, end_branch_label, abscissae, imt):
+        self.end_branch_label = end_branch_label
+        self.abscissae = abscissae
+        self.imt = imt
+    
+    def __eq__(self, other):
+        return self.end_branch_label == other.end_branch_label and self.abscissae == other.abscissae and imt == other.imt
 
 class HazardCurve(object):
-    pass
+    __tablename__ = "hazard_curve"
+    
+    # table metadata
+    id = Column(Integer, primary_key=True)
+    list_id = Column(Integer, ForeignKey('hazard_curve_list.id'))
+    lat = Column(Integer),
+    long =Column(Integer)
+    
+    def __init__(self, list_id):
+        self.list_id = list_id
         
