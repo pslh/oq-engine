@@ -1,0 +1,380 @@
+- fields: {compiler: 1, completeness: 4, contributer: GEM Faulted Earth, created_at: !!timestamp '2010-12-14
+      21:12:33.714113', last_updated: !!timestamp '2010-12-14 21:59:07.163103', name: Bob's
+      Fault, notes: '', verified_by: null}
+  model: faults.fault
+  pk: 3
+- fields: {compiler: 1, completeness: 4, contributer: GEM Faulted Earth, created_at: !!timestamp '2010-12-15
+      20:46:15.023269', last_updated: !!timestamp '2010-12-15 20:46:15.023335', name: foo,
+    notes: '', verified_by: null}
+  model: faults.fault
+  pk: 4
+- fields: {compiler: 1, completeness: 4, contributer: Foo, created_at: !!timestamp '2010-12-14
+      21:09:40.284013', last_updated: !!timestamp '2010-12-15 21:18:34.732949', name: Unverified
+      Fault, notes: '', verified_by: null}
+  model: faults.fault
+  pk: 2
+- fields: {compiler: 1, completeness: 4, contributer: Foo, created_at: !!timestamp '2010-12-13
+      22:17:25.148668', last_updated: !!timestamp '2010-12-15 22:08:28.236981', name: San
+      Andreas, notes: '', verified_by: 1}
+  model: faults.fault
+  pk: 1
+- fields: {fault: 1, geometry: POINT (0.3254699706901300 6.6884771734567998)}
+  model: faults.observation
+  pk: 1
+- fields: {fault: 1, geometry: POINT (15.8203124993680007 3.5134210454999000)}
+  model: faults.observation
+  pk: 2
+- fields: {accuracy: '0.10', aseismic_slip_factor: '0.00', dip_angle: null, downthrown_side: E,
+    expression: 1, fault: 4, geometry: 'LINESTRING (-11.6455078120349995 7.4931964698246993,
+      -9.9975585933506999 7.3842578280159996, -8.6132812496561009 8.4071681632677997,
+      -7.2619628903350000 10.5094167004309984, -4.6801757810630997 10.1851874088669998,
+      -3.4771728514236000 10.3041103279230004, -2.6257324217700999 9.0370028981113002,
+      -0.5712890624771900 10.3149192854060008, 1.9445800780474001 11.1137272817350006,
+      4.4604492185718998 10.9627642559539993, 5.4382324216578999 9.6873984303775007,
+      6.1907958981903004 8.7439362197376997, 7.4707031247016999 8.4071681632677997)',
+    is_active: true, is_episodic: true, lower_depth: null, method: 5, notes: Second
+      section, rake_angle: null, slip_rate: 3, slip_type: 3, strike_angle: null, upper_depth: null}
+  model: faults.faultsection
+  pk: 5
+- fields: {accuracy: '0.10', aseismic_slip_factor: '0.00', dip_angle: null, downthrown_side: E,
+    expression: 1, fault: 1, geometry: 'LINESTRING (17.2480468760270007 -70.2972140574560029,
+      21.4228515633610002 -70.4006627120619868, 24.8945312507229985 -70.4742349384579967,
+      28.2124023443399992 -70.1783449925739973, 32.3212890629259988 -69.8478964222669987,
+      33.7440185550570035 -69.6348684226019969, 33.5847167972509979 -69.2335126263020015,
+      33.4418945316310001 -68.5370230426990048, 34.7053222659559992 -68.8880086461570045,
+      37.1827392580440019 -69.6501559637989942, 38.8691406251650022 -69.9385389779239972,
+      39.8359375001260005 -69.0142768348050026, 42.8242187500069917 -68.0822699877020057,
+      46.6914062498520011 -67.3829345032229838, 48.8886718747650022 -67.3491104406910068)',
+    is_active: true, is_episodic: true, lower_depth: null, method: 5, notes: Need
+      notes., rake_angle: null, slip_rate: 3, slip_type: 3, strike_angle: null, upper_depth: null}
+  model: faults.faultsection
+  pk: 4
+- fields: {accuracy: '0.10', aseismic_slip_factor: '0.00', dip_angle: '90.20', downthrown_side: N,
+    expression: 1, fault: 2, geometry: 'LINESTRING (9.0742187513532002 -71.1245404717909935,
+      14.3476562511429986 -73.4352711249349994, 21.5546875008549996 -71.3787785863689805,
+      27.0917968756339960 -70.8957457794119961, 32.6289062504130030 -71.0390534531090054,
+      36.6718750002509992 -73.6221694530530044, 40.7148437500899973 -71.2661941165520005,
+      44.2304687499499991 -70.7948105811060060, 45.6367187498929994 -69.8327512151559944,
+      51.7890624996479971 -69.1241696781819996)', is_active: true, is_episodic: true,
+    lower_depth: '12.20', method: 5, notes: another foo., rake_angle: '181.50', slip_rate: 3,
+    slip_type: 3, strike_angle: '-14.50', upper_depth: '10.20'}
+  model: faults.faultsection
+  pk: 6
+- fields: {dip_slip_ratio: null, earthquake: null, interval: 5, marker_age: null,
+    scaling: null, section: 6}
+  model: faults.recurrence
+  pk: 2
+- fields: {category: 5, historical_eq: null, prehistorical_eq: null, section: 6}
+  model: faults.event
+  pk: 2
+- fields: {codename: add_logentry, content_type: 8, name: Can add log entry}
+  model: auth.permission
+  pk: 22
+- fields: {codename: change_logentry, content_type: 8, name: Can change log entry}
+  model: auth.permission
+  pk: 23
+- fields: {codename: delete_logentry, content_type: 8, name: Can delete log entry}
+  model: auth.permission
+  pk: 24
+- fields: {codename: add_group, content_type: 2, name: Can add group}
+  model: auth.permission
+  pk: 4
+- fields: {codename: change_group, content_type: 2, name: Can change group}
+  model: auth.permission
+  pk: 5
+- fields: {codename: delete_group, content_type: 2, name: Can delete group}
+  model: auth.permission
+  pk: 6
+- fields: {codename: add_message, content_type: 4, name: Can add message}
+  model: auth.permission
+  pk: 10
+- fields: {codename: change_message, content_type: 4, name: Can change message}
+  model: auth.permission
+  pk: 11
+- fields: {codename: delete_message, content_type: 4, name: Can delete message}
+  model: auth.permission
+  pk: 12
+- fields: {codename: add_permission, content_type: 1, name: Can add permission}
+  model: auth.permission
+  pk: 1
+- fields: {codename: change_permission, content_type: 1, name: Can change permission}
+  model: auth.permission
+  pk: 2
+- fields: {codename: delete_permission, content_type: 1, name: Can delete permission}
+  model: auth.permission
+  pk: 3
+- fields: {codename: add_user, content_type: 3, name: Can add user}
+  model: auth.permission
+  pk: 7
+- fields: {codename: change_user, content_type: 3, name: Can change user}
+  model: auth.permission
+  pk: 8
+- fields: {codename: delete_user, content_type: 3, name: Can delete user}
+  model: auth.permission
+  pk: 9
+- fields: {codename: add_contenttype, content_type: 5, name: Can add content type}
+  model: auth.permission
+  pk: 13
+- fields: {codename: change_contenttype, content_type: 5, name: Can change content
+      type}
+  model: auth.permission
+  pk: 14
+- fields: {codename: delete_contenttype, content_type: 5, name: Can delete content
+      type}
+  model: auth.permission
+  pk: 15
+- fields: {codename: add_event, content_type: 16, name: Can add event}
+  model: auth.permission
+  pk: 46
+- fields: {codename: change_event, content_type: 16, name: Can change event}
+  model: auth.permission
+  pk: 47
+- fields: {codename: delete_event, content_type: 16, name: Can delete event}
+  model: auth.permission
+  pk: 48
+- fields: {codename: add_fault, content_type: 9, name: Can add fault}
+  model: auth.permission
+  pk: 25
+- fields: {codename: can_verify_faults, content_type: 9, name: Can verify faults}
+  model: auth.permission
+  pk: 49
+- fields: {codename: change_fault, content_type: 9, name: Can change fault}
+  model: auth.permission
+  pk: 26
+- fields: {codename: delete_fault, content_type: 9, name: Can delete fault}
+  model: auth.permission
+  pk: 27
+- fields: {codename: add_faultsection, content_type: 10, name: Can add fault section}
+  model: auth.permission
+  pk: 28
+- fields: {codename: change_faultsection, content_type: 10, name: Can change fault
+      section}
+  model: auth.permission
+  pk: 29
+- fields: {codename: delete_faultsection, content_type: 10, name: Can delete fault
+      section}
+  model: auth.permission
+  pk: 30
+- fields: {codename: add_fold, content_type: 11, name: Can add fold}
+  model: auth.permission
+  pk: 31
+- fields: {codename: change_fold, content_type: 11, name: Can change fold}
+  model: auth.permission
+  pk: 32
+- fields: {codename: delete_fold, content_type: 11, name: Can delete fold}
+  model: auth.permission
+  pk: 33
+- fields: {codename: add_foldsection, content_type: 12, name: Can add fold section}
+  model: auth.permission
+  pk: 34
+- fields: {codename: change_foldsection, content_type: 12, name: Can change fold section}
+  model: auth.permission
+  pk: 35
+- fields: {codename: delete_foldsection, content_type: 12, name: Can delete fold section}
+  model: auth.permission
+  pk: 36
+- fields: {codename: add_observation, content_type: 14, name: Can add observation}
+  model: auth.permission
+  pk: 40
+- fields: {codename: change_observation, content_type: 14, name: Can change observation}
+  model: auth.permission
+  pk: 41
+- fields: {codename: delete_observation, content_type: 14, name: Can delete observation}
+  model: auth.permission
+  pk: 42
+- fields: {codename: add_recurrence, content_type: 15, name: Can add recurrence}
+  model: auth.permission
+  pk: 43
+- fields: {codename: change_recurrence, content_type: 15, name: Can change recurrence}
+  model: auth.permission
+  pk: 44
+- fields: {codename: delete_recurrence, content_type: 15, name: Can delete recurrence}
+  model: auth.permission
+  pk: 45
+- fields: {codename: add_session, content_type: 6, name: Can add session}
+  model: auth.permission
+  pk: 16
+- fields: {codename: change_session, content_type: 6, name: Can change session}
+  model: auth.permission
+  pk: 17
+- fields: {codename: delete_session, content_type: 6, name: Can delete session}
+  model: auth.permission
+  pk: 18
+- fields: {codename: add_site, content_type: 7, name: Can add site}
+  model: auth.permission
+  pk: 19
+- fields: {codename: change_site, content_type: 7, name: Can change site}
+  model: auth.permission
+  pk: 20
+- fields: {codename: delete_site, content_type: 7, name: Can delete site}
+  model: auth.permission
+  pk: 21
+- fields: {codename: add_migrationhistory, content_type: 13, name: Can add migration
+      history}
+  model: auth.permission
+  pk: 37
+- fields: {codename: change_migrationhistory, content_type: 13, name: Can change migration
+      history}
+  model: auth.permission
+  pk: 38
+- fields: {codename: delete_migrationhistory, content_type: 13, name: Can delete migration
+      history}
+  model: auth.permission
+  pk: 39
+- fields:
+    name: Faulted-Compiler
+    permissions: [46, 47, 48, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 40,
+      41, 42, 43, 44, 45]
+  model: auth.group
+  pk: 1
+- fields:
+    name: Faulted-Contributor
+    permissions: []
+  model: auth.group
+  pk: 2
+- fields:
+    name: Faulted-Admin
+    permissions: [7, 8]
+  model: auth.group
+  pk: 4
+- fields:
+    name: Faulted-Reviewer
+    permissions: [49]
+  model: auth.group
+  pk: 3
+- fields:
+    date_joined: 2010-12-16 02:20:44
+    email: ''
+    first_name: Angelique
+    groups: [1]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:20:44
+    last_name: Zajac
+    password: sha1$97355$b94e255b2494f0a57312dbff8b7716b720c529af
+    user_permissions: []
+    username: angelique.zajac
+  model: auth.user
+  pk: 5
+- fields:
+    date_joined: 2010-12-16 02:21:23
+    email: ''
+    first_name: ''
+    groups: [1]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:21:23
+    last_name: ''
+    password: sha1$a5e81$6efce10429afea1987bbcc1cf187860e573890e3
+    user_permissions: []
+    username: pilar.villamor
+  model: auth.user
+  pk: 6
+- fields:
+    date_joined: 2010-12-16 02:22:02
+    email: ''
+    first_name: Rob
+    groups: [1]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:22:02
+    last_name: Langridge
+    password: sha1$cddaf$9871fe8b4edd54d07212ab09a57abe34e1077909
+    user_permissions: []
+    username: rob.langridge
+  model: auth.user
+  pk: 7
+- fields:
+    date_joined: 2010-12-16 02:23:05
+    email: ''
+    first_name: ''
+    groups: [1]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:23:05
+    last_name: ''
+    password: sha1$276b1$46167f9507401c13e993d2bba16c4a4a54f83525
+    user_permissions: []
+    username: kate.clark
+  model: auth.user
+  pk: 9
+- fields:
+    date_joined: 2010-12-16 02:19:25
+    email: ''
+    first_name: Annemarie
+    groups: [1, 2, 3]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:19:25
+    last_name: Christophersen
+    password: sha1$4ee5c$d6d9a5f817e6e920905238789bb6e55482355835
+    user_permissions: []
+    username: annemarie.christophersen
+  model: auth.user
+  pk: 3
+- fields:
+    date_joined: 2010-12-16 02:22:33
+    email: ''
+    first_name: Kelvin
+    groups: [1, 2, 3]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:22:33
+    last_name: Berryman
+    password: sha1$97bfc$19e2cd17156902d7bc26d91df6faae75cd51129d
+    user_permissions: []
+    username: kelvin.berryman
+  model: auth.user
+  pk: 8
+- fields:
+    date_joined: 2010-12-16 02:16:51
+    email: ''
+    first_name: Nicola
+    groups: [1, 2, 3]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:16:51
+    last_name: Litchfield
+    password: sha1$69602$70a8fc02adc9cd864ac3703593e41ebaa565f4d9
+    user_permissions: []
+    username: nicola.litchfield
+  model: auth.user
+  pk: 2
+- fields:
+    date_joined: 2010-12-16 02:20:00
+    email: ''
+    first_name: Richard
+    groups: [1, 2, 4]
+    is_active: true
+    is_staff: true
+    is_superuser: false
+    last_login: 2010-12-16 02:20:00
+    last_name: Thomas
+    password: sha1$dba69$aea2372a7b4cdfc99fceb8127fc8295a9f048a3d
+    user_permissions: []
+    username: richard.thomas
+  model: auth.user
+  pk: 4
+- fields:
+    date_joined: 2010-12-13 22:15:49.950430
+    email: jmckenty@gmail.com
+    first_name: ''
+    groups: []
+    is_active: true
+    is_staff: true
+    is_superuser: true
+    last_login: 2010-12-15 18:48:15.222831
+    last_name: ''
+    password: sha1$302b5$bd0e0d0cf12333a7a126f4835e53500e5cab5742
+    user_permissions: []
+    username: jmckenty
+  model: auth.user
+  pk: 1
+

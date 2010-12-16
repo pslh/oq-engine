@@ -142,6 +142,9 @@ class Fault(models.Model):
         return MultiLineString(linestrings)
         
     geometry = property(_get_geometry)
+    
+    class Meta:
+        permissions = (("can_verify_faults", "Can verify faults"),)
 
 
 class Observation(models.Model):

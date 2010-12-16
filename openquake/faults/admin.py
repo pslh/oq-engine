@@ -8,6 +8,8 @@ from olwidget.forms import MapModelForm
 from olwidget.fields import MapField, EditableLayerField, InfoLayerField
 from olwidget.widgets import Map, EditableMap, EditableLayer, InfoLayer
 
+from django.contrib.auth.decorators import permission_required
+
 class SectionInlineForm(ModelForm):
     layers = [EditableLayerField({'geometry': 'linestring', 'name': 'geometry'})]
     # geometry = EditableLayerField({'overlay_style': { 'fill_color': "#ff0000" }})
@@ -69,11 +71,6 @@ class SectionInline(admin.StackedInline): # TabularInline
     readonly_fields = ['fault']
 
 
-def make_verified(modeladmin, request, queryset): 
-    queryset.update(verified_by=request.user)
-make_verified.short_description = "Mark selected faults as verified"
-
-
 class FaultAdmin(GeoModelAdmin): # admin.ModelAdmin
     # date_hierarchy = 'last_updated'
     list_map = ['geometry']
@@ -93,9 +90,20 @@ class FaultAdmin(GeoModelAdmin): # admin.ModelAdmin
          ('Details', {'fields': 
                 ['notes',],'classes': ['collapse']}),
     ]
-    actions = [make_verified]
+    actions = ['make_verified']
     inlines = [SectionInline, ObservationInline]
 
+    def make_verified(self, request, queryset): 
+        if request.user.has_perm('faults.can_verify_faults'):
+            rows_updated = queryset.update(verified_by=request.user)
+            if rows_updated == 1:
+                message_bit = "1 fault was" 
+            else:
+                message_bit = "%s faults were" % rows_updated
+            self.message_user(request, "%s successfully marked as verified." % message_bit)
+        else:
+            self.message_user(request, "You're not allowed to verify faults, sorry.")
+    make_verified.short_description = "Mark selected faults as verified"
 
 class RecurrenceInline(admin.StackedInline):
     model = Recurrence
