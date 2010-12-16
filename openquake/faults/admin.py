@@ -54,7 +54,7 @@ class SectionInline(admin.StackedInline): # TabularInline
     # formset = inlineformset_factory(Fault, FaultSection)
     # form = SectionInlineForm
     formfield_overrides = {
-        models.LineStringField: {'widget': EditableMap(options={'geometry': 'linestring'})},
+        models.LineStringField: {'widget': EditableMap(options={'geometry': 'linestring',})}, #  'hide_textarea' : False
         # models.LineStringField: {'widget': Map(
         #               vector_layers=[EditableLayer(options={'geometry': 'linestring', 'name': 'geometry'}),
         #                              InfoLayer(info=[[c.geometry, "foo"] for c in FaultSection.objects.all() if c.geometry])], options={'name' : 'reference_geometry'}) },
