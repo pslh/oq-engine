@@ -1,6 +1,6 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-
+from django.contrib.gis.geos import MultiLineString, Point
 
 DATA_COMPLETENESS = ((1, 'well-constrained'), 
                      (2, 'moderately-constrained'), 
@@ -134,6 +134,14 @@ class Fault(models.Model):
     
     def __unicode__(self):
         return self.name
+    
+    def _get_geometry(self):
+        linestrings = [x.geometry for x in self.faultsection_set.all() if x.geometry is not None]
+        if not linestrings:
+            return None # Point((1.0, 1.0))
+        return MultiLineString(linestrings)
+        
+    geometry = property(_get_geometry)
 
 
 class Observation(models.Model):
@@ -154,7 +162,7 @@ class FaultSection(Episodic):
     dip_angle = models.DecimalField(**DECIMAL_FIELD)
     rake_angle = models.DecimalField(**DECIMAL_FIELD) # DIP DIR?
     strike_angle = models.DecimalField(**DECIMAL_FIELD)
-    geometry = models.MultiLineStringField(blank=True, null=True)
+    geometry = models.LineStringField(blank=True, null=True)
     upper_depth = models.DecimalField(**DECIMAL_FIELD)
     lower_depth = models.DecimalField(**DECIMAL_FIELD)
     downthrown_side = models.CharField(max_length=2, choices=OCTANT, 
@@ -162,8 +170,13 @@ class FaultSection(Episodic):
     notes = models.TextField(default="", blank=True)
     objects = models.GeoManager()
     
+    def _get_other_sections(self):
+        return self.fault.geometry
+    
+    other_sections = property(_get_other_sections)
+    
     def __unicode__(self):
-        return "some section"
+        return "%s:%s" % (self.fault.name, self.id)
 
 
 class Recurrence(models.Model):
@@ -173,6 +186,13 @@ class Recurrence(models.Model):
     scaling = models.IntegerField(blank=True, null=True)
     interval = models.IntegerField(choices=INTERVAL, default=1)
     earthquake = models.IntegerField(blank=True, null=True)
+
+
+class Event(models.Model):
+    section = models.ForeignKey(FaultSection)
+    category = models.IntegerField(choices=AGE, default=1)
+    historical_eq = models.IntegerField(null=True, blank=True)
+    prehistorical_eq = models.IntegerField(null=True, blank=True)
 
 
 class Fold(models.Model):

@@ -1,13 +1,8 @@
 """ Django settings for openquake project.  """
 
-#ADD THIS
 import os
-GEOGRAPHIC_ADMIN_DIR = os.path.dirname(__file__)
+CURRENT_DIR = os.path.dirname(__file__)
 
-# http://docs.djangoproject.com/en/dev/topics/testing/#id1
-# Your user must be a postgrest superuser
-# Avoid specifying your password with: ~/.pgpass
-# http://www.postgresql.org/docs/8.3/interactive/libpq-pgpass.html
 TEST_RUNNER = 'django.contrib.gis.tests.run_gis_tests'
 
 DEBUG = True
@@ -19,16 +14,9 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-# # SPATIALITE_LIBRARY_PATH = '/Library/Frameworks/SQLite3.framework/SQLite3'
-# # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-# DATABASE_ENGINE = 'postgresql_psycopg2'
-# DATABASE_NAME = 'openquake'
 # # DATABASE_ENGINE = 'sqlite3'
 # # DATABASE_NAME = 'openquake.db' # Or path to database file if using sqlite3.
-# DATABASE_USER = 'postgres'             # Not used with sqlite3.
-# DATABASE_PASSWORD = ''         # Not used with sqlite3.
-# DATABASE_HOST = ''             # Set to empty string for localhost.
-# DATABASE_PORT = ''             # Set to empty string for default.
+
 
 DATABASES = {
     'default': {
@@ -40,12 +28,13 @@ DATABASES = {
     }
 }
 
-# Not used at this point but you'll need it here if you 
-# want to enable a google maps baselayer within your
-# OpenLayers maps
-GOOGLE_MAPS_API_KEY = 'abcdefg'
 
-GIS_DATA_DIR = os.path.join(GEOGRAPHIC_ADMIN_DIR, '../tests/data')
+GOOGLE_MAPS_API_KEY = 'abcdefg'
+# GOOGLE_API_KEY
+# YAHOO_APP_ID
+# CLOUDMADE_API_KEY
+
+GIS_DATA_DIR = os.path.join(CURRENT_DIR, '../media/gis')
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -66,12 +55,15 @@ USE_I18N = True
 
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
-MEDIA_ROOT = os.path.join(GEOGRAPHIC_ADMIN_DIR, '../media')
+MEDIA_ROOT = os.path.abspath(os.path.join(CURRENT_DIR, '../media'))
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash if there is a path component (optional in other cases).
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
+
+OL_API = '/media/OpenLayers/OpenLayers.js'
+# OSM_API = '/media/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -97,7 +89,7 @@ MIDDLEWARE_CLASSES = (
 ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
-    os.path.join(GEOGRAPHIC_ADMIN_DIR, '../templates'),
+    os.path.join(CURRENT_DIR, '../templates'),
     # Don't forget to use absolute paths, not relative paths.
 )
 
@@ -110,6 +102,7 @@ INSTALLED_APPS = (
     'django.contrib.databrowse',
     'django.contrib.gis',
     'south',
+    'olwidget',
     'openquake.faults',
     # 'openquake.seismicsources',
 )
