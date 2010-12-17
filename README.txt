@@ -12,6 +12,7 @@ For the most part the Python packages in here can be installed using `pip`
  * gfortran
  * python-numpy
  * python-scipy
+ * celery >= 2.0.3
 
 Is it recommended that you install the following Python packages with
 easy_install (http://pypi.python.org/pypi/setuptools).
