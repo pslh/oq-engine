@@ -1,4 +1,4 @@
-from models import FaultSection, Fault
+from models import FaultSection, Fault, Observation
 from django import forms
 from django.forms.models import ModelForm
 from olwidget.forms import MapModelForm
@@ -10,7 +10,9 @@ from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.formtools.wizard import FormWizard
 from olwidget.fields import MapField, EditableLayerField, InfoLayerField
 
-class FaultForm(ModelForm):
+from openquake.faults import classmaker
+
+class FaultForm(ModelForm):    
     class Meta:
         model = Fault
 
@@ -32,17 +34,18 @@ class FaultCreationForm(ModelForm):
         return fault
 
 
-class SectionForm(MapModelForm):
+class SectionForm(ModelForm, MapModelForm):
+    __metaclass__ = classmaker()
     # geom1 = EditableLayerField({'overlay_style': { 'fill_color': "#ff0000" }})
     layers = [EditableLayerField({'geometry': 'linestring', 'name': 'geometry'})]
-    layers.append(InfoLayerField([[c.geometry, "foo"] for c in FaultSection.objects.all() if c.geometry],
+    layers.append(InfoLayerField([[c.geometry, c.__unicode__()] for c in Observation.objects.filter(geometry__isnull=False)],
             {
                 'overlay_style': {
                     'fill_opacity': 0,
                     'stroke_color': "white",
                     'stroke_width': 6,
                 }, 
-                'name': "Country boundaries",
+                'name': "Observations",
             }))
     # info_layer_field = InfoLayerField([[x.geometry.wkt, "something %s" % x] for x in Fault.objects.all() if x.geometry is not None  ] , {'name': "Other Sections"})
     # layers.extend([InfoLayerField([[x.geometry.wkt, "something"]], {'name': "Other Sections"}) for x in Fault.objects.all() if x.geometry is not None])

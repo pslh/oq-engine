@@ -1,6 +1,6 @@
 from openquake.faults.models import Fault, FaultSection, Recurrence, Event, Observation
 from openquake.faults.models import Fold, FoldTrace
-from openquake.faults.forms import FaultCreationForm, FaultForm
+from openquake.faults.forms import FaultCreationForm, FaultForm, SectionForm
 from django.contrib import admin
 from django.contrib.gis.db import models
 from django.contrib.gis.admin import OSMGeoAdmin
@@ -48,6 +48,7 @@ class SectionInline(admin.StackedInline):
         models.LineStringField: 
                 {'widget': EditableMap(options={'geometry': 'linestring', 'layers' : ['google.satellite']})},
     }
+    form = SectionForm
     fieldsets = [
         (None,  {'fields': 
             [('fault',), ('expression', 'method', 'is_episodic', 'is_active')],}),
@@ -70,7 +71,7 @@ class FaultAdmin(GeoModelAdmin):
     
     """
     list_map = ['traces','observations']
-    list_display = ('name', 'completeness', 'last_updated', 'verified_by')
+    list_display = ('name', 'completeness', 'last_updated', 'verified_by', 'is_active')
     list_filter = ['completeness', 'verified_by', 'compiler']
     search_fields = ['name', 'notes']
     actions = ['make_verified']
@@ -89,7 +90,7 @@ class FaultAdmin(GeoModelAdmin):
             'classes': ('wide',)}
         ),
     )
-    # form = FaultForm
+    form = FaultForm
     add_form = FaultCreationForm
     
     readonly_fields = ['compiler',]
@@ -111,7 +112,14 @@ class FaultAdmin(GeoModelAdmin):
                 'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
             })
         defaults.update(kwargs)
-        return super(FaultAdmin, self).get_form(request, obj, **defaults)
+        form = super(FaultAdmin, self).get_form(request, obj, **defaults)
+        print form
+        return form
+    
+    def save_model(self, request, obj, form, change):
+        if not change: # New Fault
+            obj.compiler = request.user
+            obj.save()
 
     @csrf_protect_m
     @transaction.commit_on_success

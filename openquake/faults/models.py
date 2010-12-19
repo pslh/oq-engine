@@ -197,6 +197,9 @@ class Observation(models.Model):
     fault = models.ForeignKey(Fault)
     geometry = models.PointField(blank=True, null=True)
     notes = models.TextField(default="", blank=True)
+    
+    def __unicode__(self):
+        return "%s:%s" % (self.fault.name, self.id)
 
 
 class FaultSection(Episodic):

@@ -108,6 +108,10 @@ INSTALLED_APPS = (
     # 'openquake.seismicsources',
 )
 
+ADMIN_REORDER = (
+    ("faults", ("Fault", "FaultSection", "Observation")),
+)
+
 LOSS_CURVES_OUTPUT_FILE = 'loss-curves-jobber.xml'
 
 KVS_PORT = 6379
