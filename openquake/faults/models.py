@@ -1,18 +1,20 @@
 from django.contrib.gis.db import models
 from django.contrib.auth.models import User
-from django.contrib.gis.geos import MultiLineString, Point
+from django.contrib.gis.geos import MultiLineString, Point, MultiPoint, GeometryCollection
 
-DATA_COMPLETENESS = ((1, 'well-constrained'), 
-                     (2, 'moderately-constrained'), 
-                     (3, 'poorly-constrained'), 
-                     (4, 'inferred'),
+DATA_COMPLETENESS = (
+        (1, 'well-constrained'), 
+        (2, 'moderately-constrained'), 
+        (3, 'poorly-constrained'), 
+        (4, 'inferred'),
 )
 
-DISPLACEMENT = (    (1, '0.1 - <0.5'),
-                    (2, '0.5 - <1'),
-                    (3, '1 - <5'),
-                    (4, '5 - <10'),
-                    (5, '10 - <30'),
+DISPLACEMENT = (    
+        (1, '0.1 - <0.5'),
+        (2, '0.5 - <1'),
+        (3, '1 - <5'),
+        (4, '5 - <10'),
+        (5, '10 - <30'),
 )
 
 AGE = (
@@ -105,12 +107,14 @@ DECIMAL_FIELD = {'decimal_places' : 2,
                'blank' : True }
 
 
-class FuzzyIntegerField(models.Field): # CompositeField
-    # TODO(JMC): Implement this for multi-variate fields, e.g. the 
-    #    min, max, preferred fields
+class FuzzyIntegerField(models.Field):
+    """Exposes a composite field for min, max, and preferred value
+    .. todo:: Implement this composite field"""
     pass
 
+
 class Episodic(models.Model):
+    """Abstract base for models that are episodic"""
     is_episodic = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     objects = models.GeoManager()
@@ -118,8 +122,8 @@ class Episodic(models.Model):
         abstract = True
 
 
-class Fault(models.Model):
-    """A Fault is a named collection of Fault Sections"""
+class GeologyFeature(models.Model):
+    """Verifiable Geology Feature such as Fault or Fold"""
     name = models.CharField(max_length=255)
     compiler = models.ForeignKey(User, default=1)
     contributer = models.CharField(max_length=255, default="GEM Faulted Earth")
@@ -129,27 +133,70 @@ class Fault(models.Model):
             choices=DATA_COMPLETENESS, null=False, default=4)
     notes = models.TextField(default="", blank=True)
     verified_by = models.ForeignKey(
-            User, related_name='verifier', null=True, editable=False)
+            User, related_name='%(app_label)s_%(class)s_verifier', 
+            null=True, editable=False)
+    
     objects = models.GeoManager()
+    geom_children = 'faultsection_set'
+    point_children = 'observation_set'
     
     def __unicode__(self):
         return self.name
-    
-    def _get_geometry(self):
-        linestrings = [x.geometry for x in self.faultsection_set.all() if x.geometry is not None]
+
+    def _get_traces(self):
+        linestrings = [x.geometry for x in 
+                self.__getattribute__(self.geom_children).filter(
+                geometry__isnull=False).all()]
         if not linestrings:
-            return None # Point((1.0, 1.0))
+            return None
         return MultiLineString(linestrings)
-        
+    traces = property(_get_traces)
+    
+    def _get_observations(self):
+        points = [x.geometry for x in 
+                self.__getattribute__(self.point_children).filter(
+                geometry__isnull=False).all()]
+        if not points:
+            return None
+        return MultiPoint(points)
+    observations = property(_get_observations)
+
+    def _get_geometry(self):
+        features = []
+        if self.traces:
+            features.append(self.traces)
+        if self.observations:
+            features.append(self.observations)
+        return features and GeometryCollection(features) or None
     geometry = property(_get_geometry)
+    
+    def _is_active(self):
+        active_sections = self.__getattribute__(self.geom_children).filter(
+                is_active__exact=True)
+        if active_sections:
+            return True
+        return False
+    is_active = property(_is_active)
+
+    class Meta:
+        abstract = True
+
+
+class Fault(GeologyFeature):
+    """A Fault is a named collection of Fault Sections"""
+    objects = models.GeoManager()
+    geom_children = 'faultsection_set'
+    point_children = 'observation_set'
     
     class Meta:
         permissions = (("can_verify_faults", "Can verify faults"),)
 
 
 class Observation(models.Model):
+    """A single point with notes, related to a fault"""
     fault = models.ForeignKey(Fault)
     geometry = models.PointField(blank=True, null=True)
+    notes = models.TextField(default="", blank=True)
 
 
 class FaultSection(Episodic):
@@ -174,7 +221,7 @@ class FaultSection(Episodic):
     objects = models.GeoManager()
     
     def _get_other_sections(self):
-        return self.fault.geometry
+        return self.fault.traces
     
     other_sections = property(_get_other_sections)
     
@@ -198,10 +245,43 @@ class Event(models.Model):
     prehistorical_eq = models.IntegerField(null=True, blank=True)
 
 
-class Fold(models.Model):
+class Fold(GeologyFeature):
     """Folds are named collections of Fold Sections"""
-    pass
+    geom_children = 'foldtrace_set'
+    point_children = 'foldobservation_set'
+    class Meta:
+        permissions = (("can_verify_folds", "Can verify folds"),)
 
 
-class FoldSection(models.Model):
-    pass
+class FoldTrace(Episodic):
+    fold = models.ForeignKey(Fold)
+    method = models.IntegerField(choices=METHOD, default=5)
+    expression = models.IntegerField(choices=EXPRESSION, default=1)
+    accuracy = models.DecimalField(decimal_places=2, max_digits=3, default=0.10)
+    
+    geometry = models.LineStringField(blank=True, null=True)
+    notes = models.TextField(default="", blank=True)
+    
+    dip_axial_plane = models.DecimalField(**DECIMAL_FIELD)
+    dip_dir_shallow_limb = models.DecimalField(**DECIMAL_FIELD)
+    dip_dir_steep_limb = models.DecimalField(**DECIMAL_FIELD)
+    dip_shallow_limb = models.DecimalField(**DECIMAL_FIELD) # MV
+    dip_steep_limb	 = models.DecimalField(**DECIMAL_FIELD) # MV
+    growth_horizontal = models.DecimalField(**DECIMAL_FIELD) # MV unit?
+    growth_vertical  = models.DecimalField(**DECIMAL_FIELD) # MV unit?
+    plunge = models.DecimalField(**DECIMAL_FIELD) # MV unit?
+    plunge_dir = models.DecimalField(**DECIMAL_FIELD)
+    surface_age = models.IntegerField(blank=True, null=True)
+    tilt_shallow_limb = models.DecimalField(**DECIMAL_FIELD)
+    tilt_steep_limb = models.DecimalField(**DECIMAL_FIELD)
+    fold_type = models.IntegerField(choices=FOLD_TYPE, default=1)
+    
+    objects = models.GeoManager()
+    
+    def _get_other_traces(self):
+        return self.fold.traces
+    
+    other_traces = property(_get_other_traces)
+    
+    def __unicode__(self):
+        return "%s:%s" % (self.fold.name, self.id)
