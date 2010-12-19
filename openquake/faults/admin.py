@@ -1,6 +1,6 @@
 from openquake.faults.models import Fault, FaultSection, Recurrence, Event, Observation
 from openquake.faults.models import Fold, FoldTrace
-from openquake.faults.forms import FaultCreationForm, FaultForm, SectionForm
+from openquake.faults.forms import FaultCreationForm, FaultForm, SectionForm, ObservationForm
 from django.contrib import admin
 from django.contrib.gis.db import models
 from django.contrib.gis.admin import OSMGeoAdmin
@@ -30,6 +30,7 @@ class ObservationInline(admin.StackedInline):
     formfield_overrides = {
         models.PointField: {'widget': EditableMap(options={'geometry': 'point', 'zoom_to_data_extent' : False})},
     }
+    form = ObservationForm
     readonly_fields = ['fault']
 
 
