@@ -130,7 +130,7 @@ class FaultAdmin(GeoModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change: # New Fault
             obj.compiler = request.user
-            obj.save()
+        obj.save()
 
     @csrf_protect_m
     @transaction.commit_on_success
