@@ -25,7 +25,7 @@ BROKER_VHOST = "celeryvhost"
 
 CELERY_RESULT_BACKEND = "amqp"
 
-
+print "About to load referenced imports..."
 CELERY_IMPORTS = ("openquake.risk.job",
                   "openquake.hazard.tasks",
-                  "tests.tasks")
+                  "openquake.test")
