@@ -51,13 +51,14 @@ class SectionInline(admin.StackedInline):
     fieldsets = [
         (None,  {'fields': 
             [('fault',), ('expression', 'method', 'is_episodic', 'is_active')],}),
+        ('Notes', {'fields': ['notes'], 
+            'classes': ['collapse']}),
         ('Geometry', {'fields': 
             ['accuracy', 'aseismic_slip_factor', ('slip_type', 'slip_rate'),
-            ('dip_angle', 'rake_angle', 'strike_angle'), 'geometry',
-            ('upper_depth', 'lower_depth', 'downthrown_side', )], 
+            ('dip_angle', 'rake_angle', 'strike_angle'),
+            ('upper_depth', 'lower_depth', 'downthrown_side', ),
+             'geometry',], 
             'classes' : ['wide', 'show'],}),
-        ('Details', {'fields': ['notes'], 
-            'classes': ['collapse']}),
     ]
     readonly_fields = ['fault']
 
@@ -88,18 +89,11 @@ class FaultAdmin(GeoModelAdmin):
             'classes': ('wide',)}
         ),
     )
-    form = FaultForm
+    # form = FaultForm
     add_form = FaultCreationForm
     
     readonly_fields = ['compiler',]
-    
     inlines = [SectionInline, ObservationInline]
-    add_inlines = []
-    
-    def get_inlines(self, request, obj=None):
-        if not obj:
-            return self.add_inlines
-        return super(FaultAdmin, self).get_inlines(request, obj)
 
     def get_fieldsets(self, request, obj=None):
         if not obj:
@@ -158,7 +152,7 @@ class TraceInline(admin.StackedInline):
         ('Geometry', {'fields': 
             ['accuracy', 'geometry', ], 
             'classes' : ['wide', 'show'],}),
-        ('Details', {'fields': ['notes'], 
+        ('Notes', {'fields': ['notes'], 
             'classes': ['collapse']}),
     ]
     readonly_fields = ['fold']
