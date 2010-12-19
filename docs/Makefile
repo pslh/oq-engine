@@ -1,6 +1,8 @@
 # Makefile for Sphinx documentation
 #
 
+export DJANGO_SETTINGS_MODULE = openquake.settings
+
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build

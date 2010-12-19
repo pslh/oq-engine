@@ -11,8 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
    
+   todo
    architecture
    converter
+   faults
    flags
    formats
    hazard
@@ -24,6 +26,8 @@ Contents:
    producer
    risk
    schema
+   shapes
+   state
    seismicsources
    tasks
    urls

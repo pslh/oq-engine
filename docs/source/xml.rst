@@ -8,10 +8,10 @@ Constants and helper functions for XML processing,
 including namespaces, and namespace maps.
 
 
-The :mod:`xml` Module
+The :mod:`xmly` Module
 ------------------------
 
-.. automodule:: openquake.xml
+.. automodule:: openquake.xmly
     :members:
     :undoc-members:
     :show-inheritance:
