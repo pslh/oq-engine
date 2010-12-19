@@ -66,6 +66,8 @@ def admin_reorder(context, token):
             # sort the model list for each app
             app_name = app["app_url"][:-1]
             if not app_name:
+                if not "request" in context:
+                    return ""
                 app_name = context["request"].path.strip("/").split("/")[-1]
             model_order = [m.lower() for m in order.get(app_name, [])]
             context["app_list"][i]["models"].sort(key=lambda model: 

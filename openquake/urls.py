@@ -11,6 +11,9 @@ from openquake.faults.forms import SectionForm, FaultForm, FaultWizard
 
 databrowse.site.register(models.Fault)
 databrowse.site.register(models.FaultSection)
+databrowse.site.register(models.Observation)
+databrowse.site.register(models.Fold)
+databrowse.site.register(models.FoldTrace)
 
 admin.autodiscover()
 

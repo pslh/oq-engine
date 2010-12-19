@@ -16,6 +16,14 @@ from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_protect
 csrf_protect_m = method_decorator(csrf_protect)
 
+MAP_OPTIONS = {
+        'default_lat' : -41.215,
+        'default_lon' : 174.897, 
+        'default_zoom' : 10,
+        'layers' : ['google.satellite', 've.aerial', 'osm.osmarender'],
+        'zoom_to_data_extent' : True,
+        'popups_outside' : True,
+}
 
 class ObservationInline(admin.StackedInline):
     """
@@ -26,7 +34,7 @@ class ObservationInline(admin.StackedInline):
     """
     model = Observation
     extra = 1
-    max_num = 1
+    # max_num = 1
     formfield_overrides = {
         models.PointField: {'widget': EditableMap(options={'geometry': 'point', 'zoom_to_data_extent' : False})},
     }
@@ -44,11 +52,11 @@ class SectionInline(admin.StackedInline):
     """
     model = FaultSection
     extra = 1
-    max_num = 1
-    formfield_overrides = {
-        models.LineStringField: 
-                {'widget': EditableMap(options={'geometry': 'linestring', 'layers' : ['google.satellite']})},
-    }
+    # max_num = 1
+    # formfield_overrides = {
+    #     models.LineStringField: 
+    #             {'widget': EditableMap(options={'geometry': 'linestring', 'layers' : ['google.satellite']})},
+    # }
     form = SectionForm
     fieldsets = [
         (None,  {'fields': 
@@ -71,7 +79,9 @@ class FaultAdmin(GeoModelAdmin):
     .. todo:: Filter by active
     
     """
-    list_map = ['traces','observations']
+    list_map = ['traces']
+    list_map_options = MAP_OPTIONS.copy()
+    options = MAP_OPTIONS.copy()
     list_display = ('name', 'completeness', 'last_updated', 'verified_by', 'is_active')
     list_filter = ['completeness', 'verified_by', 'compiler']
     search_fields = ['name', 'notes']
@@ -95,7 +105,7 @@ class FaultAdmin(GeoModelAdmin):
     add_form = FaultCreationForm
     
     readonly_fields = ['compiler',]
-    inlines = [SectionInline, ObservationInline]
+    inlines = [ObservationInline, SectionInline]
 
     def get_fieldsets(self, request, obj=None):
         if not obj:
@@ -153,7 +163,7 @@ class TraceInline(admin.StackedInline):
     max_num = 1
     formfield_overrides = {
         models.LineStringField: 
-                {'widget': EditableMap(options={'geometry': 'linestring',})},
+                {'widget': EditableMap(options={'geometry': 'linestring', 'layers' : ['google.satellite']})},
     }
     fieldsets = [
         (None,  {'fields': 
@@ -172,6 +182,8 @@ class FoldAdmin(GeoModelAdmin):
     .. todo:: Generalize fieldset and actions for Faults and Folds.
     """
     list_map = ['traces']
+    list_map_options = MAP_OPTIONS.copy()
+    options = MAP_OPTIONS.copy()
     list_display = ('name', 'completeness', 'last_updated', 'verified_by')
     list_filter = ['completeness', 'verified_by', 'compiler']
     search_fields = ['name', 'notes']
@@ -214,11 +226,8 @@ class FaultSectionAdmin(GeoModelAdmin):
     list_display = ('fault', 'id',)
     list_filter = ['fault']
     list_map = ['geometry']
-    list_map_options = {
-        # group nearby points into clusters
-        # 'cluster': True,
-        # 'cluster_display': 'list',
-    }
+    list_map_options = MAP_OPTIONS.copy()
+    # options = list_map_options
     inlines = [RecurrenceInline, EventInline]
     fieldsets = [
         (None,  {'fields': 
@@ -229,21 +238,16 @@ class FaultSectionAdmin(GeoModelAdmin):
             ('upper_depth', 'lower_depth', 'downthrown_side', )], 'classes' : ['wide', 'show'],}),
         ('Details', {'fields': ['notes'], 'classes': ['collapse']}),
     ]
-    # OSMAdmin options
-    # map_width = 700
-    # map_height = 325
-    
-    # OLWidget Options
-    options = {
-        'default_lat': -72,
-        'default_lon': 43,
-    }
-    # maps = (
-    #     (('capital', 'perimiter'), { 'layers': ['google.streets'] }),
-    #     (('biggest_river',), {'overlay_style': {'stroke_color': "#0000ff"}}),
-    # )
+    form = SectionForm
 
+class ObservationAdmin(GeoModelAdmin):
+    list_filter = ['fault']
+    list_map = ['geometry']
+    list_map_options = MAP_OPTIONS.copy()
+    options = list_map_options.copy()
+    #options.update({'zoom_to_data_extent' : False })
 
 admin.site.register(Fault, FaultAdmin)
 admin.site.register(Fold, FoldAdmin)
 admin.site.register(FaultSection, FaultSectionAdmin)
+admin.site.register(Observation, ObservationAdmin)

@@ -33,6 +33,14 @@ class FaultCreationForm(ModelForm):
             fault.save()
         return fault
 
+MAP_OPTIONS = {
+        'default_lat' : -41.215,
+        'default_lon' : 174.897, 
+        'default_zoom' : 10,
+        'layers' : ['google.satellite', 've.aerial', 'osm.osmarender'],
+        'zoom_to_data_extent' : True,
+        'popups_outside' : True,
+}
 
 class SectionForm(ModelForm, MapModelForm):
     __metaclass__ = classmaker()

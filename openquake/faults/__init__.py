@@ -3,9 +3,14 @@ Django app for managing active faults and folds, as part of the Faulted Earth
 Global Component.
 
 .. todo:: Add filter by active faults
+    http://stackoverflow.com/questions/2251851/django-admin-list-filter-attribute-from-userprofile
+    http://code.djangoproject.com/ticket/5833
+    http://djangosnippets.org/snippets/2260/
+
 .. todo:: Add info layer of other sections to fault section map.
     http://code.djangoproject.com/ticket/11112
     https://groups.google.com/forum/#topic/django-users/S7E13Y7TUNU
+    
 
 """
 
