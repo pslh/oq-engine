@@ -1,17 +1,35 @@
 from models import FaultSection, Fault
-
+from django import forms
 from django.forms.models import ModelForm
 from olwidget.forms import MapModelForm
 from olwidget.fields import EditableLayerField
 
 from django.http import HttpResponseRedirect
 from django.shortcuts import render_to_response
+from django.utils.translation import ugettext, ugettext_lazy as _
 from django.contrib.formtools.wizard import FormWizard
 from olwidget.fields import MapField, EditableLayerField, InfoLayerField
 
 class FaultForm(ModelForm):
     class Meta:
         model = Fault
+
+
+class FaultCreationForm(ModelForm):
+    """
+    A form that creates a Fault, with no sections.
+    """
+    name = forms.CharField(label=_("Name of Fault"))
+
+    class Meta:
+        model = Fault
+        fields = ("name",)
+
+    def save(self, commit=True):
+        fault = super(FaultCreationForm, self).save(commit=False)
+        if commit:
+            fault.save()
+        return fault
 
 
 class SectionForm(MapModelForm):

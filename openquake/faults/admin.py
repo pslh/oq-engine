@@ -1,15 +1,20 @@
 from openquake.faults.models import Fault, FaultSection, Recurrence, Event, Observation
 from openquake.faults.models import Fold, FoldTrace
+from openquake.faults.forms import FaultCreationForm, FaultForm
 from django.contrib import admin
 from django.contrib.gis.db import models
 from django.contrib.gis.admin import OSMGeoAdmin
+from django.db import transaction
 from olwidget.admin import GeoModelAdmin
 from django.forms.models import ModelForm
 from olwidget.forms import MapModelForm
 from olwidget.fields import MapField, EditableLayerField, InfoLayerField
 from olwidget.widgets import Map, EditableMap, EditableLayer, InfoLayer
 
+from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
+from django.views.decorators.csrf import csrf_protect
+csrf_protect_m = method_decorator(csrf_protect)
 
 
 class ObservationInline(admin.StackedInline):
@@ -67,16 +72,64 @@ class FaultAdmin(GeoModelAdmin):
     list_display = ('name', 'completeness', 'last_updated', 'verified_by')
     list_filter = ['completeness', 'verified_by', 'compiler']
     search_fields = ['name', 'notes']
-    fieldsets = [
-         (None,    {'fields': ['name']}), 
-         ('Provenance', {'fields': 
-                 [('compiler', 'contributer'),
-                 'completeness', ], 'classes': ['collapse']}), 
-         ('Details', {'fields': 
-                ['notes',],'classes': ['collapse']}),
-    ]
     actions = ['make_verified']
+    
+    add_form_template = 'admin/faults/add_form.html'
+    
+    fieldsets = [
+         (None,    {'fields': [('name', 'completeness'),]}), 
+         ('Provenance', {'fields': [('contributer', 'compiler'), 'notes'], 
+            'classes': ['show']}), 
+    ]
+    
+    add_fieldsets = (
+        (None, {
+            'fields': ('name', ),
+            'classes': ('wide',)}
+        ),
+    )
+    form = FaultForm
+    add_form = FaultCreationForm
+    
+    readonly_fields = ['compiler',]
+    
     inlines = [SectionInline, ObservationInline]
+    add_inlines = []
+    
+    def get_inlines(self, request, obj=None):
+        if not obj:
+            return self.add_inlines
+        return super(FaultAdmin, self).get_inlines(request, obj)
+
+    def get_fieldsets(self, request, obj=None):
+        if not obj:
+            return self.add_fieldsets
+        return super(FaultAdmin, self).get_fieldsets(request, obj)
+
+    def get_form(self, request, obj=None, **kwargs):
+        """
+        Use special form during Fault creation
+        """
+        defaults = {}
+        if obj is None:
+            defaults.update({
+                'form': self.add_form,
+                'fields': admin.util.flatten_fieldsets(self.add_fieldsets),
+            })
+        defaults.update(kwargs)
+        return super(FaultAdmin, self).get_form(request, obj, **defaults)
+
+    @csrf_protect_m
+    @transaction.commit_on_success
+    def add_view(self, request, form_url='', extra_context=None):
+        """Suppress all the inlines during add"""
+        self.inline_instances = []
+        fault = super(FaultAdmin, self).add_view(request, form_url, extra_context)
+        if request.method == 'POST':
+            for inline_class in self.inlines:
+                inline_instance = inline_class(self.model, self.admin_site)
+                self.inline_instances.append(inline_instance)
+        return fault
 
     def make_verified(self, request, queryset): 
         if request.user.has_perm('faults.can_verify_faults'):
