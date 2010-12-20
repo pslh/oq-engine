@@ -40,6 +40,15 @@ with os.popen("which gfortran") as gf:
     if not gf:
         raise EnvironmentError("You need to install gfortran")
 
+# if the environment var MK_OPENQUAKE_DEB_PKG is defined (with any value, such as 'true'),
+# use a different list of required packages ('install_requires')
+_install_requires = ["pyyaml", "shapely", "python-gflags", "redis",
+                        "lxml", "sphinx", "eventlet", "guppy", "libLAS",
+                        "numpy", "scipy", "celery", "nose", "django",
+                        "ordereddict"]
+if os.environ.has_key('MK_OPENQUAKE_DEB_PKG'):
+    _install_requires = [] # TODO(LB): add package dependencies for Ubuntu/Deb pkg building
+
 setup(name='openquake',
       version='0.11',
       description='OpenQuake Platform',
@@ -53,7 +62,4 @@ setup(name='openquake',
       data_files=[('/etc/openquake', ['celeryconfig.py']),
                   ('lib', libs),('dist', dist)],
       scripts=scripts,
-      install_requires=["pyyaml", "shapely", "python-gflags", "redis",
-                        "lxml", "sphinx", "eventlet", "guppy", "libLAS",
-                        "numpy", "scipy", "celery", "nose", "django",
-                        "ordereddict"])
+      install_requires=_install_requires)
