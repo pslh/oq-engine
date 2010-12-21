@@ -11,6 +11,40 @@ Global Component.
     http://code.djangoproject.com/ticket/11112
     https://groups.google.com/forum/#topic/django-users/S7E13Y7TUNU
     
+.. todo:: Support lat/lon type-in for points
+.. todo:: Show coordinates while editing
+.. todo:: Show length of section while editing
+.. todo:: Provide a summary map for each fault
+.. todo:: [BUG] Save and Continue from Fault Section fails
+.. todo:: [BUG] Missing Base Layers
+.. todo:: [BUG] Missing info layers
+.. todo:: [BUG] Crash when editing geom from FaultSection form
+
+.. todo:: Create multiple observations from one map
+.. todo:: Change accuracy to Compilation Scale, prepopulate from 2X of Zoom Level in JS and use selection box for bins
+.. todo:: Use more collapsed sections, very carefully (e.g. better styling to highlight collapsed areas)
+.. todo:: Take the word "angle" off everything
+
+.. todo:: Change is_active and is_episodic to select box with "Non-episodic, episodic and active, episodic and quiescient, episodic and unknown"
+.. todo:: Support WMS for base layers (photo source)
+.. todo:: All compulsory fields need a matching fitness for use field
+.. todo:: Top-level fitness for use should be computed
+.. todo:: Rename data completeness to Fitness for Use
+.. todo:: Provide tooltips and help text for all fields, using data dictionary content from O&T
+
+.. todo:: Support multi-value fields, with optional preferred value, and optional use of select control for bin ranges
+.. todo:: Change labels on fieldsets to geological terms (e.g. provenance and geometry are both wrong.)
+
+.. todo:: Rebuild recurrence, event and displacement relationships (using 'selected' boolean fields to indicate relationship preference)
+
+.. todo:: Add names to sections
+.. todo:: Add filter by country, using country bounding polygons
+.. todo:: Sections have traces, which have expression, method and compilation scale attached directly. (Moved from Section)
+
+.. todo:: Support missing slash on /admin url
+.. todo:: Use thicker lines for better selectability
+.. todo:: Normalize CSS on databrowser, make it easier to get back to admin screens
+
 
 """
 

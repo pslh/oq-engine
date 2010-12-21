@@ -106,6 +106,12 @@ DECIMAL_FIELD = {'decimal_places' : 2,
                'null' : True,
                'blank' : True }
 
+EPISODIC = (
+        (1, 'Non-episodic'),
+        (2, 'Episodic, Active'),
+        (3, 'Episodic, Quiescient'),
+        (4, 'Episodic, Unknown'),
+)
 
 class FuzzyIntegerField(models.Field):
     """Exposes a composite field for min, max, and preferred value
@@ -115,8 +121,7 @@ class FuzzyIntegerField(models.Field):
 
 class Episodic(models.Model):
     """Abstract base for models that are episodic"""
-    is_episodic = models.BooleanField(default=True)
-    is_active = models.BooleanField(default=True)
+    activity = models.IntegerField(choices=EPISODIC, default=1)
     objects = models.GeoManager()
     class Meta:
         abstract = True
@@ -169,14 +174,14 @@ class GeologyFeature(models.Model):
             features.append(self.observations)
         return features and GeometryCollection(features) or None
     geometry = property(_get_geometry)
-    
-    def _is_active(self):
-        active_sections = self.__getattribute__(self.geom_children).filter(
-                is_active__exact=True)
-        if active_sections:
-            return True
-        return False
-    is_active = property(_is_active)
+        # 
+        # def _is_active(self):
+        #     active_sections = self.__getattribute__(self.geom_children).filter(
+        #             is_active__exact=True)
+        #     if active_sections:
+        #         return True
+        #     return False
+        # is_active = property(_is_active)
 
     class Meta:
         abstract = True
@@ -229,7 +234,9 @@ class FaultSection(Episodic):
     other_sections = property(_get_other_sections)
     
     def __unicode__(self):
-        return "%s:%s" % (self.fault.name, self.id)
+        if hasattr(self, 'fault'):
+            return "%s:%s" % (self.fault.name, self.id)
+        return "unassigned fault section"
 
 
 class Recurrence(models.Model):

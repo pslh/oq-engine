@@ -1,6 +1,6 @@
 from openquake.faults.models import Fault, FaultSection, Recurrence, Event, Observation
 from openquake.faults.models import Fold, FoldTrace
-from openquake.faults.forms import FaultCreationForm, FaultForm, SectionForm, ObservationForm
+from openquake.faults.forms import MAP_OPTIONS, FaultCreationForm, FaultForm, SectionForm, SectionInlineForm, ObservationForm
 from django.contrib import admin
 from django.contrib.gis.db import models
 from django.contrib.gis.admin import OSMGeoAdmin
@@ -16,14 +16,6 @@ from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_protect
 csrf_protect_m = method_decorator(csrf_protect)
 
-MAP_OPTIONS = {
-        'default_lat' : -41.215,
-        'default_lon' : 174.897, 
-        'default_zoom' : 10,
-        'layers' : ['google.satellite', 've.aerial', 'osm.osmarender'],
-        'zoom_to_data_extent' : True,
-        'popups_outside' : True,
-}
 
 class ObservationInline(admin.StackedInline):
     """
@@ -36,7 +28,7 @@ class ObservationInline(admin.StackedInline):
     extra = 1
     # max_num = 1
     formfield_overrides = {
-        models.PointField: {'widget': EditableMap(options={'geometry': 'point', 'zoom_to_data_extent' : False})},
+        models.PointField: {'widget': EditableMap(options={'geometry': 'point', 'hide_textarea' : False, 'zoom_to_data_extent' : False})},
     }
     form = ObservationForm
     readonly_fields = ['fault']
@@ -52,15 +44,10 @@ class SectionInline(admin.StackedInline):
     """
     model = FaultSection
     extra = 1
-    # max_num = 1
-    # formfield_overrides = {
-    #     models.LineStringField: 
-    #             {'widget': EditableMap(options={'geometry': 'linestring', 'layers' : ['google.satellite']})},
-    # }
     form = SectionForm
     fieldsets = [
         (None,  {'fields': 
-            [('fault',), ('expression', 'method', 'is_episodic', 'is_active')],}),
+            [('fault',), ('expression', 'method', 'activity')],}),
         ('Notes', {'fields': ['notes'], 
             'classes': ['collapse']}),
         ('Geometry', {'fields': 
@@ -82,7 +69,7 @@ class FaultAdmin(GeoModelAdmin):
     list_map = ['traces']
     list_map_options = MAP_OPTIONS.copy()
     options = MAP_OPTIONS.copy()
-    list_display = ('name', 'completeness', 'last_updated', 'verified_by', 'is_active')
+    list_display = ('name', 'completeness', 'last_updated', 'verified_by')
     list_filter = ['completeness', 'verified_by', 'compiler']
     search_fields = ['name', 'notes']
     actions = ['make_verified']
@@ -92,7 +79,7 @@ class FaultAdmin(GeoModelAdmin):
     fieldsets = [
          (None,    {'fields': [('name', 'completeness'),]}), 
          ('Provenance', {'fields': [('contributer', 'compiler'), 'notes'], 
-            'classes': ['show']}), 
+            'classes': ['collapse']}), 
     ]
     
     add_fieldsets = (
@@ -124,7 +111,6 @@ class FaultAdmin(GeoModelAdmin):
             })
         defaults.update(kwargs)
         form = super(FaultAdmin, self).get_form(request, obj, **defaults)
-        print form
         return form
     
     def save_model(self, request, obj, form, change):
@@ -167,7 +153,7 @@ class TraceInline(admin.StackedInline):
     }
     fieldsets = [
         (None,  {'fields': 
-            [('fold',), ('expression', 'method', 'is_episodic', 'is_active')],}),
+            [('fold',), ('expression', 'method', 'activity')],}),
         ('Geometry', {'fields': 
             ['accuracy', 'geometry', ], 
             'classes' : ['wide', 'show'],}),
@@ -226,12 +212,12 @@ class FaultSectionAdmin(GeoModelAdmin):
     list_display = ('fault', 'id',)
     list_filter = ['fault']
     list_map = ['geometry']
-    list_map_options = MAP_OPTIONS.copy()
+    list_map_options = MAP_OPTIONS
     # options = list_map_options
     inlines = [RecurrenceInline, EventInline]
     fieldsets = [
         (None,  {'fields': 
-            [('fault',), ('expression', 'method', 'is_episodic', 'is_active')],}),
+            [('fault',), ('expression', 'method', 'activity')],}),
         ('Geometry', {'fields': 
             ['accuracy', 'aseismic_slip_factor', ('slip_type', 'slip_rate'),
             ('dip_angle', 'rake_angle', 'strike_angle'), 'geometry',
@@ -243,8 +229,8 @@ class FaultSectionAdmin(GeoModelAdmin):
 class ObservationAdmin(GeoModelAdmin):
     list_filter = ['fault']
     list_map = ['geometry']
-    list_map_options = MAP_OPTIONS.copy()
-    options = list_map_options.copy()
+    list_map_options = MAP_OPTIONS
+    options = list_map_options
     #options.update({'zoom_to_data_extent' : False })
 
 admin.site.register(Fault, FaultAdmin)

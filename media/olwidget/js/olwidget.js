@@ -183,16 +183,16 @@ var olwidget = {
  * The Map.  Extends an OpenLayers map.
  */
 olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
-    initialize: function(mapDivID, vectorLayers, options) {
+    initialize: function(mapDivID, vectorLayers, options, toolbardiv) {
         this.vectorLayers = vectorLayers;
-        this.opts = this.initOptions(options);
-        this.initMap(mapDivID, this.opts);
+        this.opts = this.initOptions(options, toolbardiv);
+        this.initMap(mapDivID, this.opts, toolbardiv);
     },
     /*
      * Extend the passed in options with defaults, and create unserialized
      * objects for serialized options (such as projections).
      */
-    initOptions: function(options) {
+    initOptions: function(options, toolbardiv) {
         var defaults = {
             // Constructor options
             mapOptions: {
@@ -236,7 +236,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
     /*
      * Initialize the OpenLayers Map and add base layers
      */
-    initMap: function(mapDivId, opts) {
+    initMap: function(mapDivId, opts, toolbardiv) {
         var mapDiv = document.getElementById(mapDivId);
         OpenLayers.Util.extend(mapDiv.style, opts.mapDivStyle);
         if (opts.mapDivClass) {
@@ -289,7 +289,7 @@ olwidget.Map = OpenLayers.Class(OpenLayers.Map, {
         });
         this.addControl(this.selectControl);
         this.selectControl.activate();
-        this.addControl(new olwidget.EditableLayerSwitcher());
+        this.addControl(new olwidget.EditableLayerSwitcher({div: toolbardiv}));
     },
     initCenter: function() {
         if (this.opts.zoomToDataExtent) {
@@ -907,6 +907,7 @@ olwidget.InfoMap = OpenLayers.Class(olwidget.Map, {
 olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitcher, {
     // The layer we are currently editing
     currentlyEditing: null,
+    toolbarcontainer: null,
     /** A list of all editable layers, including none.  Contains an object:
      *  {
      *   layer: the layer,
@@ -919,6 +920,12 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
     panel: null,
 
     initialize: function(options) {
+        // this.toolbarcontainer = options.tbd;
+        //         // alert(this.toolbarcontainer);
+        //         opts = {}
+        //         if (this.toolbarcontainer) {
+        //             opts = {div: this.toolbarcontainer};
+        //         }
         OpenLayers.Control.prototype.initialize.apply(this, arguments);
     },
     setMap: function() {
@@ -968,10 +975,11 @@ olwidget.EditableLayerSwitcher = OpenLayers.Class(OpenLayers.Control.LayerSwitch
         if (this.currentlyEditing) {
             this.stopEditing();
         }
-        this.panel = new OpenLayers.Control.Panel({
+        panelopts = {
             defaultControl: layer.defaultControl,
             displayClass: 'olControlEditingToolbar'
-        });
+        };
+        this.panel = new OpenLayers.Control.Panel(panelopts); // Panel(panelopts);
         // monkey patch to keep undo button states
         this.panel.onClick = function(ctrl, evt) {
             OpenLayers.Event.stop(evt ? evt : window.event);

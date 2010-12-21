@@ -2,24 +2,17 @@ from django.conf import settings
 from django.conf.urls.defaults import *
 from django.views.generic.simple import direct_to_template
 from django.views.static import serve
-
-from django.contrib import admin
 from django.contrib import databrowse
 
-from openquake.faults import models
-from openquake.faults.forms import SectionForm, FaultForm, FaultWizard
+from django.contrib import admin
 
-databrowse.site.register(models.Fault)
-databrowse.site.register(models.FaultSection)
-databrowse.site.register(models.Observation)
-databrowse.site.register(models.Fold)
-databrowse.site.register(models.FoldTrace)
+from openquake.faults import urls as faulturls
+
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    (r'^faults/add$', FaultWizard([FaultForm, SectionForm])),
-    (r'^faults/edit/(?P<fault_id>.*)/$', FaultWizard([FaultForm, SectionForm])),
+    (r'^faults/', include(faulturls)),
     (r'^databrowse/(.*)', databrowse.site.root),
     (r'^admin/', include(admin.site.urls)),
     (r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 

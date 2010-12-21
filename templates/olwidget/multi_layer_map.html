@@ -1,0 +1,39 @@
+<style type="text/css"> 
+    .olControlMousePosition {
+        color: black !important;
+        font-size: 200%;
+        background-color: #dddddd;
+        opacity: 75%;
+    }
+    
+    .olControlScaleLine {
+        left: 40%;
+    }
+</style> 
+<div id="{{ id }}"></div><br/>
+{{ layer_html|join:"" }}
+<script type="text/javascript">
+    
+    var target = document.getElementById("{{ id }}");
+    if (target.innerHTML != "") {
+      target.innerHTML = "";
+    }
+        // OpenLayers.ImgPath = "http://js.mapbox.com/theme/dark/";
+        // var container = document.getElementById("{{ id }}_controls");
+        box_o_maps["{{ id }}"] = new olwidget.Map("{{ id }}", [
+                {{ layer_js|join:"," }}
+            ],
+            {{ map_opts|safe }} 
+        );
+        box_o_maps["{{ id }}"].addControl(new OpenLayers.Control.MousePosition());
+        box_o_maps["{{ id }}"].addControl(new OpenLayers.Control.ScaleLine());
+        var layer = new OpenLayers.Layer.WMS( "OpenGEO",
+            "http://maps.opengeo.org/geowebcache/service/wms?layers=bluemarble",
+            {layers: "bluemarble", format: 'png'}
+        );
+        box_o_maps["{{ id }}"].addLayer(layer); 
+        box_o_maps["{{ id }}"].initCenter();
+    
+        
+</script>
+
