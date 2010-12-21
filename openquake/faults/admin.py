@@ -25,7 +25,7 @@ class ObservationInline(admin.StackedInline):
 
     """
     model = Observation
-    extra = 1
+    extra = 0
     # max_num = 1
     formfield_overrides = {
         models.PointField: {'widget': EditableMap(options={'geometry': 'point', 'hide_textarea' : False, 'zoom_to_data_extent' : False})},
@@ -43,7 +43,7 @@ class SectionInline(admin.StackedInline):
     
     """
     model = FaultSection
-    extra = 1
+    extra = 0
     form = SectionForm
     fieldsets = [
         (None,  {'fields': 
@@ -145,8 +145,7 @@ class FaultAdmin(GeoModelAdmin):
 
 class TraceInline(admin.StackedInline):
     model = FoldTrace
-    extra = 1
-    max_num = 1
+    extra = 0
     formfield_overrides = {
         models.LineStringField: 
                 {'widget': EditableMap(options={'geometry': 'linestring', 'layers' : ['google.satellite']})},
@@ -200,7 +199,6 @@ class FoldAdmin(GeoModelAdmin):
 class RecurrenceInline(admin.StackedInline):
     model = Recurrence
     extra = 0
-    max_num = 1
 
 
 class EventInline(admin.StackedInline):
