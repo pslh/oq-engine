@@ -33,7 +33,6 @@ MAP_OPTIONS = {
                 ['LayerSwitcher', 'Navigation', 'PanZoomBar', 'Attribution'], 
                 'min_extent' : 'new OpenLayers.Bounds(-10, -10, 10, 10)'},
         'min_extent' : 'new OpenLayers.Bounds(-10, -10, 10, 10)',
-        
 }
 
 
@@ -58,120 +57,93 @@ class FaultCreationForm(ModelForm):
         return fault
 
 
-class SectionForm(ModelForm, MapModelForm):
-    """FaultSection creation and editing, used both in dedicated and inline views."""
-    __metaclass__ = classmaker()
+def make_section_layer(fault, section_id):
+    return InfoLayerField([[s.geometry, "%s Sections" % (s.__unicode__())]
+            for s in fault.faultsection_set.filter(
+            geometry__isnull=False).exclude(id=section_id)],
+            {
+                    'geometry': 'linestring',
+                    'overlay_style': {
+                        'fill_opacity': 0,
+                        'stroke_color': "grey",
+                        'stroke_width': 2,
+                    }, 
+                    'name': "Other Sections",
+            }) 
+              
+                    
+def make_point_layer(fault, observation_id):
+    return InfoLayerField([[o.geometry, "%s Observations" % (o.__unicode__())]
+            for o in fault.observation_set.filter(
+            geometry__isnull=False).exclude(id=observation_id)],
+            {
+                'geometry': 'point',
+                'overlay_style': {                             
+                    'externalGraphic': "/media/alien.png",
+                    'graphicWidth': 21,
+                    'graphicHeight': 25,
+                }, 
+                'name': "Observations",
+            })
 
+
+class SectionForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super(SectionForm, self).__init__(*args, **kwargs)
         layers = [EditableLayerField({'geometry': 'linestring', 'name': 'geometry'})]
-        traces = []
-        points = []
         if hasattr(self.instance, 'fault'):
-            for section in self.instance.fault.faultsection_set.filter(
-                    geometry__isnull=False).all():
-                    traces.append([section.geometry, 
-                        "%s Sections" % (section.__unicode__())])            
-            for observed in self.instance.fault.observation_set.filter(
-                    geometry__isnull=False).all():
-                    points.append([observed.geometry, 
-                        "%s Observations" % (observed.__unicode__())])
-        if traces:
-            layers.append(InfoLayerField(traces,
-                        {
-                            'geometry': 'linestring',
-                            'overlay_style': {
-                                'fill_opacity': 0,
-                                'stroke_color': "grey",
-                                'stroke_width': 1,
-                            }, 
-                            'name': "Other Sections",
-                        }))         
-        if points:
-            layers.append(InfoLayerField(points,
-                        {
-                            'geometry': 'point',
-                            'overlay_style': {                             
-                                'externalGraphic': "/media/alien.png",
-                                'graphicWidth': 21,
-                                'graphicHeight': 25,
-                            }, 
-                            'name': "Observations",
-                        }))   
-
+            layers.append(make_section_layer(self.instance.fault, self.instance.id))
+            layers.append(make_point_layer(self.instance.fault, None))
         self.fields['geometry'] = olwidget.fields.MapField(layers, MAP_OPTIONS)
 
-    class Meta:
-        model = FaultSection
-        fieldsets = [
-            (None,  {'fields': 
-                [('fault',), ('expression', 'method', 'is_episodic', 'is_active')],}),
-            ('Geometry', {'fields': 
-                ['accuracy', 'aseismic_slip_factor', ('slip_type', 'slip_rate'),
-                ('dip_angle', 'rake_angle', 'strike_angle'), 'geometry',
-                ('upper_depth', 'lower_depth', 'downthrown_side', )], 'classes' : ['wide', 'show'],}),
-            ('Details', {'fields': ['notes'], 'classes': ['collapse']}),
-        ]
 
-
-class SectionInlineForm(InlineAdminForm, SectionForm):
+class SectionInlineForm(ModelForm, MapModelForm):
+    """FaultSection creation and editing, used both in dedicated and inline views."""
     __metaclass__ = classmaker()
-
-
-class ObservationForm(ModelForm, MapModelForm):
-    __metaclass__ = classmaker()
+    parent_obj = None
     
     def __init__(self, *args, **kwargs):
-        super(ObservationForm, self).__init__(*args, **kwargs)
-        layers = [EditableLayerField({'geometry': 'point', 'name': 'geometry'})]
-        traces = []
-        points = []
-        if hasattr(self.instance, 'fault'):
-            for section in self.instance.fault.faultsection_set.filter(
-                    geometry__isnull=False).all():
-                    traces.append([section.geometry, 
-                        "%s Sections" % (section.__unicode__())])            
-            for observed in self.instance.fault.observation_set.filter(
-                    geometry__isnull=False).all():
-                    points.append([observed.geometry, 
-                        "%s Observations" % (observed.__unicode__())])
-        if traces:
-            layers.append(InfoLayerField(traces,
-                        {
-                            'geometry': 'linestring',
-                            'overlay_style': {
-                                'fill_opacity': 0,
-                                'stroke_color': "grey",
-                                'stroke_width': 1,
-                            }, 
-                            'name': "Other Sections",
-                        }))         
-        if points:
-            layers.append(InfoLayerField(points,
-                        {
-                            'geometry': 'point',
-                            'overlay_style': {                             
-                                'externalGraphic': "/media/alien.png",
-                                'graphicWidth': 21,
-                                'graphicHeight': 25,
-                            }, 
-                            'name': "Observations",
-                        }))   
+        super(SectionInlineForm, self).__init__(*args, **kwargs)
+        self.set_layers()
+    
+    def set_layers(self):
+        fault = self.__class__.parent_obj # Can use self.instance sometimes?
+        layers = [EditableLayerField({'geometry': 'linestring', 'name': 'geometry'})]
+        layers.append(make_section_layer(fault, self.instance.id))
+        layers.append(make_point_layer(fault, None))
+        self.fields['geometry'] = olwidget.fields.MapField(layers, MAP_OPTIONS)
+    
+    class Meta:
+        model = FaultSection
 
+
+class ObservationForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ObservationForm, self).__init__(*args, **kwargs)
+        self.set_layers()
+    
+    def set_layers(self):
+        layers = [EditableLayerField({'geometry': 'point', 'name': 'geometry'})]
+        if hasattr(self.instance, 'fault'):
+            layers.append(make_section_layer(self.instance.fault, None))
+            layers.append(make_point_layer(self.instance.fault, self.instance.id))
+        self.fields['geometry'] = olwidget.fields.MapField(layers, MAP_OPTIONS)
+    
+
+class ObservationInlineForm(ModelForm, MapModelForm):
+    __metaclass__ = classmaker()
+    parent_obj = None
+    
+    def __init__(self, *args, **kwargs):
+        super(ObservationInlineForm, self).__init__(*args, **kwargs)
+        self.set_layers()
+        
+    def set_layers(self):   
+        fault = self.__class__.parent_obj # Can use self.instance sometimes?     
+        layers = [EditableLayerField({'geometry': 'point', 'name': 'geometry'})]
+        layers.append(make_section_layer(fault, None))
+        layers.append(make_point_layer(fault, self.instance.id))
         self.fields['geometry'] = olwidget.fields.MapField(layers, MAP_OPTIONS)
     
     class Meta:
         model = Observation
-        fieldsets = [
-            (None,  {'fields': [ 'geometry','notes'], 'classes' : ['wide', 'show'],}),
-        ]
-        
-
-class FaultWizard(FormWizard):
-        
-    def done(self, request, form_list):
-        for form in form_list:
-            if form.is_valid():
-                form.save()
-        #self.do_something_with_the_form_data([form.cleaned_data for form in form_list])
-        return HttpResponseRedirect('/page-to-redirect-to-when-done/')

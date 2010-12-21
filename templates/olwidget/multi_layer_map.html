@@ -29,7 +29,7 @@
         box_o_maps["{{ id }}"].addControl(new OpenLayers.Control.ScaleLine());
         var layer = new OpenLayers.Layer.WMS( "OpenGEO",
             "http://maps.opengeo.org/geowebcache/service/wms?layers=bluemarble",
-            {layers: "bluemarble", format: 'png'}
+            {layers: "bluemarble", format: 'image/png'}
         );
         box_o_maps["{{ id }}"].addLayer(layer); 
         box_o_maps["{{ id }}"].initCenter();

@@ -1,6 +1,6 @@
 from openquake.faults.models import Fault, FaultSection, Recurrence, Event, Observation
 from openquake.faults.models import Fold, FoldTrace
-from openquake.faults.forms import MAP_OPTIONS, FaultCreationForm, FaultForm, SectionForm, SectionInlineForm, ObservationForm
+from openquake.faults.forms import MAP_OPTIONS, FaultCreationForm, FaultForm, SectionForm, SectionInlineForm, ObservationForm, ObservationInlineForm
 from django.contrib import admin
 from django.contrib.gis.db import models
 from django.contrib.gis.admin import OSMGeoAdmin
@@ -10,11 +10,22 @@ from django.forms.models import ModelForm
 from olwidget.forms import MapModelForm
 from olwidget.fields import MapField, EditableLayerField, InfoLayerField
 from olwidget.widgets import Map, EditableMap, EditableLayer, InfoLayer
+from django.contrib.admin.util import unquote
 
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import permission_required
 from django.views.decorators.csrf import csrf_protect
 csrf_protect_m = method_decorator(csrf_protect)
+
+
+class RecurrenceInline(admin.StackedInline):
+    model = Recurrence
+    extra = 0
+
+
+class EventInline(admin.StackedInline):
+    model = Event
+    extra = 0
 
 
 class ObservationInline(admin.StackedInline):
@@ -26,25 +37,26 @@ class ObservationInline(admin.StackedInline):
     """
     model = Observation
     extra = 0
-    # max_num = 1
-    formfield_overrides = {
-        models.PointField: {'widget': EditableMap(options={'geometry': 'point', 'hide_textarea' : False, 'zoom_to_data_extent' : False})},
-    }
-    form = ObservationForm
+    form = ObservationInlineForm
     readonly_fields = ['fault']
+    
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.get('request')
+        if 'request' in kwargs:
+            del kwargs['request']
+        super(ObservationInline, self).__init__(*args, **kwargs)
 
 
 class SectionInline(admin.StackedInline):
     """Basic admin form for entering and editing Section Traces.
     
-    .. todo:: Show underlying observation points as Info Layer.
     .. todo:: Nested inlines with Recurrence and Events.
     .. todo:: Set fault properly on creation.
     
     """
     model = FaultSection
     extra = 0
-    form = SectionForm
+    form = SectionInlineForm
     fieldsets = [
         (None,  {'fields': 
             [('fault',), ('expression', 'method', 'activity')],}),
@@ -58,6 +70,12 @@ class SectionInline(admin.StackedInline):
             'classes' : ['wide', 'show'],}),
     ]
     readonly_fields = ['fault']
+    
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.get('request')
+        if 'request' in kwargs:
+            del kwargs['request']
+        super(SectionInline, self).__init__(*args, **kwargs)
 
 
 class FaultAdmin(GeoModelAdmin):
@@ -124,10 +142,22 @@ class FaultAdmin(GeoModelAdmin):
         """Suppress all the inlines during add"""
         self.inline_instances = []
         fault = super(FaultAdmin, self).add_view(request, form_url, extra_context)
-        if request.method == 'POST':
-            for inline_class in self.inlines:
-                inline_instance = inline_class(self.model, self.admin_site)
-                self.inline_instances.append(inline_instance)
+        for inline_class in self.inlines:
+            inline_instance = inline_class(self.model, self.admin_site, request=request)
+            self.inline_instances.append(inline_instance)
+        return fault
+    
+    @csrf_protect_m
+    @transaction.commit_on_success   
+    def change_view(self, request, object_id, extra_context=None):
+        print extra_context
+        self.inline_instances = []
+        for inline_class in self.inlines:
+            inline_instance = inline_class(self.model, self.admin_site, request=request)
+            obj = self.get_object(request, unquote(object_id))
+            inline_instance.form.parent_obj = obj
+            self.inline_instances.append(inline_instance)
+        fault = super(FaultAdmin, self).change_view(request, object_id, extra_context)
         return fault
 
     def make_verified(self, request, queryset): 
@@ -196,23 +226,12 @@ class FoldAdmin(GeoModelAdmin):
     make_verified.short_description = "Mark selected folds as verified"
 
 
-class RecurrenceInline(admin.StackedInline):
-    model = Recurrence
-    extra = 0
-
-
-class EventInline(admin.StackedInline):
-    model = Event
-    extra = 0
-    
-
-class FaultSectionAdmin(GeoModelAdmin):
+class SectionAdmin(GeoModelAdmin):
     list_display = ('fault', 'id',)
     list_filter = ['fault']
     list_map = ['geometry']
     list_map_options = MAP_OPTIONS
     options = MAP_OPTIONS
-    # options = list_map_options
     inlines = [RecurrenceInline, EventInline]
     fieldsets = [
         (None,  {'fields': 
@@ -223,16 +242,18 @@ class FaultSectionAdmin(GeoModelAdmin):
             ('upper_depth', 'lower_depth', 'downthrown_side', )], 'classes' : ['wide', 'show'],}),
         ('Details', {'fields': ['notes'], 'classes': ['collapse']}),
     ]
-    # form = SectionForm
+    form = SectionForm
+
 
 class ObservationAdmin(GeoModelAdmin):
     list_filter = ['fault']
     list_map = ['geometry']
     list_map_options = MAP_OPTIONS
     options = list_map_options
-    #options.update({'zoom_to_data_extent' : False })
+    form = ObservationForm
+
 
 admin.site.register(Fault, FaultAdmin)
 admin.site.register(Fold, FoldAdmin)
-admin.site.register(FaultSection, FaultSectionAdmin)
+admin.site.register(FaultSection, SectionAdmin)
 admin.site.register(Observation, ObservationAdmin)
