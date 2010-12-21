@@ -211,6 +211,7 @@ class FaultSectionAdmin(GeoModelAdmin):
     list_filter = ['fault']
     list_map = ['geometry']
     list_map_options = MAP_OPTIONS
+    options = MAP_OPTIONS
     # options = list_map_options
     inlines = [RecurrenceInline, EventInline]
     fieldsets = [
