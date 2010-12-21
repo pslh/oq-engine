@@ -222,7 +222,7 @@ class FaultSectionAdmin(GeoModelAdmin):
             ('upper_depth', 'lower_depth', 'downthrown_side', )], 'classes' : ['wide', 'show'],}),
         ('Details', {'fields': ['notes'], 'classes': ['collapse']}),
     ]
-    form = SectionForm
+    # form = SectionForm
 
 class ObservationAdmin(GeoModelAdmin):
     list_filter = ['fault']
