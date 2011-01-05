@@ -46,6 +46,14 @@ Global Component.
 .. todo:: Normalize CSS on databrowser, make it easier to get back to admin screens
 
 
+Further notes:
+
+  https://tiger.my/demos/wheel/
+  http://www.rkexcelamerica.com/dojo/1.3/release/docs/dojox/widget/AnalogGauge.html
+
+Watch out for migration of geometry column, which breaks it!
+
+
 """
 
 # The below code defines classmaker() - you should put this in a separate
