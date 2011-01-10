@@ -91,7 +91,7 @@ class MonteCarloMixin: # pylint: disable=W0232
         gmf_generator.seed(self.params.get('GMF_RANDOM_SEED', None))
         
         histories = int(self.params['NUMBER_OF_SEISMICITY_HISTORIES'])
-        realizations = int(self.params['NUMBER_OF_HAZARD_CURVE_CALCULATIONS'])
+        realizations = int(self.params['NUMBER_OF_LOGIC_TREE_SAMPLES'])
         LOG.info("Going to run hazard for %s histories of %s realizations each."
                 % (histories, realizations))
 

@@ -3,7 +3,7 @@
 [HAZARD]
 
 # file containing erf logic tree structure
-ERF_LOGIC_TREE_FILE = ErfLogicTree.inp
+SOURCE_MODEL_LOGIC_TREE_FILE = ErfLogicTree.inp
 # file containing gmpe logic tree structure
 GMPE_LOGIC_TREE_FILE = GmpeLogicTree.inp
 # output directory

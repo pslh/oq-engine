@@ -39,12 +39,12 @@ def defaultConfig() :
          "RESULT_TYPE" : "Hazard map",
          "PROBABILITY_OF_EXCEEDANCE" : "0.1",
          "REGION": "-78.0 0.0 -77.0 0.0 -77.0 1.0 -78.0 1.0 1.0",
-         "NUMBER_OF_HAZARD_CURVE_CALCULATIONS":"100"}
+         "NUMBER_OF_LOGIC_TREE_SAMPLES":"100"}
     return d
     
 def defaultConfigReverseOrder() :
     d = {"REGION": "-78.0 0.0 -77.0 0.0 -77.0 1.0 -78.0 1.0 1.0",
-         "NUMBER_OF_HAZARD_CURVE_CALCULATIONS":"100",
+         "NUMBER_OF_LOGIC_TREE_SAMPLES":"100",
 	 "PROBABILITY_OF_EXCEEDANCE" : "0.1",
 	 "RESULT_TYPE" : "Hazard map",
 	 "NUMBER_OF_PROCESSORS" : "1",
