@@ -109,10 +109,6 @@ SUBDUCTION_RUPTURE_ASPECT_RATIO = 1.5
 # (Only along strike ( rupture full DDW), Along strike and down dip, Along strike & centered down dip)
 SUBDUCTION_RUPTURE_FLOATING_TYPE = Along strike and down dip
 
-# (true or false) 
-MEAN_HAZARD_CURVES = true
-INDIVIDUAL_HAZARD_CURVES = true
-
 
 # CALCULATION MODE (Monte Carlo, Full Calculation)
 # if Monte Carlo is chosen than uncertainties defined by rules are treated as uncorrelated, and the user has to set the number of hazard calculations to be done
