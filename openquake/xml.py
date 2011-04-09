@@ -110,13 +110,17 @@ def element_equal_to_site(element, site):
     else:
         return False
 
+import pdb
+
 def lon_lat_from_site(element):
     """Extract (lon, lat) pair from gml:pos sub-element of element."""
     pos_el = element.findall(".//%s" % GML_POS_TAG)
     if len(pos_el) > 1:
-        error_msg = "site element %s has more than one gml:pos elements" % (
-            element)
-        raise ValueError(error_msg)
+        raise ValueError(
+            "site element %s has more than one gml:pos elements" % element)
+    if len(pos_el) < 1:
+        pdb.set_trace()
+        raise ValueError("site element %s has zero gml:pos elements" % element)
     return lon_lat_from_gml_pos(pos_el[0])
 
 def lon_lat_from_gml_pos(pos_el):
