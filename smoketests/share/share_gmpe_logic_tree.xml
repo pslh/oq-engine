@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nrml xmlns:gml="http://www.opengis.net/gml"
+      xmlns="http://openquake.org/xmlns/nrml/0.2"
+      gml:id="n1">
+    <logicTreeSet>
+        <logicTree id="lt1" tectonicRegion="Active Shallow Crust">
+            <logicTreeBranchSet branchingLevel="1" uncertaintyType="gmpeModel">
+
+                <logicTreeBranch>
+                    <uncertaintyModel>AkB_2010_AttenRel</uncertaintyModel>
+                    <uncertaintyWeight>0.35</uncertaintyWeight>
+                </logicTreeBranch>
+                        
+            <logicTreeBranch>
+                    <uncertaintyModel>CF_2008_AttenRel</uncertaintyModel>
+                    <uncertaintyWeight>0.35</uncertaintyWeight>
+                </logicTreeBranch>
+            
+                <logicTreeBranch>
+                    <uncertaintyModel>CY_2008_AttenRel</uncertaintyModel>
+                    <uncertaintyWeight>0.20</uncertaintyWeight>
+                </logicTreeBranch>
+
+                <logicTreeBranch>
+                    <uncertaintyModel>ZhaoEtAl_2006_AttenRel</uncertaintyModel>
+                    <uncertaintyWeight>0.10</uncertaintyWeight>
+                </logicTreeBranch>
+
+                </logicTreeBranchSet>
+        </logicTree>
+    </logicTreeSet>
+</nrml>

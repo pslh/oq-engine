@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<nrml xmlns="http://openquake.org/xmlns/nrml/0.2" xmlns:gml="http://www.opengis.net/gml" xmlns:qml="http://quakeml.org/xmlns/quakeml/1.1" gml:id="n1">
+  <sourceModel gml:id="share_model">
+    <config/>
+    <areaSource gml:id="911">
+      <gml:name>911</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+        9.3140707     45.265533
+       10.015694     45.011757
+        9.6567183     44.669632
+        9.4611473     44.471500
+        9.2702112     44.283428
+        8.7794809     44.549854
+        8.4755297     44.712498
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.598</aValueCumulative>
+          <bValue>0.970</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>0.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>8.0</hypocentralDepth>
+    </areaSource>
+        <areaSource gml:id="912">
+      <gml:name>912</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+        10.537289   44.745728
+        10.824336   44.951595
+        11.457679   44.916168
+        11.919618   44.781052
+        12.052342   44.741680
+        12.395358   44.434109
+        12.270123   44.106453
+        12.075720   44.297394
+        11.553079   44.507702
+        11.137180   44.548515
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.862</aValueCumulative>
+          <bValue>0.998</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>7.0</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="913">
+      <gml:name>913</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+        10.015694   45.011757
+        10.537289   44.745728
+        11.137180   44.548515
+        11.553079   44.507702
+        11.323310   44.136684
+        10.699876   44.208866
+        9.6567183   44.669632
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.993</aValueCumulative>
+          <bValue>0.932</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>13.0</hypocentralDepth>
+    </areaSource>
+      <areaSource gml:id="914">
+      <gml:name>914</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+            11.553079       44.507702   
+            12.075720       44.297394   
+            12.270123       44.106453   
+            12.116509       43.793972   
+            11.323310       44.136684   
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>1.622</aValueCumulative>
+          <bValue>0.919</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>13.0</hypocentralDepth>
+    </areaSource>
+    <areaSource gml:id="915">
+      <gml:name>915</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+        9.6567183       44.669632
+        10.699876       44.208866
+        11.323310       44.136684
+        12.116509       43.793972
+        11.993237       43.542446
+        11.870223       43.658337
+        11.254693       43.954441
+        10.413175       43.987789
+        9.4611473       44.471500
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.968</aValueCumulative>
+          <bValue>0.935</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.3</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>8</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="916">
+      <gml:name>916</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+        9.4611473        44.471500
+        10.413175        43.987789
+        11.254693        43.954441
+        11.870223        43.658337
+        11.577987        43.222858
+        10.930690        43.686275
+        10.226611        43.616528
+        10.075448        43.897949
+        9.2702112        44.283428
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.542</aValueCumulative>
+          <bValue>1.028</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>6.0</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="917">
+      <gml:name>917</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+       12.270123       44.106453
+       12.395358       44.434109
+       13.089877       43.994831
+       13.785748       43.554699
+       14.007418       43.178745
+       14.181002       42.474834
+       14.372491       42.149933
+       14.279234       41.857189
+       13.541156       43.294296
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>2.731</aValueCumulative>
+          <bValue>0.845</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>7.0</hypocentralDepth>
+    </areaSource>
+    <areaSource gml:id="918">
+      <gml:name>918</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+       12.116509         43.793972
+       12.270123         44.106453
+       13.541156         43.294296
+       14.279234         41.857189
+       13.588533         42.522327
+       13.151796         43.028217
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>2.068</aValueCumulative>
+          <bValue>0.834</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>13.0</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="919">
+      <gml:name>919</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+       11.993237     43.542446
+       12.116509     43.793972
+       13.151796     43.028217
+       12.766461     42.665394
+       12.412247     43.126457
+              </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>1.169</aValueCumulative>
+          <bValue>0.794</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>8.00</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="920">
+      <gml:name>920</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+             11.870223    43.658337
+             11.993237    43.542446
+             12.412247    43.126457
+             12.766461    42.665394
+             12.938025    42.439087
+             13.530234    41.848179
+             13.604964    41.527168
+             13.332681    41.457592
+             13.050910    41.736828
+             12.750907    41.955196
+             12.701694    41.998119
+             12.542922    42.145256
+             12.280819    42.483452
+             12.161645    42.635773
+             11.893587    42.961288
+             11.755552    43.093781
+             11.577987    43.222858
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>1.505</aValueCumulative>
+          <bValue>0.899</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>6.0</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="921">
+      <gml:name>921</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+         11.577987      43.222858
+         11.755552      43.093781
+         11.893587      42.961288
+         12.161645      42.635773
+         12.280819      42.483452
+         11.996041      42.132748
+         11.347994      42.757839
+         10.386529      43.424587
+         10.226611      43.616528
+         10.930690      43.686275
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.817</aValueCumulative>
+          <bValue>0.892</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>5.0</hypocentralDepth>
+    </areaSource>
+     <areaSource gml:id="922">
+      <gml:name>922</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+         13.050910        41.736828
+         12.637448        41.497391
+         12.356889        41.775860
+         12.701694        41.998119
+         12.750907        41.955196
+                </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>0.171</aValueCumulative>
+          <bValue>0.921</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>5.0</hypocentralDepth>
+    </areaSource>
+    <areaSource gml:id="923">
+      <gml:name>923</gml:name>
+      <tectonicRegion>Active Shallow Crust</tectonicRegion>
+      <areaBoundary>
+        <gml:Polygon>
+          <gml:exterior>
+            <gml:LinearRing>
+              <gml:posList>
+          13.151796      43.028217
+          13.588533      42.522327
+          14.279234      41.857189
+          14.253531      41.776028
+          14.141660      41.420269
+          13.604964      41.527168
+          13.530234      41.848179
+          12.938025      42.439087
+          12.766461      42.665394
+                 </gml:posList>
+            </gml:LinearRing>
+          </gml:exterior>
+        </gml:Polygon>
+      </areaBoundary>
+      <ruptureRateModel>
+        <truncatedGutenbergRichter>
+          <aValueCumulative>1.952</aValueCumulative>
+          <bValue>0.862</bValue>
+          <minMagnitude>5.0</minMagnitude>
+          <maxMagnitude>7.5</maxMagnitude>
+        </truncatedGutenbergRichter>
+        <focalMechanism publicID="fc_0">
+          <qml:nodalPlanes>
+            <qml:nodalPlane1>
+              <qml:strike>
+                <qml:value>75.0</qml:value>
+              </qml:strike>
+              <qml:dip>
+                <qml:value>45.0</qml:value>
+              </qml:dip>
+              <qml:rake>
+                <qml:value>-90.0</qml:value>
+              </qml:rake>
+            </qml:nodalPlane1>
+          </qml:nodalPlanes>
+        </focalMechanism>
+      </ruptureRateModel>
+      <ruptureDepthDistribution>
+        <magnitude>5.0</magnitude>
+        <depth>0.0</depth>
+      </ruptureDepthDistribution>
+      <hypocentralDepth>9.0</hypocentralDepth>
+    </areaSource>
+  </sourceModel>
+</nrml>
