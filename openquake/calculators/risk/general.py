@@ -233,7 +233,6 @@ class BaseRiskCalculator(Calculator):
         # pylint: disable=W0404
         from openquake import engine
 
-        sites = []
         self.job_ctxt.blocks_keys = []  # pylint: disable=W0201
         sites = engine.read_sites_from_exposure(self.job_ctxt)
 
