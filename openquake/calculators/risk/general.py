@@ -245,7 +245,7 @@ class BaseRiskCalculator(Calculator):
             block_count += 1
 
         LOG.info("Job has partitioned %s sites into %s blocks",
-                len(sites), block_count)
+                 len(sites), block_count)
 
     def store_exposure_assets(self):
         """Load exposure assets and write them to database."""
