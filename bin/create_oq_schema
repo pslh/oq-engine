@@ -96,6 +96,10 @@ do
     --tab-spaces-only)
         table_spaces_only="on"
         ;;
+    --tab-spaces-path=*)
+        tspace_path=`echo $i | sed 's/[-a-zA-Z0-9]*=//'`
+        echo "Using $tspace_path as tablespace path"
+        ;;
     -y|--yes)
         user_interaction="off"
         ;;
